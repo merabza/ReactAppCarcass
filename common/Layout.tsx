@@ -4,8 +4,8 @@ import NavMenu from "../menu/NavMenu";
 import TopNavMenu from "../../TopNavMenu";
 import { useAppSelector } from "../redux/hooks";
 
-import "@fortawesome/fontawesome-free/css/solid.css";
-import "@fortawesome/fontawesome-free/css/fontawesome.css";
+// import "@fortawesome/fontawesome-free/css/solid.css";
+// import "@fortawesome/fontawesome-free/css/fontawesome.css";
 import "bootstrap/dist/css/bootstrap.css";
 import "./Layout.css";
 import { Outlet } from "react-router-dom";
