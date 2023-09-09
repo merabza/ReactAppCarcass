@@ -285,12 +285,14 @@ const MdItemEdit: FC = () => {
           idFielName: curDataType.idFieldName,
           id: curMdIdVal,
           mdItem: frm,
+          navigate,
         });
       } else {
         addMasterDataRecord({
           tableName: curDataType.dtTable,
           idFielName: curDataType.idFieldName,
           mdItem: frm,
+          navigate,
         });
       }
     }

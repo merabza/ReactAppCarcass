@@ -21,7 +21,7 @@ import {
   IMainMenuModel,
 } from "../types/userRightsTypes";
 import { buildErrorMessage } from "../types/errorTypes";
-import { redirect } from "react-router-dom";
+//import { redirect } from "react-router-dom";
 
 export interface IChangeProfileModel {
   userid: number;
@@ -145,11 +145,11 @@ export const userRightsApi = createApi({
           method: "DELETE",
         };
       },
-      async onQueryStarted(args, { dispatch, queryFulfilled }) {
+      async onQueryStarted({ navigate }, { dispatch, queryFulfilled }) {
         // console.log("authenticationApi login onQueryStarted started")
         try {
           await queryFulfilled;
-          redirect("/login");
+          navigate("/login");
         } catch (error) {
           dispatch(setAlertApiMutationError(buildErrorMessage(error)));
         }

@@ -27,7 +27,8 @@ import {
 } from "../slices/masterdataSlice";
 import { RootState } from "../../../redux/store";
 import { buildErrorMessage } from "../types/errorTypes";
-import { redirect } from "react-router-dom";
+// import { redirect } from "react-router-dom";
+import { NavigateFunction } from "react-router-dom";
 
 export const masterdataApi = createApi({
   reducerPath: "masterdataApi",
@@ -73,7 +74,7 @@ export const masterdataApi = createApi({
         };
       },
       async onQueryStarted(
-        { tableName, idFielName },
+        { tableName, idFielName, navigate },
         { dispatch, getState, queryFulfilled }
       ) {
         try {
@@ -91,7 +92,7 @@ export const masterdataApi = createApi({
           const returnPageName = (getState() as RootState).masterDataState
             .returnPageName;
           const realReturnPageName = returnPageName ? returnPageName : "mdList";
-          redirect(`/${realReturnPageName}/${tableName}/${idValue}`);
+          navigate(`/${realReturnPageName}/${tableName}/${idValue}`);
         } catch (error) {
           dispatch(setAlertApiMutationError(buildErrorMessage(error)));
         }
@@ -110,7 +111,7 @@ export const masterdataApi = createApi({
         };
       },
       async onQueryStarted(
-        { tableName, idFielName, id, mdItem },
+        { tableName, idFielName, id, mdItem, navigate },
         { dispatch, getState, queryFulfilled }
       ) {
         try {
@@ -127,7 +128,7 @@ export const masterdataApi = createApi({
           const returnPageName = (getState() as RootState).masterDataState
             .returnPageName;
           const realReturnPageName = returnPageName ? returnPageName : "mdList";
-          redirect(`/${realReturnPageName}/${tableName}/${id}`);
+          navigate(`/${realReturnPageName}/${tableName}/${id}`);
         } catch (error) {
           dispatch(setAlertApiMutationError(buildErrorMessage(error)));
         }

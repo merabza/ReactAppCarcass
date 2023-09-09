@@ -1,10 +1,13 @@
 //masterdataTypes.ts
 
+import { NavigateFunction } from "react-router-dom";
+
 export interface IMasterDataMutationParameters {
   tableName: string;
   idFielName: string;
   id: number;
   mdItem: any;
+  navigate: NavigateFunction;
 }
 
 export interface IdeleteMasterDataRecordParameters {
@@ -22,6 +25,7 @@ export interface IAdddMasterDataParameters {
   tableName: string;
   idFielName: string;
   mdItem: any;
+  navigate: NavigateFunction;
 }
 
 export interface ISetAddedMasterDataRecordAction {

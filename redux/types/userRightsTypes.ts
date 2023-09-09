@@ -1,4 +1,5 @@
 //userRightsTypes.ts
+import { NavigateFunction } from "react-router-dom";
 
 export interface IMenuItmModel {
   menId: number;
@@ -32,4 +33,5 @@ export interface IMainMenuModel {
 
 export interface IdeleteCurrentUserParameters {
   userName: string;
+  navigate: NavigateFunction;
 }
