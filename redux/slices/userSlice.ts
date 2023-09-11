@@ -51,7 +51,9 @@ export const userSlice = createSlice({
       }
     },
     setIsCurrentUserValid: (state, action: PayloadAction<boolean>) => {
-      state.userValidationChecked = action.payload;
+      const isUserValid = action.payload;
+      state.userValidationChecked = isUserValid;
+      if (!isUserValid) state.user = null;
     },
     setPasswordChanged: (state, action: PayloadAction<boolean>) => {
       state.passwordChanged = action.payload;

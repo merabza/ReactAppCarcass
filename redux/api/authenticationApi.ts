@@ -74,7 +74,7 @@ export const authenticationApi = createApi({
           dispatch(setIsCurrentUserValid(true));
         } catch (error) {
           // console.log("authenticationApi login catched error");
-          dispatch(setIsCurrentUserValid(true));
+          dispatch(setIsCurrentUserValid(false));
           dispatch(setAlertApiMutationError(buildErrorMessage(error)));
         }
       },
@@ -94,7 +94,7 @@ export const authenticationApi = createApi({
           dispatch(setUser(data));
           dispatch(setIsCurrentUserValid(true));
         } catch (error) {
-          dispatch(setIsCurrentUserValid(true));
+          dispatch(setIsCurrentUserValid(false));
           dispatch(setAlertApiMutationError(buildErrorMessage(error)));
         }
       },

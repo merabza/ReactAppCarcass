@@ -77,7 +77,7 @@ export const userRightsApi = createApi({
           // console.log("userRightsApi isCurrentUserValid onQueryStarted setIsCurrentUserValid=false");
           dispatch(setIsCurrentUserValid(true));
         } catch (error) {
-          dispatch(setIsCurrentUserValid(true));
+          dispatch(setIsCurrentUserValid(false));
           //აქ შეცდომის დაფიქირება არ არის საჭირო
           // dispatch(setAlertApiLoadError(buildErrorMessage(error)));
         }
