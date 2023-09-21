@@ -10,38 +10,47 @@ import WaitPage from "./WaitPage";
 const PrivateApp: FC = () => {
   // console.log("PrivateApp Start");
 
-  const { userValidationChecked, user } = useAppSelector(
+  const { userValidationChecked, user, CheckingUser } = useAppSelector(
     (state) => state.userState
   );
   // console.log("PrivateApp Start { userValidationChecked, user } = ", { userValidationChecked, user });
 
   const navigate = useNavigate();
-  const publicPathces = [
-    "/login",
-    "/registration",
-    "/createdb",
-    "/undercounstruction",
-  ];
+  const publicPathces = ["/login", "/registration"];
 
   const [IsCurrentUserValid] = useLazyIsCurrentUserValidQuery();
 
   const location = useLocation();
 
   useEffect(() => {
+    console.log(
+      "PrivateApp useEffect {CheckingUser, userValidationChecked, user}=",
+      { CheckingUser, userValidationChecked, user }
+    );
+
+    if (CheckingUser) return;
+
+    if (!userValidationChecked && user) {
+      IsCurrentUserValid();
+      return;
+    }
+
     if (!user) {
-      // console.log("PrivateApp useEffect window.location.pathname=", window.location.pathname);
+      console.log(
+        "PrivateApp useEffect window.location.pathname=",
+        window.location.pathname
+      );
       if (window.location.pathname !== "/login") {
-        // console.log("PrivateApp useEffect navigate login", window.location.pathname);
+        console.log(
+          "PrivateApp useEffect navigate login",
+          window.location.pathname
+        );
         navigate("/login", {
           state: { from: window.location.pathname },
         });
       }
     }
-
-    if (!userValidationChecked && user) {
-      IsCurrentUserValid(null);
-    }
-  }, [userValidationChecked, user]);
+  }, [CheckingUser, userValidationChecked, user]);
 
   if (publicPathces.includes(location.pathname)) {
     // console.log("PrivateApp location=", location);

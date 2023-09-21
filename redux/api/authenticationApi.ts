@@ -8,10 +8,8 @@ import type {
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 import { RootState } from "../../../redux/store";
-import { setAlertApiMutationError } from "../slices/alertSlice";
-import { setIsCurrentUserValid, setUser } from "../slices/userSlice";
+import { setUser, setloggingIn } from "../slices/userSlice";
 import { IAppUser } from "../types/authenticationTypes";
-import { buildErrorMessage } from "../types/errorTypes";
 
 export interface ILoginRequest {
   username: string;
@@ -66,16 +64,15 @@ export const authenticationApi = createApi({
       },
 
       async onQueryStarted(args, { dispatch, queryFulfilled }) {
-        // console.log("authenticationApi login onQueryStarted started")
+        console.log("authenticationApi login onQueryStarted started");
         try {
+          dispatch(setloggingIn(true));
           const { data } = await queryFulfilled;
-          // console.log("authenticationApi login onQueryStarted data=", data);
+          console.log("authenticationApi login onQueryStarted data=", data);
           dispatch(setUser(data));
-          dispatch(setIsCurrentUserValid(true));
         } catch (error) {
-          // console.log("authenticationApi login catched error");
-          dispatch(setIsCurrentUserValid(false));
-          dispatch(setAlertApiMutationError(buildErrorMessage(error)));
+          console.log("authenticationApi login catched error");
+          dispatch(setUser(null));
         }
       },
     }),
@@ -90,12 +87,11 @@ export const authenticationApi = createApi({
       },
       async onQueryStarted(args, { dispatch, queryFulfilled }) {
         try {
+          dispatch(setloggingIn(true));
           const { data } = await queryFulfilled;
           dispatch(setUser(data));
-          dispatch(setIsCurrentUserValid(true));
         } catch (error) {
-          dispatch(setIsCurrentUserValid(false));
-          dispatch(setAlertApiMutationError(buildErrorMessage(error)));
+          dispatch(setUser(null));
         }
       },
     }),
