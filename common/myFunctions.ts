@@ -1,4 +1,8 @@
 //myFunctions.ts
+export function EmptyToNull(value: string | null | undefined) {
+  if (value === "" || value === null || value === undefined) return null;
+  return value;
+}
 
 export function NzInt(value: string | null | undefined, defValue = 0) {
   try {

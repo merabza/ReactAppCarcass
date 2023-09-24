@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { GetDisplayValue } from "../modules/GetDisplayValue";
 import BsComboBox from "./BsComboBox";
-import { NzInt, filterByHeader } from "../common/myFunctions";
+import { EmptyToNull, NzInt, filterByHeader } from "../common/myFunctions";
 import { DataTypeFfModel } from "../redux/types/dataTypesTypes";
 import { Cell, LookupCell } from "../redux/types/gridTypes";
 import { IMasterDataState } from "../redux/slices/masterdataSlice";
@@ -54,12 +54,12 @@ const MdListView: FC<MdListViewProps> = (props) => {
     if (firstFilter) {
       for (let propertyName in firstItem) {
         if (!firstFilter[propertyName]) {
-          firstItem[propertyName] = -1;
+          firstItem[propertyName] = "";
         }
       }
     } else {
       for (let propertyName in firstItem) {
-        firstItem[propertyName] = -1;
+        firstItem[propertyName] = "";
       }
     }
     return firstItem;
@@ -133,7 +133,9 @@ const MdListView: FC<MdListViewProps> = (props) => {
                             {caption}
                             <BsComboBox
                               name={fieldName}
-                              value={frm ? frm[fieldName] : null}
+                              value={
+                                frm && frm[fieldName] ? frm[fieldName] : ""
+                              }
                               dataMember={
                                 masterData.mdRepo[lookupCol.dataMember]
                               }
@@ -168,7 +170,7 @@ const MdListView: FC<MdListViewProps> = (props) => {
                             {caption}
                             <BsComboBox
                               name={fieldName}
-                              value={frm ? frm[fieldName] : null}
+                              value={frm ? frm[fieldName] : ""}
                               dataMember={rows}
                               valueMember="val"
                               displayMember="disp"
@@ -192,14 +194,14 @@ const MdListView: FC<MdListViewProps> = (props) => {
                           {caption}
                           <Form.Control
                             type="number"
-                            value={frm ? frm[fieldName] : ""}
+                            value={frm && frm[fieldName] ? frm[fieldName] : ""}
                             onChange={(e) => {
                               const { value } = e.target;
                               // console.log(
                               //   "MdListView Integer filter changed to value = ",
                               //   value
                               // );
-                              const numberValue = NzInt(value, -1);
+                              const numberValue = NzInt(EmptyToNull(value), -1);
                               changeField(
                                 fieldName,
                                 numberValue === -1 ? "" : numberValue
