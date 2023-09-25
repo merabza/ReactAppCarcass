@@ -22,6 +22,7 @@ type MdListViewProps = {
   firstFilter?: any;
   readOnly?: boolean;
   filterChanged?: (frm: any) => void;
+  // onLoad: (offset: number, numberOfRowsToShow: number) => void; //
 };
 
 interface IrowSourceItem {

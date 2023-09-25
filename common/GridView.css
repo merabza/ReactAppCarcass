@@ -1,0 +1,14 @@
+/*GridView.css*/
+
+#gridview div table thead tr th a {
+  padding: 10px;
+  font-size: 1.1em;
+  display: block;
+}
+
+#gridview div table thead tr th span {
+  padding: 10px;
+  font-size: 1.1em;
+  display: block;
+}
+
