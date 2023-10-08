@@ -71,22 +71,22 @@ export const userRightsApi = createApi({
       },
       async onQueryStarted(args, { dispatch, queryFulfilled }) {
         try {
-          console.log(
-            "userRightsApi isCurrentUserValid onQueryStarted start setCheckingUser=true setIsCurrentUserValid=false"
-          );
+          // console.log(
+          //   "userRightsApi isCurrentUserValid onQueryStarted start setCheckingUser=true setIsCurrentUserValid=false"
+          // );
           dispatch(setCheckingUser(true));
           // dispatch(setIsCurrentUserValid(false));
           // console.log("userRightsApi isCurrentUserValid onQueryStarted await queryFulfilled");
           await queryFulfilled;
-          console.log(
-            "userRightsApi isCurrentUserValid onQueryStarted finish setIsCurrentUserValid=true setCheckingUser=false"
-          );
+          // console.log(
+          //   "userRightsApi isCurrentUserValid onQueryStarted finish setIsCurrentUserValid=true setCheckingUser=false"
+          // );
           dispatch(setIsCurrentUserValid(true));
         } catch (error) {
-          console.log(
-            "userRightsApi isCurrentUserValid onQueryStarted catched error setIsCurrentUserValid=false setCheckingUser=false error=",
-            error
-          );
+          // console.log(
+          //   "userRightsApi isCurrentUserValid onQueryStarted catched error setIsCurrentUserValid=false setCheckingUser=false error=",
+          //   error
+          // );
           dispatch(setIsCurrentUserValid(false));
           //აქ შეცდომის დაფიქირება არ არის საჭირო
           // dispatch(setAlertApiLoadError(buildErrorMessage(error)));

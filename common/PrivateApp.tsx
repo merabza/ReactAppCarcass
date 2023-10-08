@@ -23,10 +23,10 @@ const PrivateApp: FC = () => {
   const location = useLocation();
 
   useEffect(() => {
-    console.log(
-      "PrivateApp useEffect {CheckingUser, userValidationChecked, user}=",
-      { CheckingUser, userValidationChecked, user }
-    );
+    // console.log(
+    //   "PrivateApp useEffect {CheckingUser, userValidationChecked, user}=",
+    //   { CheckingUser, userValidationChecked, user }
+    // );
 
     if (CheckingUser) return;
 
@@ -36,15 +36,15 @@ const PrivateApp: FC = () => {
     }
 
     if (!user) {
-      console.log(
-        "PrivateApp useEffect window.location.pathname=",
-        window.location.pathname
-      );
+      // console.log(
+      //   "PrivateApp useEffect window.location.pathname=",
+      //   window.location.pathname
+      // );
       if (window.location.pathname !== "/login") {
-        console.log(
-          "PrivateApp useEffect navigate login",
-          window.location.pathname
-        );
+        // console.log(
+        //   "PrivateApp useEffect navigate login",
+        //   window.location.pathname
+        // );
         navigate("/login", {
           state: { from: window.location.pathname },
         });

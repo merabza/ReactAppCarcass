@@ -51,7 +51,7 @@ export function GetDisplayValue(
       );
     }
 
-    if (!!lookupCol.rowSource) {
+    if (!!lookupCol.rowSource && !!value) {
       // console.log("GetDisplayValue col.rowSource=", lookupCol.rowSource);
       var rsarr = lookupCol.rowSource.split(";");
       // console.log("GetDisplayValue rsarr=", rsarr);

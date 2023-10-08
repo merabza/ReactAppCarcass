@@ -1,4 +1,4 @@
-//GridView.tsx
+//GridViewOld.tsx
 
 import React, { useState, useEffect, useCallback, FC } from "react";
 import { Table, Row } from "react-bootstrap";
@@ -13,10 +13,10 @@ import {
   IGridScrollTo,
   ISortField,
 } from "./GridViewTypes";
-import { NzInt } from "./myFunctions";
-import Loading from "./Loading";
+import { NzInt } from "../common/myFunctions";
+import Loading from "../common/Loading";
 
-type GridViewProps = {
+type GridViewOldProps = {
   columns: IGridColumn[]; //
   rows: any[]; //
   offset?: number;
@@ -36,7 +36,7 @@ type GridViewProps = {
   backLigth?: (node: HTMLElement | HTMLLIElement | null) => void;
 };
 
-const GridView: FC<GridViewProps> = (props) => {
+const GridViewOld: FC<GridViewOldProps> = (props) => {
   const {
     columns,
     rows,
@@ -54,7 +54,7 @@ const GridView: FC<GridViewProps> = (props) => {
     backLigth,
   } = props;
 
-  console.log("GridView props=", props);
+  console.log("GridViewOld props=", props);
 
   const [curOffset, setCurOffset] = useState<number>(0); //წანაცვლება
   const [curShowRows, setCurShowRows] = useState<number>(10); //ცხრილში საჩვენებელი სტრიქონების რაოდენობა
@@ -74,14 +74,14 @@ const GridView: FC<GridViewProps> = (props) => {
   const gvShowRows = showRows ?? curShowRows;
   const gvAllRowsCount =
     allRowsCount || allRowsCount === 0 ? allRowsCount : rows.length;
-  //console.log("GridView gvAllRowsCount=", gvAllRowsCount);
+  //console.log("GridViewOld gvAllRowsCount=", gvAllRowsCount);
 
-  //console.log("GridView {gvOffset, gvShowRows}=", {gvOffset, gvShowRows});
+  //console.log("GridViewOld {gvOffset, gvShowRows}=", {gvOffset, gvShowRows});
 
   const changeOffsetAndShowRows = useCallback(
     (targetOffset: number, targetShowRows: number) => {
       // console.log(
-      //   "GridView changeOffsetAndShowRows {targetOffset, targetShowRows}=",
+      //   "GridViewOld changeOffsetAndShowRows {targetOffset, targetShowRows}=",
       //   { targetOffset, targetShowRows }
       // );
 
@@ -89,7 +89,7 @@ const GridView: FC<GridViewProps> = (props) => {
 
       if (targetShowRows !== gvShowRows) {
         setCurShowRows(targetShowRows);
-        //console.log("GridView setCurShowRows targetShowRows=", targetShowRows);
+        //console.log("GridViewOld setCurShowRows targetShowRows=", targetShowRows);
         haveChanges = true;
       }
 
@@ -100,30 +100,32 @@ const GridView: FC<GridViewProps> = (props) => {
 
       if (newOffset !== gvOffset) {
         setCurOffset(newOffset);
-        //console.log("GridView setCurOffset newOffset=", newOffset);
-        setCurOffsetInputWith((Math.floor(Math.log10(newOffset)) + 1) * 9 + 31);
+        //console.log("GridViewOld setCurOffset newOffset=", newOffset);
+        setCurOffsetInputWith(
+          (Math.floor(Math.log10(newOffset + 1)) + 1) * 9 + 31
+        );
         haveChanges = true;
       }
 
       if (haveChanges && onChangeOffsetAndShowRows) {
-        //console.log("GridView changeOffsetAndShowRows onChangeOffsetAndShowRows {newOffset, targetShowRows}=", {newOffset, targetShowRows});
+        //console.log("GridViewOld changeOffsetAndShowRows onChangeOffsetAndShowRows {newOffset, targetShowRows}=", {newOffset, targetShowRows});
         onChangeOffsetAndShowRows(newOffset, targetShowRows);
       }
 
       if (onLoad) {
         // console.log(
-        //   "GridView changeOffsetAndShowRows {newOffset, targetShowRows}=",
+        //   "GridViewOld changeOffsetAndShowRows {newOffset, targetShowRows}=",
         //   { newOffset, targetShowRows }
         // );
 
         let needsToLoad = false;
         // console.log(
-        //   "GridView changeOffsetAndShowRows needsToLoad=",
+        //   "GridViewOld changeOffsetAndShowRows needsToLoad=",
         //   needsToLoad
         // );
         if (!needsToLoad && !rows) {
           // console.log(
-          //   "GridView changeOffsetAndShowRows needsToLoad because {rows}=",
+          //   "GridViewOld changeOffsetAndShowRows needsToLoad because {rows}=",
           //   { rows }
           // );
           needsToLoad = true;
@@ -138,7 +140,7 @@ const GridView: FC<GridViewProps> = (props) => {
               rows[index] === null
             ) {
               // console.log(
-              //   "GridView changeOffsetAndShowRows needsToLoad because {index, rows[index]}=",
+              //   "GridViewOld changeOffsetAndShowRows needsToLoad because {index, rows[index]}=",
               //   { index, val: rows[index] }
               // );
               needsToLoad = true;
@@ -149,7 +151,7 @@ const GridView: FC<GridViewProps> = (props) => {
 
         if (needsToLoad) {
           // console.log(
-          //   "GridView changeOffsetAndShowRows call",
+          //   "GridViewOld changeOffsetAndShowRows call",
           //   newOffset,
           //   targetShowRows
           // );
@@ -168,7 +170,7 @@ const GridView: FC<GridViewProps> = (props) => {
   );
 
   useEffect(() => {
-    // console.log("GridView useEffect ", {
+    // console.log("GridViewOld useEffect ", {
     //   curFilterSortId,
     //   gvFilterSortId,
     //   curOffset,
@@ -197,7 +199,7 @@ const GridView: FC<GridViewProps> = (props) => {
   ]);
 
   function toggleSortForColumn(fieldName: string) {
-    //console.log("---- GridView toggleSortForColumn {fieldName}=", {fieldName});
+    //console.log("---- GridViewOld toggleSortForColumn {fieldName}=", {fieldName});
 
     const newSortFieldNames = [] as ISortField[];
     let ascDescVal = 0;
@@ -282,7 +284,7 @@ const GridView: FC<GridViewProps> = (props) => {
         </thead>
         <tbody>
           {rows.slice(gvOffset, gvOffset + gvShowRows).map((row, i) => {
-            //console.log("GridView row=", row);
+            //console.log("GridViewOld row=", row);
             const index = gvOffset + i + 1;
             const bl = curscrollTo?.index === index;
             return (
@@ -302,9 +304,9 @@ const GridView: FC<GridViewProps> = (props) => {
                       ? row[changingFieldName]
                       : false;
                     if (col.caption === "თოლია") {
-                      //console.log("GridView col=", col);
-                      //console.log("GridView changingFieldName=", changingFieldName);
-                      //console.log("GridView changing=", changing);
+                      //console.log("GridViewOld col=", col);
+                      //console.log("GridViewOld changingFieldName=", changingFieldName);
+                      //console.log("GridViewOld changing=", changing);
                     }
                     return (
                       <td
@@ -417,4 +419,4 @@ const GridView: FC<GridViewProps> = (props) => {
   );
 };
 
-export default GridView;
+export default GridViewOld;

@@ -93,19 +93,19 @@ export function checkDataTypeLoaded(
 
   if (masterData.mdWorkingOnLoadingListData) {
     //console.log("checkDataLoaded 1 steel loading");
-    return false;
+    return null;
   }
 
   const datatypes = dataTypes.dataTypes;
 
   if (!datatypes) {
     //console.log("checkDataLoaded 2 datatypes not loaded");
-    return false;
+    return null;
   }
 
   if (datatypes.length === 0) {
     //console.log("checkDataLoaded 3 datatypes has not any element");
-    return false;
+    return null;
   }
 
   const dataType = datatypes.find((dt) => {
@@ -114,7 +114,7 @@ export function checkDataTypeLoaded(
 
   if (!dataType) {
     //console.log("checkDataLoaded 10 datatype not found for table ", tableName);
-    return false;
+    return null;
   }
 
   return dataType;

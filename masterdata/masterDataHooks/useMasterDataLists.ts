@@ -56,7 +56,7 @@ export function useMasterDataLists(): [fnloadListData] {
       const requiredMdNames: Array<string> = [tableName];
 
       const { gridsDatas } = dataTypesState;
-
+      // console.log("useMasterDataLists loadListData gridsDatas=", gridsDatas);
       if (gridName in gridsDatas) {
         const gridData = gridsDatas[gridName];
         if (gridData !== undefined) {
@@ -64,6 +64,10 @@ export function useMasterDataLists(): [fnloadListData] {
           grid?.cells.forEach((cell) => {
             if (cell.typeName === "Lookup") {
               const lookupCol = cell as LookupCell;
+              // console.log(
+              //   "useMasterDataLists loadListData lookupCol=",
+              //   lookupCol
+              // );
               if (lookupCol.dataMember)
                 requiredMdNames.push(lookupCol.dataMember);
             }
@@ -83,16 +87,21 @@ export function useMasterDataLists(): [fnloadListData] {
         return;
       }
 
+      // console.log(
+      //   "useMasterDataLists loadListData realyNeedTables=",
+      //   realyNeedTables
+      // );
       await getTables(realyNeedTables);
+      // console.log("useMasterDataLists loadListData getTables Finished");
       dispatch(SetMdWorkingOnLoadingListData(false));
       dispatch(SetWorkingOnLoad(false));
     },
     [
       dataTypesState,
-      dispatch,
-      getDataTypes,
-      getGridModel,
-      getTables,
+      // dispatch,
+      // getDataTypes,
+      // getGridModel,
+      // getTables,
       masterDataState,
     ]
   );

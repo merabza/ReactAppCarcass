@@ -43,6 +43,7 @@ const MdListView: FC<MdListViewProps> = (props) => {
     filterChanged,
   } = props;
 
+  // console.log("MdListView props=", props);
   // console.log("MdListView table=", table);
   // console.log("MdListView gridColumns=", gridColumns);
 
