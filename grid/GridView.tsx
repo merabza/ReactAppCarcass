@@ -58,7 +58,7 @@ const GridView: FC<GridViewProps> = (props) => {
     editorLink,
   } = props;
 
-  //console.log("GridView props=", props);
+  console.log("GridView props=", props);
 
   const [curShowRowsCount, setCurShowRowsCount] = useState<number>(10); //ცხრილში საჩვენებელი სტრიქონების რაოდენობა
 

@@ -7,6 +7,13 @@ export interface IFilterSortObject {
   tableName: string;
 }
 
+export interface IFilterSortRequest {
+  offset: number;
+  rowsCount: number;
+  filterFields: IFilterField[];
+  sortByFields: ISortField[];
+}
+
 export interface IGridColumn {
   caption: string;
   visible: boolean;
@@ -30,7 +37,7 @@ export interface ISortField {
 
 export interface IFilterField {
   fieldName: string;
-  value: any;
+  value: string;
 }
 
 export interface IRowsData {
