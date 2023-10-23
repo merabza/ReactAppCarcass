@@ -12,24 +12,24 @@ export function checkDataLoaded(
   // console.log("checkDataLoaded 0 masterData=", masterData);
 
   if (masterData.mdWorkingOnLoadingListData) {
-    // console.log("checkDataLoaded 1 steel loading");
+    //console.log("checkDataLoaded 1 steel loading");
     return false;
   }
 
   const datatypes = dataTypes.dataTypes;
 
   if (!datatypes) {
-    // console.log("checkDataLoaded 2 datatypes not loaded");
+    //console.log("checkDataLoaded 2 datatypes not loaded");
     return false;
   }
 
   if (datatypes.length === 0) {
-    // console.log("checkDataLoaded 3 datatypes has not any element");
+    //console.log("checkDataLoaded 3 datatypes has not any element");
     return false;
   }
 
   if (tableName === undefined) {
-    // console.log("checkDataLoaded 4 tableName does not specified");
+    //console.log("checkDataLoaded 4 tableName does not specified");
     return false;
   }
 
@@ -47,22 +47,22 @@ export function checkDataLoaded(
   }
 
   if (!masterData.mdRepo[tableName]) {
-    // console.log("checkDataLoaded 8 table is ampty");
+    //console.log("checkDataLoaded 8 table is ampty");
     return false;
   }
 
   if (gridName === undefined) {
-    // console.log("checkDataLoaded 9 gridName does not specified");
+    //console.log("checkDataLoaded 9 gridName does not specified");
     return false;
   }
 
   if (!(gridName in dataTypes.gridsDatas)) {
-    // console.log("checkDataLoaded 10 grid rules not found gridName=", gridName);
+    //console.log("checkDataLoaded 10 grid rules not found gridName=", gridName);
     return false;
   }
 
   if (!dataTypes.gridsDatas[gridName]) {
-    // console.log("checkDataLoaded 11 grid rules empty gridName=", gridName);
+    //console.log("checkDataLoaded 11 grid rules empty gridName=", gridName);
     return false;
   }
 
@@ -71,7 +71,7 @@ export function checkDataLoaded(
   });
 
   if (!dataType) {
-    // console.log("checkDataLoaded 12 datatype not found for table ", tableName);
+    //console.log("checkDataLoaded 12 datatype not found for table ", tableName);
     return false;
   }
 
@@ -133,7 +133,10 @@ export function checkDataTableLoaded(
 
   if (!(tableName in masterData.mdRepo)) {
     //console.log("checkDataLoaded 4 table not loaded tableName=", tableName);
-    //console.log("checkDataLoaded 4 table not loaded masterData.mdRepo=", masterData.mdRepo);
+    // console.log(
+    //   "checkDataLoaded 4 table not loaded masterData.mdRepo=",
+    //   masterData.mdRepo
+    // );
     return false;
   }
 

@@ -1,6 +1,6 @@
 //GridView.tsx
 
-import React, { useState, useEffect, FC, useCallback } from "react";
+import React, { useState, useEffect, FC } from "react";
 import { Table, Row, Col } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
@@ -16,7 +16,9 @@ import {
 } from "./GridViewTypes";
 import { NzInt } from "../common/myFunctions";
 import Loading from "../common/Loading";
-import FilterComboBox from "./FilterComboBox";
+import PosibleValuesFilterComboBox from "./PosibleValuesFilterComboBox";
+import MdLookupColumn from "./MdLookupColumn";
+import MasterDataFilterComboBox from "./MasterDataFilterComboBox";
 
 type GridViewProps = {
   gridHeader?: string;
@@ -32,7 +34,6 @@ type GridViewProps = {
     sortByFields: ISortField[],
     filterByFields: IFilterField[]
   ) => void;
-  firstFilter?: any;
   readOnly?: boolean;
   allowCreate?: boolean;
   allowUpdate?: boolean;
@@ -50,7 +51,6 @@ const GridView: FC<GridViewProps> = (props) => {
     curscrollTo,
     backLigth,
     onLoadRows,
-    firstFilter,
     readOnly,
     allowCreate,
     allowUpdate,
@@ -58,7 +58,7 @@ const GridView: FC<GridViewProps> = (props) => {
     editorLink,
   } = props;
 
-  console.log("GridView props=", props);
+  // console.log("GridView props=", props);
 
   const [curShowRowsCount, setCurShowRowsCount] = useState<number>(10); //ცხრილში საჩვენებელი სტრიქონების რაოდენობა
 
@@ -70,32 +70,13 @@ const GridView: FC<GridViewProps> = (props) => {
     [] as IFilterField[]
   ); //სორტირების ველების სახელები
 
-  const getFilterFirstItem = useCallback(
-    (table: Array<any>) => {
-      const firstItem = { ...table[0] };
-      if (firstFilter) {
-        for (let propertyName in firstItem) {
-          if (!firstFilter[propertyName]) {
-            firstItem[propertyName] = "";
-          }
-        }
-      } else {
-        for (let propertyName in firstItem) {
-          firstItem[propertyName] = "";
-        }
-      }
-      return firstItem;
-    },
-    [firstFilter]
-  );
-
   useEffect(() => {
     if (!rowsData) {
       if (onLoadRows) {
         onLoadRows(0, curShowRowsCount, curSortFieldNames, curFilterFields);
       }
     }
-  }, [rowsData, curShowRowsCount, curSortFieldNames]);
+  }, [rowsData, curShowRowsCount, curSortFieldNames, curFilterFields]);
 
   function toggleSortForColumn(fieldName: string, shiftKeyIsUsed: boolean) {
     //console.log("---- GridView toggleSortForColumn {fieldName}=", {fieldName});
@@ -134,7 +115,7 @@ const GridView: FC<GridViewProps> = (props) => {
     if (value !== undefined)
       newFilterFields.push({
         fieldName: fieldName,
-        value: value,
+        value: value.toString(),
       } as IFilterField);
 
     // console.log(
@@ -185,18 +166,32 @@ const GridView: FC<GridViewProps> = (props) => {
                       {caption}{" "}
                       <FontAwesomeIcon icon={sortIconName as IconName} />
                     </Link>
-                    <FilterComboBox
-                      // key={col.fieldName}
-                      name={col.fieldName}
-                      dataMember={col.possibleValues}
-                      onChangeValue={(name, newValue) => {
-                        // console.log(
-                        //   "GridView FilterComboBox onChangeValue {name, newValue}=",
-                        //   { name, newValue }
-                        // );
-                        changeFilterField(name, newValue);
-                      }}
-                    ></FilterComboBox>
+                    {!!col.possibleValues && (
+                      <PosibleValuesFilterComboBox
+                        // key={col.fieldName}
+                        dataMember={col.possibleValues}
+                        onChangeValue={(newValue) => {
+                          // console.log(
+                          //   "GridView FilterComboBox onChangeValue {name, newValue}=",
+                          //   { name, newValue }
+                          // );
+                          changeFilterField(col.fieldName, newValue);
+                        }}
+                      ></PosibleValuesFilterComboBox>
+                    )}
+                    {!!col.mdLookupColumnPart && (
+                      <MasterDataFilterComboBox
+                        masterDataTable={col.mdLookupColumnPart.dataTable}
+                        valueMember={col.mdLookupColumnPart.valueMember}
+                        displayMembar={col.mdLookupColumnPart.displayMember}
+                        isNullable={col.nullable}
+                        onChangeValue={(
+                          newValue: number | null | undefined
+                        ) => {
+                          changeFilterField(col.fieldName, newValue);
+                        }}
+                      ></MasterDataFilterComboBox>
+                    )}
                   </th>
                 );
               } else {
@@ -247,20 +242,29 @@ const GridView: FC<GridViewProps> = (props) => {
                       key={col.fieldName}
                       className={bl ? "backLigth" : undefined}
                     >
-                      {col.control && React.isValidElement(col.control)
-                        ? React.cloneElement(
-                            col.control as React.ReactElement<any>,
-                            {
-                              value,
-                              index,
-                              offset: rowsData.offset,
-                              showRows: curShowRowsCount,
-                              changing,
-                              record: row,
-                            },
-                            null
-                          )
-                        : value}
+                      {col.control && React.isValidElement(col.control) ? (
+                        React.cloneElement(
+                          col.control as React.ReactElement<any>,
+                          {
+                            value,
+                            index,
+                            offset: rowsData.offset,
+                            showRows: curShowRowsCount,
+                            changing,
+                            record: row,
+                          },
+                          null
+                        )
+                      ) : col.mdLookupColumnPart ? (
+                        <MdLookupColumn
+                          dataTable={col.mdLookupColumnPart.dataTable}
+                          valueMember={col.mdLookupColumnPart.valueMember}
+                          displayMember={col.mdLookupColumnPart.displayMember}
+                          value={value}
+                        ></MdLookupColumn>
+                      ) : (
+                        value
+                      )}
                     </td>
                   );
                 })}
@@ -403,7 +407,10 @@ const GridView: FC<GridViewProps> = (props) => {
               e.preventDefault();
               if (onLoadRows) {
                 onLoadRows(
-                  rowsData.allRowsCount - curShowRowsCount,
+                  Math.floor(
+                    (rowsData.allRowsCount - curShowRowsCount) /
+                      curShowRowsCount
+                  ) * curShowRowsCount,
                   curShowRowsCount,
                   curSortFieldNames,
                   curFilterFields
@@ -422,6 +429,9 @@ const GridView: FC<GridViewProps> = (props) => {
   //visible - თუ საჭიროა, რომ სევტი გამოჩნდეს
   //caption - სათაური
   //fieldName - ველის სახელი, რომლითაც სტრიქონებიდან უნდა ამოვიღოთ უჯრის მნიშვნელობა
+
+  if (columns.length === 0)
+    return <div>სვეტების შესახებ ინფორმაცია განსაზღვრული არ არის</div>;
 
   //ერთერთ ველს უნდა ჰქონდეს
   const keyCol = columns.find((f) => f.isKey);

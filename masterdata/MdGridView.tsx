@@ -18,11 +18,12 @@ import { GetDisplayValue } from "../modules/GetDisplayValue";
 
 type MdGridViewProps = {
   tableName: string;
-  recId: number;
+  recId?: number | undefined;
+  readOnly?: boolean | undefined;
 };
 
 const MdGridView: FC<MdGridViewProps> = (props) => {
-  const { tableName, recId } = props;
+  const { tableName, recId, readOnly } = props;
   // console.log("MdGridView props=", props);
 
   const [curDataType, setCurDataType] = useState<DataTypeFfModel | null>(null);
@@ -57,18 +58,18 @@ const MdGridView: FC<MdGridViewProps> = (props) => {
       tableName
     );
 
-    // console.log("MdGridView useEffect 5 checkResult=", checkResult);
+    //console.log("MdGridView useEffect 5 checkResult=", checkResult);
 
     if (checkResult) {
       const { dataType, gridData } = checkResult;
       const gridRules = gridData ? DeserializeGridModel(gridData) : null;
 
-      // console.log("MdItemEdit useEffect new dataType=", dataType);
-      // console.log("MdItemEdit useEffect new gridData=", gridData);
+      // console.log("MdGridView useEffect new dataType=", dataType);
+      // console.log("MdGridView useEffect new gridData=", gridData);
       setCurDataType(dataType);
       setCurGridRules(gridRules);
-      // console.log("MdItemEdit useEffect new gridRules=", gridRules);
-      // console.log("MdItemEdit useEffect new masterData=", masterData);
+      // console.log("MdGridView useEffect new gridRules=", gridRules);
+      // console.log("MdGridView useEffect new dataType=", dataType);
       if (gridRules)
         setCurGridColumns(ConvertGridModelToGridColumns(gridRules, dataType));
     }
@@ -92,7 +93,7 @@ const MdGridView: FC<MdGridViewProps> = (props) => {
     dataTypesState,
   ]);
 
-  const [curscrollTo, backLigth] = useScroller<number>(recId);
+  const [curscrollTo, backLigth] = useScroller<number | undefined>(recId);
 
   const [ApiLoadHaveErrors] = useAlert(EAlertKind.ApiLoad);
 
@@ -123,7 +124,7 @@ const MdGridView: FC<MdGridViewProps> = (props) => {
   curGridColumns?.forEach((col) => {
     col.possibleValues = curMasterDataTable
       .map((row) => row[col.fieldName])
-      .filter((item, pos, arr) => arr.indexOf(item) == pos); //distinct
+      .filter((item, pos, arr) => arr.indexOf(item) === pos); //distinct
   });
 
   // console.log("MdGridView curMasterDataTable=", curMasterDataTable);
@@ -171,7 +172,7 @@ const MdGridView: FC<MdGridViewProps> = (props) => {
   return (
     <GridView
       gridHeader={curDataType.dtName}
-      readOnly={false}
+      readOnly={readOnly}
       allowCreate={curDataType.create}
       allowUpdate={curDataType.update}
       allowDelete={curDataType.delete}
@@ -188,7 +189,10 @@ const MdGridView: FC<MdGridViewProps> = (props) => {
         // console.log("MdGridView GridView onLoadRows curDataType=", curDataType);
         let RealOffset = offset;
         if (RealOffset >= curMasterDataTable.length)
-          RealOffset = curMasterDataTable.length - rowsCount;
+          RealOffset =
+            Math.floor((curMasterDataTable.length - rowsCount) / rowsCount) *
+            rowsCount;
+
         if (RealOffset < 0) RealOffset = 0;
         let endElementNom = RealOffset + rowsCount;
         if (endElementNom > curMasterDataTable.length)

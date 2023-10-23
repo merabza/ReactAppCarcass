@@ -90,7 +90,7 @@ export function DeserializeGridModel(
     const cJson = JSON.stringify(cell);
     // console.log("DeserializeGridModel 3 cell=", cell);
     // console.log("DeserializeGridModel 4 cJson=", cJson);
-    // console.log("DeserializeGridModel 5 cell.typeName=", cell.TypeName);
+    // console.log("DeserializeGridModel 5 cell.typeName=", cell.typeName);
     switch (cell.typeName) {
       case "Boolean": {
         var boolCell = JSON.parse(cJson) as BooleanCell;

@@ -12,8 +12,8 @@ type MdLookupColumnProps = {
 const MdLookupColumn: FC<MdLookupColumnProps> = (props) => {
   const { dataTable, valueMember, displayMember, value } = props;
 
-  console.log("MdLookupColumn props=", props);
-  console.log("MdLookupColumn value=", value);
+  // console.log("MdLookupColumn props=", props);
+  // console.log("MdLookupColumn value=", value);
 
   if (!!valueMember && !!displayMember && !!dataTable) {
     const fval = dataTable.find((mdItm) => mdItm[valueMember] === value);

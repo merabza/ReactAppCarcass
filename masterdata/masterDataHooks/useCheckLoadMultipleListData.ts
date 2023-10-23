@@ -55,7 +55,10 @@ export function useCheckLoadMultipleListData(): [fnLoadMultipleListData] {
       const realyNeedGrids = gridNames.filter(
         (gridName) => !isGridNameIngridRules(gridName)
       );
-      if (realyNeedGrids.length === 0) return;
+      if (realyNeedGrids.length === 0) {
+        dispatch(SetMdWorkingOnLoadingListData(false));
+        return;
+      }
 
       // console.log("loadMultipleListData realyNeedGrids = ", realyNeedGrids);
 

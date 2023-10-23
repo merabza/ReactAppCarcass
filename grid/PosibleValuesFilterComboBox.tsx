@@ -1,9 +1,8 @@
-//FilterComboBox.tsx
+//PosibleValuesFilterComboBox.tsx
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { FC, useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
-// import { ValueType } from "react-select/lib/types";
 
 interface IFilterOption {
   optionValue: number;
@@ -16,26 +15,17 @@ export const FilterOptionType = {
   SomeValue: { optionValue: 2, optionDisplay: null } as IFilterOption,
 } as const;
 
-type FilterComboBoxProps = {
-  // key: string;
+type PosibleValuesFilterComboBoxProps = {
   controlId?: string;
-  name: string;
   dataMember?: Array<any>;
-  // value?: number | string | undefined;
-  firstOptionAsDefaultVelue?: boolean;
-  onChangeValue: (name: string, newValue: any) => void;
+  onChangeValue: (newValue: any) => void;
 };
 
-const FilterComboBox: FC<FilterComboBoxProps> = (props) => {
-  const {
-    // key,
-    controlId,
-    name,
-    dataMember,
-    firstOptionAsDefaultVelue,
-    onChangeValue,
-  } = props;
-  // console.log("FilterComboBox props=", props);
+const PosibleValuesFilterComboBox: FC<PosibleValuesFilterComboBoxProps> = (
+  props
+) => {
+  const { controlId, dataMember, onChangeValue } = props;
+  // console.log("PosibleValuesFilterComboBox props=", props);
 
   // const [curValue, setCurValue] = useState<string>(
   //   firstOptionAsDefaultVelue &&
@@ -53,7 +43,7 @@ const FilterComboBox: FC<FilterComboBoxProps> = (props) => {
   if (dataMember && Array.isArray(dataMember)) {
     //მოწოდებულია მასივი და მასტერდატაში ნახვა საჭირო აღარ არის.
 
-    // console.log("FilterComboBox needSort=", needSort);
+    // console.log("PosibleValuesFilterComboBox needSort=", needSort);
     dataArrayContainsEmpyValues =
       dataMember.includes(null) || dataMember.includes("");
     dataArray = dataMember
@@ -61,12 +51,12 @@ const FilterComboBox: FC<FilterComboBoxProps> = (props) => {
       //.sort((a, b) => a.toString().localeCompare(b.toString()));
       .sort();
   }
-  //console.log("FilterComboBox dataArray=", dataArray);
-  // console.log("FilterComboBox firstItem=", firstItem);
-  // console.log("FilterComboBox valueMember=", valueMember);
+  //console.log("PosibleValuesFilterComboBox dataArray=", dataArray);
+  // console.log("PosibleValuesFilterComboBox firstItem=", firstItem);
+  // console.log("PosibleValuesFilterComboBox valueMember=", valueMember);
 
-  // console.log("FilterComboBox name=", name);
-  // console.log("FilterComboBox curValue=", curValue);
+  // console.log("PosibleValuesFilterComboBox name=", name);
+  // console.log("PosibleValuesFilterComboBox curValue=", curValue);
 
   return (
     <Form.Group key={controlId} className="mb-1" as={Row} controlId={controlId}>
@@ -75,22 +65,22 @@ const FilterComboBox: FC<FilterComboBoxProps> = (props) => {
           value={curValue}
           onChange={(e) => {
             e.preventDefault();
-            // console.log("FilterComboBox onChange e=", e);
-            // console.log("FilterComboBox onChange e.target=", e.target);
+            // console.log("PosibleValuesFilterComboBox onChange e=", e);
+            // console.log("PosibleValuesFilterComboBox onChange e.target=", e.target);
             // console.log(
-            //   "FilterComboBox onChange e.target.value=",
+            //   "PosibleValuesFilterComboBox onChange e.target.value=",
             //   e.target.value
             // );
             // console.log(
-            //   "FilterComboBox onChange e.target.selectedIndex=",
+            //   "PosibleValuesFilterComboBox onChange e.target.selectedIndex=",
             //   e.target.selectedIndex
             // );
             // const typeOfValue = typeof e.target.value;
-            // console.log("FilterComboBox onChange typeOfValue=", typeOfValue);
+            // console.log("PosibleValuesFilterComboBox onChange typeOfValue=", typeOfValue);
 
-            // console.log("FilterComboBox onChange e.target.selectedIndex=", e.target.selectedIndex);
+            // console.log("PosibleValuesFilterComboBox onChange e.target.selectedIndex=", e.target.selectedIndex);
             // console.log(
-            //   "FilterComboBox onChange e.target.value=",
+            //   "PosibleValuesFilterComboBox onChange e.target.value=",
             //   e.target.value === "" ? undefined : e.target.value
             // );
             // const sel = e.target as select.
@@ -99,7 +89,7 @@ const FilterComboBox: FC<FilterComboBoxProps> = (props) => {
             let returnValue: any = undefined;
             if (newValue === 1) returnValue = null;
             if (newValue > 1) returnValue = dataArray[newValue - 2];
-            onChangeValue(name, returnValue);
+            onChangeValue(returnValue);
           }}
         >
           <option
@@ -134,7 +124,7 @@ const FilterComboBox: FC<FilterComboBoxProps> = (props) => {
           onClick={(e) => {
             e.preventDefault();
             setCurValue(FilterOptionType.All.optionValue);
-            onChangeValue(name, undefined);
+            onChangeValue(undefined);
           }}
         >
           <FontAwesomeIcon icon="minus" />
@@ -144,4 +134,4 @@ const FilterComboBox: FC<FilterComboBoxProps> = (props) => {
   );
 };
 
-export default FilterComboBox;
+export default PosibleValuesFilterComboBox;
