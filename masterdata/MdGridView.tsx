@@ -10,20 +10,25 @@ import { useAlert } from "../hooks/useAlert";
 import { EAlertKind } from "../redux/slices/alertSlice";
 import Loading from "../common/Loading";
 import AlertMessages from "../common/AlertMessages";
-import { ConvertGridModelToGridColumns } from "./mdFunctions";
+import {
+  ConvertGridModelToGridColumns,
+  CountDisplayValues,
+  CountRowDataDisplayValues,
+} from "./mdFunctions";
 import { useMasterDataLists } from "./masterDataHooks/useMasterDataLists";
 import GridView from "../grid/GridView";
 import { IGridColumn, IRowsData } from "../grid/GridViewTypes";
-import { GetDisplayValue } from "../modules/GetDisplayValue";
+import { useLazyGetTableRowsDataQuery } from "../redux/api/masterdataApi";
 
 type MdGridViewProps = {
   tableName: string;
   recId?: number | undefined;
   readOnly?: boolean | undefined;
+  serverSidePagination?: boolean | undefined;
 };
 
 const MdGridView: FC<MdGridViewProps> = (props) => {
-  const { tableName, recId, readOnly } = props;
+  const { tableName, recId, readOnly, serverSidePagination } = props;
   // console.log("MdGridView props=", props);
 
   const [curDataType, setCurDataType] = useState<DataTypeFfModel | null>(null);
@@ -39,26 +44,44 @@ const MdGridView: FC<MdGridViewProps> = (props) => {
   const masterData = useAppSelector((state) => state.masterDataState);
   const dataTypesState = useAppSelector((state) => state.dataTypesState);
 
-  const { deletingKey, mdWorkingOnSave, mdWorkingOnLoadingListData } =
-    masterData;
+  const {
+    deletingKey,
+    mdWorkingOnSave,
+    mdWorkingOnLoadingListData,
+    tableRowData,
+    mdWorkingOnLoadingTables,
+    mdWorkingOnLoad,
+  } = masterData;
+
+  console.log("MdGridView mdWorkingOnLoadingTables=", mdWorkingOnLoadingTables);
+
+  const [getTableRowsData, { isLoading: loadingTableRowsData }] =
+    useLazyGetTableRowsDataQuery();
 
   useEffect(() => {
-    if (mdWorkingOnLoadingListData || deletingKey || mdWorkingOnSave) {
+    if (
+      mdWorkingOnLoadingListData ||
+      deletingKey ||
+      mdWorkingOnSave ||
+      mdWorkingOnLoad ||
+      loadingTableRowsData ||
+      Object.values(mdWorkingOnLoadingTables).some((s: boolean) => s)
+    ) {
       return;
     }
 
     setCurDataType(null);
     setCurRowsData(undefined);
-    loadListData(tableName, tableName);
+    loadListData(tableName, serverSidePagination);
 
     const checkResult = checkDataLoaded(
       masterData,
       dataTypesState,
       tableName,
-      tableName
+      serverSidePagination
     );
 
-    //console.log("MdGridView useEffect 5 checkResult=", checkResult);
+    console.log("MdGridView useEffect 5 checkResult=", tableName, checkResult);
 
     if (checkResult) {
       const { dataType, gridData } = checkResult;
@@ -91,35 +114,50 @@ const MdGridView: FC<MdGridViewProps> = (props) => {
     deletingKey,
     mdWorkingOnSave,
     dataTypesState,
+    mdWorkingOnLoadingTables,
   ]);
 
   const [curscrollTo, backLigth] = useScroller<number | undefined>(recId);
 
   const [ApiLoadHaveErrors] = useAlert(EAlertKind.ApiLoad);
 
-  if (mdWorkingOnLoadingListData) return <Loading />;
+  if (
+    mdWorkingOnLoadingListData ||
+    mdWorkingOnLoad ||
+    loadingTableRowsData ||
+    Object.values(mdWorkingOnLoadingTables).some((s: boolean) => s)
+  )
+    return <Loading />;
 
   // console.log("MdGridView tableName=", tableName);
+  // console.log("MdGridView serverSidePagination=", serverSidePagination);
   // console.log(
   //   "MdGridView masterData.mdRepo[tableName]=",
   //   masterData.mdRepo[tableName]
   // );
 
-  const curMasterDataTable = masterData.mdRepo[tableName]?.map((row) => {
-    let newrow = {} as any;
-    curGridRules?.cells.forEach((col) => {
-      newrow[col.fieldName] = GetDisplayValue(masterData, row, col);
-    });
-    return newrow;
-  });
-
-  if (!curMasterDataTable)
-    return (
-      <div>
-        <h5>ჩატვირთვის პრობლემა 0</h5>
-        <AlertMessages alertKind={EAlertKind.ApiLoad} />
-      </div>
+  let curMasterDataTable: any[] = [];
+  let countedRowData: IRowsData | undefined = undefined;
+  if (serverSidePagination) {
+    countedRowData = CountRowDataDisplayValues(
+      tableRowData[tableName],
+      curGridRules,
+      masterData
     );
+  } else
+    curMasterDataTable = CountDisplayValues(
+      masterData.mdRepo[tableName],
+      curGridRules,
+      masterData
+    );
+
+  // if ( serverSidePagination &&  !countedRowData || !serverSidePagination && !curMasterDataTable)
+  //   return (
+  //     <div>
+  //       <h5>ჩატვირთვის პრობლემა 0</h5>
+  //       <AlertMessages alertKind={EAlertKind.ApiLoad} />
+  //     </div>
+  //   );
 
   curGridColumns?.forEach((col) => {
     col.possibleValues = curMasterDataTable
@@ -137,22 +175,21 @@ const MdGridView: FC<MdGridViewProps> = (props) => {
       </div>
     );
 
-  // console.log(
-  //   "MdGridView CheckLoad {curGridColumns, curscrollTo, curDataType, curMasterDataTable, curRowsData}=",
-  //   {
-  //     curGridColumns,
-  //     curscrollTo,
-  //     curDataType,
-  //     curMasterDataTable,
-  //     curRowsData,
-  //   }
-  // );
+  // console.log("MdGridView CheckLoad ", {
+  //   tableName,
+  //   curGridColumns,
+  //   curscrollTo,
+  //   curDataType,
+  //   curMasterDataTable,
+  //   curRowsData,
+  //   serverSidePagination,
+  // });
 
   if (
     !curGridColumns ||
     curscrollTo === null ||
     !curDataType ||
-    !curMasterDataTable
+    (!serverSidePagination && !curMasterDataTable)
     //  ||
     // !curRowsData
   ) {
@@ -179,7 +216,7 @@ const MdGridView: FC<MdGridViewProps> = (props) => {
       editorLink={`/mdItemEdit/${curDataType.dtTable}`}
       showCountColumn
       columns={curGridColumns}
-      rowsData={curRowsData}
+      rowsData={serverSidePagination ? countedRowData : curRowsData}
       loading={mdWorkingOnLoadingListData}
       onLoadRows={(offset, rowsCount, sortByFields, filterFields) => {
         // console.log(
@@ -187,6 +224,18 @@ const MdGridView: FC<MdGridViewProps> = (props) => {
         //   { offset, rowsCount, sortByFields, filterFields }
         // );
         // console.log("MdGridView GridView onLoadRows curDataType=", curDataType);
+
+        if (serverSidePagination)
+          getTableRowsData({
+            tableName: tableName,
+            filterSortRequest: {
+              offset,
+              rowsCount,
+              filterFields,
+              sortByFields,
+            },
+          });
+
         let RealOffset = offset;
         if (RealOffset >= curMasterDataTable.length)
           RealOffset =

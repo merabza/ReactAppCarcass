@@ -171,18 +171,13 @@ const MdItemEdit: FC = () => {
     if (curTableName !== tableName) {
       setCurTableName(tableName);
       dispatch(clearAllAlerts());
-      loadListData(tableName, tableName);
+      loadListData(tableName);
       return;
     }
 
     if (mdWorkingOnLoadingListData) return;
 
-    const checkResult = checkDataLoaded(
-      masterData,
-      dataTypesState,
-      tableName,
-      tableName
-    );
+    const checkResult = checkDataLoaded(masterData, dataTypesState, tableName);
     if (!checkResult) return;
 
     const { dataType, gridData } = checkResult;

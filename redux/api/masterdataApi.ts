@@ -13,6 +13,7 @@ import {
   IMdTablesDataCommandResponse,
   ISetAddedMasterDataRecordAction,
   ISetDeleteMasterDataRecordAction,
+  ISetMdWorkingOnLoadingTablesListAction,
   ISetMultipleTablesData,
   ISetUpdatedMasterDataRecordAction,
 } from "../types/masterdataTypes";
@@ -20,20 +21,47 @@ import {
   setAddedMasterDataRecord,
   setDeleteMasterDataRecord,
   SetDeletingKey,
+  SetMdWorkingOnLoadingTablesList,
   setMultipleTableData,
+  setTableRowData,
   setUpdatedMasterDataRecord,
   SetWorkingOnLoad,
   SetWorkingOnSave,
 } from "../slices/masterdataSlice";
 import { RootState } from "../../../redux/store";
 import { buildErrorMessage } from "../types/errorTypes";
-// import { redirect } from "react-router-dom";
-import { NavigateFunction } from "react-router-dom";
+import { IFilterSortRequest, IRowsData } from "../../grid/GridViewTypes";
+
+export interface IGetTableRowsDataParameters {
+  tableName: string;
+  filterSortRequest: IFilterSortRequest;
+}
 
 export const masterdataApi = createApi({
   reducerPath: "masterdataApi",
   baseQuery: jwtBaseQuery,
   endpoints: (builder) => ({
+    //////////////////////////////////////////////////////
+    getTableRowsData: builder.query<IRowsData, IGetTableRowsDataParameters>({
+      query(args) {
+        const { tableName, filterSortRequest } = args;
+        return {
+          url: `/masterdata/gettablerowsdata/${tableName}?filterSortRequest=${btoa(
+            JSON.stringify(filterSortRequest)
+          )}`,
+        };
+      },
+      async onQueryStarted(args, { dispatch, queryFulfilled }) {
+        try {
+          const { tableName } = args;
+          const { data } = await queryFulfilled;
+          // console.log("masterdataApi getTableRowsData data=", data);
+          dispatch(setTableRowData({ tableName, data }));
+        } catch (error) {
+          dispatch(setAlertApiLoadError(buildErrorMessage(error)));
+        }
+      },
+    }),
     //////////////////////////////////////////////////////
     getTables: builder.query<IMdTablesDataCommandResponse, Array<string>>({
       query(realyNeedTables) {
@@ -44,15 +72,21 @@ export const masterdataApi = createApi({
         };
       },
       async onQueryStarted(realyNeedTables, { dispatch, queryFulfilled }) {
+        dispatch(SetWorkingOnLoad(true));
+        dispatch(
+          SetMdWorkingOnLoadingTablesList({
+            tableNamesList: realyNeedTables,
+            switchOn: true,
+          } as ISetMdWorkingOnLoadingTablesListAction)
+        );
         try {
-          dispatch(SetWorkingOnLoad(true));
           const queryResult = await queryFulfilled;
           const { data } = queryResult;
-          // console.log(
-          //   "masterdataApi getTables realyNeedTables=",
-          //   realyNeedTables
-          // );
-          // console.log("masterdataApi getTables queryResult=", queryResult);
+          console.log(
+            "masterdataApi getTables realyNeedTables=",
+            realyNeedTables
+          );
+          console.log("masterdataApi getTables queryResult=", queryResult);
           dispatch(
             setMultipleTableData({
               realyNeedTables,
@@ -62,6 +96,12 @@ export const masterdataApi = createApi({
         } catch (error) {
           dispatch(setAlertApiLoadError(buildErrorMessage(error)));
         }
+        dispatch(
+          SetMdWorkingOnLoadingTablesList({
+            tableNamesList: realyNeedTables,
+            switchOn: false,
+          } as ISetMdWorkingOnLoadingTablesListAction)
+        );
       },
     }),
     //////////////////////////////////////////////////////
@@ -175,6 +215,7 @@ export const masterdataApi = createApi({
 
 export const {
   useLazyGetTablesQuery,
+  useLazyGetTableRowsDataQuery,
   useAddMasterDataRecordMutation,
   useUpdateMasterDataRecordMutation,
   useDeleteMasterDataRecordMutation,

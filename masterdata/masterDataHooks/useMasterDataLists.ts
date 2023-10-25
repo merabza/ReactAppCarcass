@@ -13,7 +13,10 @@ import {
   SetWorkingOnLoad,
 } from "../../redux/slices/masterdataSlice";
 import { DeserializeGridModel, LookupCell } from "../../redux/types/gridTypes";
-export type fnloadListData = (gridName: string, tableName: string) => void;
+export type fnloadListData = (
+  tableName: string,
+  loadListDataExceptThisTable?: boolean
+) => void;
 
 export function useMasterDataLists(): [fnloadListData] {
   const dispatch = useAppDispatch();
@@ -27,7 +30,7 @@ export function useMasterDataLists(): [fnloadListData] {
   const [getTables] = useLazyGetTablesQuery();
 
   const loadListData = useCallback(
-    async (gridName: string, tableName: string) => {
+    async (tableName: string, loadListDataExceptThisTable?: boolean) => {
       // console.log(
       //   "useMasterDataLists loadListData {gridName, tableName, masterDataState, masterDataState.mdWorkingOnLoadingListData, dataTypesState.dataTypes.length}=",
       //   {
@@ -49,16 +52,18 @@ export function useMasterDataLists(): [fnloadListData] {
         await getDataTypes();
       }
 
-      if (!(gridName in dataTypesState.gridsDatas)) {
-        await getGridModel(gridName);
+      if (!(tableName in dataTypesState.gridsDatas)) {
+        await getGridModel(tableName);
       }
 
-      const requiredMdNames: Array<string> = [tableName];
+      const requiredMdNames: Array<string> = loadListDataExceptThisTable
+        ? []
+        : [tableName];
 
       const { gridsDatas } = dataTypesState;
       // console.log("useMasterDataLists loadListData gridsDatas=", gridsDatas);
-      if (gridName in gridsDatas) {
-        const gridData = gridsDatas[gridName];
+      if (tableName in gridsDatas) {
+        const gridData = gridsDatas[tableName];
         if (gridData !== undefined) {
           const grid = DeserializeGridModel(gridData);
           grid?.cells.forEach((cell) => {
@@ -78,10 +83,17 @@ export function useMasterDataLists(): [fnloadListData] {
       dispatch(SetItemEditorTables(requiredMdNames));
 
       const realyNeedTables = requiredMdNames.filter(
-        (tableName) => !(tableName in masterDataState.mdRepo)
+        (tableName) =>
+          !(tableName in masterDataState.mdRepo) &&
+          !masterDataState.mdWorkingOnLoadingTables[tableName]
       );
 
-      if (!realyNeedTables || realyNeedTables.length < 1) {
+      if (
+        realyNeedTables.length === 0 &&
+        !Object.values(masterDataState.mdWorkingOnLoadingTables).some(
+          (s: boolean) => s
+        )
+      ) {
         dispatch(SetMdWorkingOnLoadingListData(false));
         dispatch(SetWorkingOnLoad(false));
         return;

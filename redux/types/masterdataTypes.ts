@@ -46,6 +46,16 @@ export interface ISetDeleteMasterDataRecordAction {
   id: number;
 }
 
+export interface ISetMdWorkingOnLoadingOneTableAction {
+  tableName: string;
+  switchOn: boolean;
+}
+
+export interface ISetMdWorkingOnLoadingTablesListAction {
+  tableNamesList: Array<string>;
+  switchOn: boolean;
+}
+
 export interface IMasterDataRepo {
   [key: string]: any[];
 }

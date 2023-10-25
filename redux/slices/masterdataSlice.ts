@@ -5,9 +5,12 @@ import {
   IMasterDataRepo,
   ISetAddedMasterDataRecordAction,
   ISetDeleteMasterDataRecordAction,
+  ISetMdWorkingOnLoadingOneTableAction,
+  ISetMdWorkingOnLoadingTablesListAction,
   ISetMultipleTablesData,
   ISetUpdatedMasterDataRecordAction,
 } from "../types/masterdataTypes";
+import { IRowsData } from "../../grid/GridViewTypes";
 
 export interface IMasterDataState {
   returnPageName: string | null;
@@ -15,11 +18,12 @@ export interface IMasterDataState {
   mdWorkingOnLoad: boolean;
   mdRepo: IMasterDataRepo;
   mdWorkingOnLoadingListData: boolean;
-  mdWorkingOnLoadingTables: boolean;
+  mdWorkingOnLoadingTables: { [key: string]: boolean };
   mdWorkingOnClearingTables: boolean;
   deletingKey: string | null; //წაშლისას გამოიყენება deletingKey იმისათვის, რომ ცნობილი იყოს კონკრეტულად რომელი ჩანაწერი იშლება
   deleteFailure: boolean;
   itemEditorTables: Array<string>;
+  tableRowData: { [key: string]: IRowsData };
 }
 
 const initialState: IMasterDataState = {
@@ -28,17 +32,19 @@ const initialState: IMasterDataState = {
   mdWorkingOnLoad: false,
   mdRepo: {} as IMasterDataRepo,
   mdWorkingOnLoadingListData: false,
-  mdWorkingOnLoadingTables: false,
+  mdWorkingOnLoadingTables: {} as { [key: string]: boolean },
   mdWorkingOnClearingTables: false,
   deletingKey: null, //წაშლისას გამოიყენება deletingKey იმისათვის, რომ ცნობილი იყოს კონკრეტულად რომელი ჩანაწერი იშლება
   deleteFailure: false,
   itemEditorTables: new Array<string>(),
+  tableRowData: {} as { [key: string]: IRowsData },
 };
 
 export const masterdataSlice = createSlice({
   initialState,
   name: "masterdataSlice",
   reducers: {
+    /////////////////////////////////////
     setMultipleTableData: (
       state,
       action: PayloadAction<ISetMultipleTablesData>
@@ -58,7 +64,18 @@ export const masterdataSlice = createSlice({
         state.mdRepo[tableName] = tableDate;
       });
     },
-
+    /////////////////////////////////////
+    setTableRowData: (
+      state,
+      action: PayloadAction<{
+        tableName: string;
+        data: IRowsData;
+      }>
+    ) => {
+      const { tableName, data } = action.payload;
+      state.tableRowData[tableName] = data;
+    },
+    /////////////////////////////////////
     setAddedMasterDataRecord: (
       state,
       action: PayloadAction<ISetAddedMasterDataRecordAction>
@@ -69,7 +86,7 @@ export const masterdataSlice = createSlice({
         : ([] as any[]);
       tableDate?.push(mdItem);
     },
-
+    /////////////////////////////////////
     setUpdatedMasterDataRecord: (
       state,
       action: PayloadAction<ISetUpdatedMasterDataRecordAction>
@@ -88,7 +105,7 @@ export const masterdataSlice = createSlice({
         tableDate.splice(existingMdItemIndex, 1, mdItem);
       }
     },
-
+    /////////////////////////////////////
     setDeleteMasterDataRecord: (
       state,
       action: PayloadAction<ISetDeleteMasterDataRecordAction>
@@ -105,43 +122,57 @@ export const masterdataSlice = createSlice({
         tableDate.splice(existingMdItemIndex, 1);
       }
     },
-
+    /////////////////////////////////////
     SetMdWorkingOnLoadingListData: (state, action: PayloadAction<boolean>) => {
       state.mdWorkingOnLoadingListData = action.payload;
     },
-
-    SetMdWorkingOnLoadingTables: (state, action: PayloadAction<boolean>) => {
-      state.mdWorkingOnLoadingTables = action.payload;
+    /////////////////////////////////////
+    SetMdWorkingOnLoadingOneTable: (
+      state,
+      action: PayloadAction<ISetMdWorkingOnLoadingOneTableAction>
+    ) => {
+      const { tableName, switchOn } = action.payload;
+      state.mdWorkingOnLoadingTables[tableName] = switchOn;
     },
-
+    /////////////////////////////////////
+    SetMdWorkingOnLoadingTablesList: (
+      state,
+      action: PayloadAction<ISetMdWorkingOnLoadingTablesListAction>
+    ) => {
+      const { tableNamesList, switchOn } = action.payload;
+      tableNamesList.forEach(
+        (tableName) => (state.mdWorkingOnLoadingTables[tableName] = switchOn)
+      );
+    },
+    /////////////////////////////////////
     SetMdWorkingOnClearingTables: (state, action: PayloadAction<boolean>) => {
       state.mdWorkingOnClearingTables = action.payload;
     },
-
+    /////////////////////////////////////
     SetItemEditorTables: (state, action: PayloadAction<Array<string>>) => {
       state.itemEditorTables = action.payload;
     },
-
+    /////////////////////////////////////
     saveReturnPageName: (state, action: PayloadAction<string>) => {
       state.returnPageName = action.payload;
     },
-
+    /////////////////////////////////////
     SetDeletingKey: (state, action: PayloadAction<string | null>) => {
       state.deletingKey = action.payload;
     },
-
+    /////////////////////////////////////
     SetWorkingOnSave: (state, action: PayloadAction<boolean>) => {
       state.mdWorkingOnSave = action.payload;
     },
-
+    /////////////////////////////////////
     SetWorkingOnLoad: (state, action: PayloadAction<boolean>) => {
       state.mdWorkingOnLoad = action.payload;
     },
-
+    /////////////////////////////////////
     SetDeleteFailure: (state, action: PayloadAction<boolean>) => {
       state.deleteFailure = action.payload;
     },
-
+    /////////////////////////////////////
     ClearTablesFromRepo: (state, action: PayloadAction<null | string[]>) => {
       const mdRepo = state.mdRepo;
       const tableNames = action.payload;
@@ -161,7 +192,8 @@ export const {
   setUpdatedMasterDataRecord,
   setDeleteMasterDataRecord,
   SetMdWorkingOnLoadingListData,
-  SetMdWorkingOnLoadingTables,
+  SetMdWorkingOnLoadingOneTable,
+  SetMdWorkingOnLoadingTablesList,
   SetMdWorkingOnClearingTables,
   SetItemEditorTables,
   saveReturnPageName,
@@ -170,4 +202,5 @@ export const {
   SetWorkingOnLoad,
   SetDeleteFailure,
   ClearTablesFromRepo,
+  setTableRowData,
 } = masterdataSlice.actions;
