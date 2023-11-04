@@ -53,7 +53,7 @@ const MdGridView: FC<MdGridViewProps> = (props) => {
     mdWorkingOnLoad,
   } = masterData;
 
-  console.log("MdGridView mdWorkingOnLoadingTables=", mdWorkingOnLoadingTables);
+  // console.log("MdGridView mdWorkingOnLoadingTables=", mdWorkingOnLoadingTables);
 
   const [getTableRowsData, { isLoading: loadingTableRowsData }] =
     useLazyGetTableRowsDataQuery();
@@ -81,7 +81,7 @@ const MdGridView: FC<MdGridViewProps> = (props) => {
       serverSidePagination
     );
 
-    console.log("MdGridView useEffect 5 checkResult=", tableName, checkResult);
+    // console.log("MdGridView useEffect 5 checkResult=", tableName, checkResult);
 
     if (checkResult) {
       const { dataType, gridData } = checkResult;

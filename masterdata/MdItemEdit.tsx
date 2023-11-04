@@ -187,6 +187,7 @@ const MdItemEdit: FC = () => {
 
     if (gridRules) {
       const YupSchema = countSchema(gridRules);
+      console.log("MdItemEdit useEffect setCurYupSchema YupSchema=", YupSchema);
       setCurYupSchema(YupSchema);
       setSchema(YupSchema);
     }
@@ -250,6 +251,7 @@ const MdItemEdit: FC = () => {
   // );
 
   const [ApiLoadHaveErrors] = useAlert(EAlertKind.ApiLoad);
+  const [ApiMutationHaveErrors] = useAlert(EAlertKind.ApiMutation);
 
   if (ApiLoadHaveErrors)
     return (
@@ -293,7 +295,14 @@ const MdItemEdit: FC = () => {
     }
   }
 
-  if (!frm || !curDataType || !curMdIdVal || !curGridRules) {
+  console.log("MdItemEdit CheckLoad ", {
+    frm,
+    curDataType,
+    curMdIdVal,
+    curGridRules,
+  });
+
+  if (!frm || !curDataType || !curGridRules) {
     return <h5>ჩატვირთვის პრობლემა</h5>;
   }
 
@@ -323,11 +332,12 @@ const MdItemEdit: FC = () => {
             workingOnDelete={!!deletingKey}
             DeleteFailure={deleteFailure}
             onDelete={() => {
-              deleteMasterDataRecord({
-                tableName: curDataType.dtTable,
-                idFielName: curDataType.idFieldName,
-                id: curMdIdVal,
-              });
+              if (curMdIdVal)
+                deleteMasterDataRecord({
+                  tableName: curDataType.dtTable,
+                  idFielName: curDataType.idFieldName,
+                  id: curMdIdVal,
+                });
             }}
             onClearDeletingFailure={() => dispatch(SetDeleteFailure(false))}
             allowDelete={curDataType.delete}
@@ -451,6 +461,9 @@ const MdItemEdit: FC = () => {
             allowEdit={curDataType.update}
           />
           <OneErrorRow allErrors={allErrors} />
+          {!!ApiMutationHaveErrors && (
+            <AlertMessages alertKind={EAlertKind.ApiMutation} />
+          )}
         </Form>
       </Col>
     </Row>

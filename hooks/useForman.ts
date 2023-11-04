@@ -131,7 +131,14 @@ export function useForman<
           err: {} as IDictionary,
         };
       case "setSchema":
-        return { ...prevState, sch: action.payload, err: {} as IDictionary };
+        //return { ...prevState, sch: action.payload, err: {} as IDictionary };
+        const newYupSchema = action.payload;
+        return {
+          ...prevState,
+          sch: newYupSchema,
+          frm: newYupSchema ? (newYupSchema.getDefault() as TFormData) : null,
+          err: {} as IDictionary,
+        };
       default:
         throw new Error();
     }

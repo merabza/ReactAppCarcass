@@ -19,6 +19,7 @@ import {
 } from "../types/masterdataTypes";
 import {
   setAddedMasterDataRecord,
+  SetDeleteFailure,
   setDeleteMasterDataRecord,
   SetDeletingKey,
   SetMdWorkingOnLoadingTablesList,
@@ -220,6 +221,3 @@ export const {
   useUpdateMasterDataRecordMutation,
   useDeleteMasterDataRecordMutation,
 } = masterdataApi;
-function SetDeleteFailure(arg0: boolean): any {
-  throw new Error("Function not implemented.");
-}
