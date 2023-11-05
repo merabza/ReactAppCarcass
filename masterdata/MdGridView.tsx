@@ -29,7 +29,7 @@ type MdGridViewProps = {
 
 const MdGridView: FC<MdGridViewProps> = (props) => {
   const { tableName, recId, readOnly, serverSidePagination } = props;
-  // console.log("MdGridView props=", props);
+  console.log("MdGridView props=", props);
 
   const [curDataType, setCurDataType] = useState<DataTypeFfModel | null>(null);
   const [curGridColumns, setCurGridColumns] = useState<IGridColumn[] | null>(

@@ -14,6 +14,7 @@ export interface IdeleteMasterDataRecordParameters {
   tableName: string;
   idFielName: string;
   id: number;
+  navigate: NavigateFunction;
 }
 
 export interface ISetMultipleTablesData {

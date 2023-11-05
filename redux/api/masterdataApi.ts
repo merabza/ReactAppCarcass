@@ -122,14 +122,19 @@ export const masterdataApi = createApi({
           dispatch(SetWorkingOnSave(true));
           const queryResult = await queryFulfilled;
           const { data } = queryResult;
+          //console.log("masterdataApi addMasterDataRecord data=", data);
           dispatch(
             setAddedMasterDataRecord({
               tableName,
-              mdItem: data,
+              mdItem: data.entry,
             } as ISetAddedMasterDataRecordAction)
           );
+          // console.log(
+          //   "masterdataApi addMasterDataRecord idFielName=",
+          //   idFielName
+          // );
 
-          const idValue = data[idFielName];
+          const idValue = data.entry[idFielName];
           const returnPageName = (getState() as RootState).masterDataState
             .returnPageName;
           const realReturnPageName = returnPageName ? returnPageName : "mdList";
@@ -145,10 +150,11 @@ export const masterdataApi = createApi({
       void,
       IMasterDataMutationParameters
     >({
-      query({ tableName, id }) {
+      query({ tableName, mdItem, id }) {
         return {
           url: `/masterdata/${tableName}/${id}`,
           method: "PUT",
+          body: mdItem,
         };
       },
       async onQueryStarted(
@@ -188,7 +194,7 @@ export const masterdataApi = createApi({
         };
       },
       async onQueryStarted(
-        { tableName, idFielName, id },
+        { tableName, idFielName, id, navigate },
         { dispatch, queryFulfilled }
       ) {
         try {
@@ -203,6 +209,7 @@ export const masterdataApi = createApi({
             } as ISetDeleteMasterDataRecordAction)
           );
           dispatch(SetDeleteFailure(false));
+          navigate(`/mdList/${tableName}`);
         } catch (error) {
           dispatch(SetDeleteFailure(true));
           dispatch(setAlertApiMutationError(buildErrorMessage(error)));

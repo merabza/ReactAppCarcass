@@ -337,6 +337,7 @@ const MdItemEdit: FC = () => {
                   tableName: curDataType.dtTable,
                   idFielName: curDataType.idFieldName,
                   id: curMdIdVal,
+                  navigate,
                 });
             }}
             onClearDeletingFailure={() => dispatch(SetDeleteFailure(false))}
