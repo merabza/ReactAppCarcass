@@ -2,7 +2,13 @@
 
 import moment from "moment";
 import { IMasterDataState } from "../redux/slices/masterdataSlice";
-import { Cell, DateCell, LookupCell } from "../redux/types/gridTypes";
+import {
+  Cell,
+  DateCell,
+  LookupCell,
+  MdLookupCell,
+} from "../redux/types/gridTypes";
+import { ILookup } from "../redux/types/masterdataTypes";
 
 export function GetDisplayValue(
   masterData: IMasterDataState,
@@ -32,16 +38,29 @@ export function GetDisplayValue(
     return moment(value).format(strFormat);
   }
 
+  if (col.typeName === "MdLookup") {
+    const mdLookupCol = col as MdLookupCell;
+    const { dtTable } = mdLookupCol;
+    if (
+      dtTable &&
+      dtTable in masterData.mdLookupRepo &&
+      masterData.mdLookupRepo[dtTable]
+    ) {
+      const lookupTable = masterData.mdataRepo[dtTable];
+      return GetDisplayValueForMdLookup(lookupTable, value);
+    }
+  }
+
   if (col.typeName === "Lookup") {
     const lookupCol = col as LookupCell;
     const { dataMember } = lookupCol;
 
     if (
       dataMember &&
-      dataMember in masterData.mdRepo &&
-      masterData.mdRepo[dataMember]
+      dataMember in masterData.mdataRepo &&
+      masterData.mdataRepo[dataMember]
     ) {
-      const dataTable = masterData.mdRepo[dataMember];
+      const dataTable = masterData.mdataRepo[dataMember];
 
       return GetDisplayValueForLookup(
         dataTable,
@@ -76,6 +95,18 @@ export function GetDisplayValueForLookup(
     );
     if (displayMember && !!fval && !!fval[displayMember])
       return fval[displayMember];
+  }
+
+  return value;
+}
+
+export function GetDisplayValueForMdLookup(
+  lookupTable: ILookup[] | undefined,
+  value: number
+) {
+  if (!!lookupTable) {
+    const fval = lookupTable.find((mdItm) => mdItm.id === value);
+    if (!!fval && !!fval.display) return fval.display;
   }
 
   return value;

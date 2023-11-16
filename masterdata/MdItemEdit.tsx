@@ -21,6 +21,7 @@ import {
   GridModel,
   IntegerCell,
   LookupCell,
+  MdLookupCell,
   MixedCell,
   StringCell,
 } from "../redux/types/gridTypes";
@@ -29,18 +30,22 @@ import { DataTypeFfModel } from "../redux/types/dataTypesTypes";
 import {
   useAddMasterDataRecordMutation,
   useDeleteMasterDataRecordMutation,
+  useLazyGetOneMdRecordQuery,
   useUpdateMasterDataRecordMutation,
 } from "../redux/api/masterdataApi";
 import { clearAllAlerts, EAlertKind } from "../redux/slices/alertSlice";
 import { SetDeleteFailure } from "../redux/slices/masterdataSlice";
-import { useMasterDataLists } from "./masterDataHooks/useMasterDataLists";
+//import { useMasterDataLists } from "./masterDataHooks/useMasterDataLookupLists";
 import { useAlert } from "../hooks/useAlert";
 import AlertMessages from "../common/AlertMessages";
 import { useForman } from "../hooks/useForman";
+import { useMasterDataLookupLists } from "./masterDataHooks/useMasterDataLookupLists";
+import { countMdSchema } from "./mdSchemaFunctions";
+import { IGetOneMdRecordParameters } from "../redux/types/masterdataTypes";
 
 const MdItemEdit: FC = () => {
   //1. იდენტიფიკატორი
-  const [curMdIdVal, setCurMdIdVal] = useState<number | undefined>(undefined);
+  const [curMdIdVal, setCurMdIdVal] = useState<number | undefined>();
 
   //1.1. ცხრილის სახელი
   const [curTableName, setCurTableName] = useState<string | undefined>(
@@ -57,7 +62,7 @@ const MdItemEdit: FC = () => {
 
   const dispatch = useAppDispatch();
 
-  const [loadListData] = useMasterDataLists();
+  const [loadListData] = useMasterDataLookupLists();
 
   const dataTypesState = useAppSelector((state) => state.dataTypesState);
 
@@ -68,10 +73,16 @@ const MdItemEdit: FC = () => {
     mdWorkingOnSave,
     mdWorkingOnLoadingListData,
     itemEditorTables,
+    itemEditorLookupTables,
     deleteFailure,
+    mdRecordForEdit,
   } = masterData;
 
-  const { mdIdValue, tableName } = useParams<string>();
+  const { tableName } = useParams<string>();
+  const { mdIdValue: fromParamsMdId } = useParams<string>();
+
+  const [getOneMdRecord, { isLoading: loadingMdRecord }] =
+    useLazyGetOneMdRecordQuery();
 
   const navigate = useNavigate();
 
@@ -90,71 +101,9 @@ const MdItemEdit: FC = () => {
     setSchema,
   ] = useForman<any, any>(curYupSchema);
 
-  function countSchema(gridRules: GridModel) {
-    const fields = {} as any;
-    gridRules.cells.forEach((col) => {
-      let yupResult;
-
-      switch (col.typeName) {
-        case "Integer":
-        case "Lookup":
-          yupResult = yup.number();
-          const IntegerCol = col as IntegerCell;
-          if (IntegerCol.isIntegerErr)
-            yupResult = yupResult.integer(IntegerCol.isIntegerErr.errorMessage);
-          else yupResult = yupResult.integer();
-          if (IntegerCol.minValRule) {
-            yupResult = yupResult.min(IntegerCol.minValRule.val);
-          }
-          if (IntegerCol.isPositiveErr) {
-            yupResult = yupResult.positive(
-              IntegerCol.isPositiveErr.errorMessage
-            );
-          }
-          if (IntegerCol.def) {
-            yupResult = yupResult.default(IntegerCol.def);
-          }
-          break;
-        case "Boolean":
-          yupResult = yup.boolean();
-          break;
-        case "Date":
-          yupResult = yup.date();
-          break;
-        case "String":
-          const StringCol = col as StringCell;
-          yupResult = yup.string();
-          if (StringCol.def) {
-            yupResult = yupResult.default(StringCol.def);
-          }
-          if (StringCol.maxLenRule) {
-            yupResult = yupResult.max(
-              StringCol.maxLenRule.val,
-              StringCol.maxLenRule.err.errorMessage
-            );
-          }
-          break;
-        default:
-          throw new Error();
-      }
-
-      const mixedCol = col as MixedCell;
-
-      if (mixedCol.isRequiredErr) {
-        yupResult = yupResult.required(mixedCol.isRequiredErr.errorMessage);
-      }
-      if (mixedCol.isNullable) {
-        yupResult = yupResult.nullable();
-      }
-
-      fields[col.fieldName] = yupResult;
-    });
-    return yup.object().shape(fields);
-  }
-
   // console.log("MdItemEdit Before UseEffect {}=", {
   //   masterData,
-  //   mdRepo: masterData.mdRepo,
+  //   mdLookupRepo: masterData.mdLookupRepo,
   //   mdWorkingOnLoadingListData,
   //   curMdIdVal,
   //   curTableName,
@@ -186,25 +135,26 @@ const MdItemEdit: FC = () => {
     setCurGridRules(gridRules);
 
     if (gridRules) {
-      const YupSchema = countSchema(gridRules);
+      const YupSchema = countMdSchema(gridRules);
       console.log("MdItemEdit useEffect setCurYupSchema YupSchema=", YupSchema);
       setCurYupSchema(YupSchema);
       setSchema(YupSchema);
     }
 
+    const mdIdValue = fromParamsMdId ? parseInt(fromParamsMdId) : 0;
+
     if (curMdIdVal !== mdIdValue) {
-      if (mdIdValue !== undefined) {
-        setCurMdIdVal(parseInt(mdIdValue));
-        //console.log("MdItemEdit useEffect mdIdValue=", mdIdValue);
-        //console.log("MdItemEdit useEffect tableName=", tableName);
-        //console.log("MdItemEdit useEffect dataType.idFieldName=", dataType.idFieldName);
-        //console.log("MdItemEdit useEffect masterData.mdRepo[tableName]=", masterData.mdRepo[tableName]);
-        const mdItm = masterData.mdRepo[tableName]?.find((itm) => {
-          return itm[dataType.idFieldName] === parseInt(mdIdValue);
-        });
-        //ჩატვირთული ინფორმაცია მივცეთ ფორმის მენეჯერს
-        //console.log("MdItemEdit useEffect finded mdItm=", mdItm);
-        setFormData(mdItm);
+      //გავასუფთავოთ შეცდომები, სანამ ახლების დაგროვებას დავიწყებთ
+      dispatch(clearAllAlerts());
+
+      setCurMdIdVal(mdIdValue);
+
+      if (mdIdValue) {
+        //თუ იდენტიფიკატორი კარგია, ჩავტვირთოთ ბაზიდან ინფორმაცია
+        getOneMdRecord({
+          tableName,
+          id: mdIdValue,
+        } as IGetOneMdRecordParameters);
         return;
       }
 
@@ -212,31 +162,52 @@ const MdItemEdit: FC = () => {
       clearToDefaults();
       return;
     }
+
+    if (loadingMdRecord || !mdRecordForEdit[tableName]) return;
+
+    setFormData(mdRecordForEdit[tableName]);
   }, [
+    loadingMdRecord,
     mdWorkingOnLoadingListData,
     curMdIdVal,
     curTableName,
     dataTypesState,
-    mdIdValue,
     tableName,
+    mdRecordForEdit,
   ]);
 
-  //8. ჩატვირთვის შემოწმება
-  let allNeedTablesLoaded = true;
+  // //8. ჩატვირთვის შემოწმება
+  // let allNeedTablesLoaded = true;
 
-  if (itemEditorTables) {
-    for (let i = 0; i < itemEditorTables.length; i++) {
-      const tname = itemEditorTables[i];
-      if (!(tname in masterData.mdRepo)) {
-        allNeedTablesLoaded = false;
-        break;
-      }
-      if (!masterData.mdRepo[tname]) {
-        allNeedTablesLoaded = false;
-        break;
-      }
-    }
-  }
+  // if (!curTableName || !(curTableName in itemEditorTables)) {
+  //   allNeedTablesLoaded = false;
+  // } else if (!curTableName || !(curTableName in itemEditorLookupTables)) {
+  //   allNeedTablesLoaded = false;
+  // } else if (itemEditorTables) {
+  //   for (let i = 0; i < itemEditorTables[curTableName].length; i++) {
+  //     const tname: string = itemEditorTables[curTableName][i];
+  //     if (!(tname in masterData.mdataRepo)) {
+  //       allNeedTablesLoaded = false;
+  //       break;
+  //     }
+  //     if (!masterData.mdataRepo[tname]) {
+  //       allNeedTablesLoaded = false;
+  //       break;
+  //     }
+  //   }
+  // } else if (itemEditorLookupTables) {
+  //   for (let i = 0; i < itemEditorLookupTables[curTableName].length; i++) {
+  //     const ltname: string = itemEditorLookupTables[curTableName][i];
+  //     if (!(ltname in masterData.mdLookupRepo)) {
+  //       allNeedTablesLoaded = false;
+  //       break;
+  //     }
+  //     if (!masterData.mdLookupRepo[ltname]) {
+  //       allNeedTablesLoaded = false;
+  //       break;
+  //     }
+  //   }
+  // }
 
   // console.log(
   //   "MdItemEdit before Check Loading {curDataType, curGridRules, curYupSchema, frm, allNeedTablesLoaded, mdWorkingOnLoadingListData}=",
@@ -261,7 +232,12 @@ const MdItemEdit: FC = () => {
       </div>
     );
 
-  if (mdWorkingOnLoadingListData)
+  if (
+    loadingMdRecord ||
+    // mdWorkingOnLoad ||
+    // Object.values(mdWorkingOnLoadingTables).some((s: boolean) => s) ||
+    mdWorkingOnLoadingListData
+  )
     //თუ ინფორმაციის ჩატვირთვა ჯერ კიდევ მიმდინარეობა
     return <WaitPage />;
 
@@ -276,7 +252,7 @@ const MdItemEdit: FC = () => {
     if (haveErrors) return;
 
     if (curDataType !== null) {
-      if (curMdIdVal !== undefined) {
+      if (curMdIdVal) {
         updateMasterDataRecord({
           tableName: curDataType.dtTable,
           idFielName: curDataType.idFieldName,
@@ -350,6 +326,28 @@ const MdItemEdit: FC = () => {
               const fieldName = field.fieldName ? field.fieldName : "";
 
               switch (field.typeName) {
+                case "MdLookup":
+                  const mdLookupField = field as MdLookupCell;
+                  if (mdLookupField.dtTable) {
+                    return (
+                      <OneComboBoxControl
+                        key={fieldName}
+                        controlId={fieldName}
+                        label={caption}
+                        value={frm[fieldName]}
+                        dataMember={
+                          masterData.mdLookupRepo[mdLookupField.dtTable]
+                        }
+                        valueMember={"id"}
+                        displayMember={"display"}
+                        getError={getError}
+                        onChangeValue={changeField}
+                        firstItem={{ id: -1, name: `აირჩიე ${caption}` }}
+                      />
+                    );
+                  }
+
+                  break;
                 case "Lookup":
                   const lookupField = field as LookupCell;
                   if (
@@ -363,7 +361,9 @@ const MdItemEdit: FC = () => {
                         controlId={fieldName}
                         label={caption}
                         value={frm[fieldName]}
-                        dataMember={masterData.mdRepo[lookupField.dataMember]}
+                        dataMember={
+                          masterData.mdataRepo[lookupField.dataMember]
+                        }
                         valueMember={lookupField.valueMember}
                         displayMember={lookupField.displayMember}
                         getError={getError}

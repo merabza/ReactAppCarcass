@@ -9,11 +9,14 @@ import {
 import {
   IAdddMasterDataParameters,
   IdeleteMasterDataRecordParameters,
+  IGetOneMdRecordParameters,
   IMasterDataMutationParameters,
+  IMdLookupTablesDataCommandResponse,
   IMdTablesDataCommandResponse,
-  ISetAddedMasterDataRecordAction,
+  ITableNameAndMasterDataRecord,
   ISetDeleteMasterDataRecordAction,
   ISetMdWorkingOnLoadingTablesListAction,
+  ISetMultipleLookupTablesData,
   ISetMultipleTablesData,
   ISetUpdatedMasterDataRecordAction,
 } from "../types/masterdataTypes";
@@ -22,12 +25,15 @@ import {
   SetDeleteFailure,
   setDeleteMasterDataRecord,
   SetDeletingKey,
+  SetMdWorkingOnLoadingLookupTablesList,
   SetMdWorkingOnLoadingTablesList,
   setMultipleTableData,
+  setMultipleLookupTableData,
   setTableRowData,
   setUpdatedMasterDataRecord,
   SetWorkingOnLoad,
   SetWorkingOnSave,
+  setMasterDataRecord,
 } from "../slices/masterdataSlice";
 import { RootState } from "../../../redux/store";
 import { buildErrorMessage } from "../types/errorTypes";
@@ -106,6 +112,78 @@ export const masterdataApi = createApi({
       },
     }),
     //////////////////////////////////////////////////////
+    getLookupTables: builder.query<
+      IMdLookupTablesDataCommandResponse,
+      Array<string>
+    >({
+      query(realyNeedLookupTables) {
+        return {
+          url:
+            `/masterdata/getlookuptables?` +
+            realyNeedLookupTables
+              .map((tablename) => `tables=${tablename}`)
+              .join("&"),
+        };
+      },
+      async onQueryStarted(
+        realyNeedLookupTables,
+        { dispatch, queryFulfilled }
+      ) {
+        dispatch(SetWorkingOnLoad(true));
+        dispatch(
+          SetMdWorkingOnLoadingLookupTablesList({
+            tableNamesList: realyNeedLookupTables,
+            switchOn: true,
+          } as ISetMdWorkingOnLoadingTablesListAction)
+        );
+        try {
+          const queryResult = await queryFulfilled;
+          const { data } = queryResult;
+          console.log(
+            "masterdataApi getTables realyNeedTables=",
+            realyNeedLookupTables
+          );
+          console.log("masterdataApi getTables queryResult=", queryResult);
+          dispatch(
+            setMultipleLookupTableData({
+              realyNeedLookupTables,
+              tablesData: data.entities,
+            } as ISetMultipleLookupTablesData)
+          );
+        } catch (error) {
+          dispatch(setAlertApiLoadError(buildErrorMessage(error)));
+        }
+        dispatch(
+          SetMdWorkingOnLoadingLookupTablesList({
+            tableNamesList: realyNeedLookupTables,
+            switchOn: false,
+          } as ISetMdWorkingOnLoadingTablesListAction)
+        );
+      },
+    }),
+    //////////////////////////////////////////////////////
+    getOneMdRecord: builder.query<any, IGetOneMdRecordParameters>({
+      query({ tableName, id }) {
+        return {
+          url: `/masterdata/${tableName}/${id}`,
+        };
+      },
+      async onQueryStarted({ tableName, id }, { dispatch, queryFulfilled }) {
+        try {
+          const queryResult = await queryFulfilled;
+          const { data } = queryResult;
+          dispatch(
+            setMasterDataRecord({
+              tableName,
+              mdItem: data.entry,
+            } as ITableNameAndMasterDataRecord)
+          );
+        } catch (error) {
+          dispatch(setAlertApiLoadError(buildErrorMessage(error)));
+        }
+      },
+    }),
+    //////////////////////////////////////////////////////
     addMasterDataRecord: builder.mutation<any, IAdddMasterDataParameters>({
       query({ tableName, mdItem }) {
         return {
@@ -127,7 +205,7 @@ export const masterdataApi = createApi({
             setAddedMasterDataRecord({
               tableName,
               mdItem: data.entry,
-            } as ISetAddedMasterDataRecordAction)
+            } as ITableNameAndMasterDataRecord)
           );
           // console.log(
           //   "masterdataApi addMasterDataRecord idFielName=",
@@ -223,7 +301,9 @@ export const masterdataApi = createApi({
 
 export const {
   useLazyGetTablesQuery,
+  useLazyGetLookupTablesQuery,
   useLazyGetTableRowsDataQuery,
+  useLazyGetOneMdRecordQuery,
   useAddMasterDataRecordMutation,
   useUpdateMasterDataRecordMutation,
   useDeleteMasterDataRecordMutation,

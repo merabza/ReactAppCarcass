@@ -181,9 +181,7 @@ const GridView: FC<GridViewProps> = (props) => {
                     )}
                     {!!col.mdLookupColumnPart && (
                       <MasterDataFilterComboBox
-                        masterDataTable={col.mdLookupColumnPart.dataTable}
-                        valueMember={col.mdLookupColumnPart.valueMember}
-                        displayMembar={col.mdLookupColumnPart.displayMember}
+                        lookupTable={col.mdLookupColumnPart}
                         isNullable={col.nullable}
                         onChangeValue={(
                           newValue: number | null | undefined
@@ -257,9 +255,7 @@ const GridView: FC<GridViewProps> = (props) => {
                         )
                       ) : col.mdLookupColumnPart ? (
                         <MdLookupColumn
-                          dataTable={col.mdLookupColumnPart.dataTable}
-                          valueMember={col.mdLookupColumnPart.valueMember}
-                          displayMember={col.mdLookupColumnPart.displayMember}
+                          lookupTable={col.mdLookupColumnPart}
                           value={value}
                         ></MdLookupColumn>
                       ) : (

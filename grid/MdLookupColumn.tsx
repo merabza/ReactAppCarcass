@@ -1,23 +1,22 @@
 //MdLookupColumn.tsx
 
 import { FC } from "react";
+import { ILookup } from "../redux/types/masterdataTypes";
 
 type MdLookupColumnProps = {
-  dataTable: any[];
-  valueMember?: string | null;
-  displayMember?: string | null;
-  value?: number;
+  lookupTable: ILookup[];
+  value?: any;
 };
 
 const MdLookupColumn: FC<MdLookupColumnProps> = (props) => {
-  const { dataTable, valueMember, displayMember, value } = props;
+  const { lookupTable, value } = props;
 
   // console.log("MdLookupColumn props=", props);
   // console.log("MdLookupColumn value=", value);
 
-  if (!!valueMember && !!displayMember && !!dataTable) {
-    const fval = dataTable.find((mdItm) => mdItm[valueMember] === value);
-    if (!!fval && !!fval[displayMember]) return fval[displayMember];
+  if (!!lookupTable) {
+    const fval = lookupTable.find((mdItm) => mdItm.id === value);
+    if (!!fval && !!fval.display) return fval.display;
   }
 
   return value;

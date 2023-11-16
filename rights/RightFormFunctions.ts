@@ -4,15 +4,14 @@ import { IRightsState } from "../redux/slices/rightsSlice";
 import {
   DataTypeModel,
   IParentsRightsDictionary,
-  ReturnValueModel,
   RightsChangeModel,
   RightsViewKind,
   TypeDataModel,
 } from "../redux/types/rightsTypes";
 
 export function createOneRight(
-  dataType: DataTypeModel,
-  retValue: ReturnValueModel,
+  dtId: number,
+  dtKey: string | null,
   curRViewId: RightsViewKind | null,
   curKey: string | null | undefined,
   drParentsRepo: IParentsRightsDictionary,
@@ -21,7 +20,7 @@ export function createOneRight(
   const oneRight = {} as RightsChangeModel;
   if (
     curRViewId === null ||
-    retValue.key === null ||
+    dtKey === null ||
     curKey === null ||
     curKey === undefined
   )
@@ -32,16 +31,16 @@ export function createOneRight(
   if (dt === undefined) return oneRight;
   if (curRViewId === RightsViewKind.normalView) {
     oneRight.parent = { dtId: dt.dtId, dKey: curKey };
-    oneRight.child = { dtId: dataType.dtId, dKey: retValue.key };
+    oneRight.child = { dtId, dKey: dtKey };
   } else {
-    oneRight.parent = { dtId: dataType.dtId, dKey: retValue.key };
+    oneRight.parent = { dtId, dKey: dtKey };
     oneRight.child = { dtId: dt.dtId, dKey: curKey };
   }
   return oneRight;
 }
 
 export function getChildrenDataTypes(
-  dataType: DataTypeModel,
+  dtId: number,
   drLinear: boolean,
   curParentDtKey: string | null | undefined,
   curRViewId: RightsViewKind | null,
@@ -55,21 +54,20 @@ export function getChildrenDataTypes(
     curRViewId === RightsViewKind.normalView
   )
     childrenDataTypes = drChildrenRepo[curRViewId][curParentDtKey].filter(
-      (w) =>
-        w.dtParentDataTypeId !== null && dataType.dtId === w.dtParentDataTypeId
+      (w) => w.dtParentDataTypeId !== null && dtId === w.dtParentDataTypeId
     );
   return childrenDataTypes;
 }
 
 export function funAddOneRightAndChildren(
   state: IRightsState,
-  dataType: DataTypeModel,
+  dtId: number,
   oneRight: RightsChangeModel,
   curParentDtKey: string | null | undefined,
   curRViewId: RightsViewKind | null
 ) {
   const childrenDataTypes = getChildrenDataTypes(
-    dataType,
+    dtId,
     state.drLinear,
     curParentDtKey,
     curRViewId,
@@ -111,7 +109,7 @@ export function funAddOneRightAndChildren(
         nextOneRight.checked = oneRight.checked;
         funAddOneRightAndChildren(
           state,
-          chdt,
+          chdt.dtId,
           nextOneRight,
           curParentDtKey,
           curRViewId

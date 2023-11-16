@@ -1,5 +1,7 @@
 //GridViewTypes.ts
 
+import { ILookup } from "../redux/types/masterdataTypes";
+
 export interface IFilterSortObject {
   //tabWindowId: number;
   filterByFields: IFilterField[];
@@ -18,21 +20,21 @@ export interface IGridColumn {
   caption: string;
   visible: boolean;
   sortable: boolean;
-  nullable: boolean;
+  nullable: boolean; //
   fieldName: string;
   isKey: boolean;
-  control: React.ReactNode;
-  changingFieldName: string;
-  possibleValues: any[];
+  control: React.ReactNode; //
+  changingFieldName: string; //
+  possibleValues: any[]; //
   typeName: string;
-  mdLookupColumnPart: IMdLookupColumnPart | null;
+  mdLookupColumnPart: ILookup[] | null; //
 }
 
-export interface IMdLookupColumnPart {
-  dataTable: any[];
-  valueMember: string;
-  displayMember: string;
-}
+// export interface IMdLookupColumnPart {
+//   lookupTable: ILookup[];
+//   valueMember: string;
+//   displayMember: string;
+// }
 
 export interface IGridScrollTo {
   index: number;

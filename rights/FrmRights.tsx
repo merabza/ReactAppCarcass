@@ -228,7 +228,9 @@ const FrmRights: FC = () => {
     dataType: DataTypeModel,
     oneRight: RightsChangeModel
   ) {
-    dispatch(addRight({ dataType, oneRight, curParentDtKey, curRViewId }));
+    dispatch(
+      addRight({ dtId: dataType.dtId, oneRight, curParentDtKey, curRViewId })
+    );
   }
 
   function getDataList(
@@ -238,7 +240,7 @@ const FrmRights: FC = () => {
   ) {
     //console.log("FrmRights getDataList {drChildrenRepo, dataType, drLinear, curRView, curParentDtKey}=", { drChildrenRepo, dataType, drLinear, curRView, curParentDtKey });
     const childrenDataTypes = getChildrenDataTypes(
-      dataType,
+      dataType.dtId,
       drLinear,
       curParentDtKey,
       curRViewId,
@@ -275,8 +277,8 @@ const FrmRights: FC = () => {
               });
 
               const oneRight = createOneRight(
-                dataType,
-                itm,
+                dataType.dtId,
+                itm.key,
                 curRViewId,
                 curKey,
                 drParentsRepo,

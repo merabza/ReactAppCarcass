@@ -42,7 +42,7 @@ export interface RightsChangeModel {
 }
 
 export interface IAddRightAction {
-  dataType: DataTypeModel;
+  dtId: number;
   oneRight: RightsChangeModel;
   curParentDtKey: string | null | undefined;
   curRViewId: RightsViewKind | null;

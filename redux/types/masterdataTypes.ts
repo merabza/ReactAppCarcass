@@ -17,9 +17,19 @@ export interface IdeleteMasterDataRecordParameters {
   navigate: NavigateFunction;
 }
 
+export interface IGetOneMdRecordParameters {
+  tableName: string;
+  id: number;
+}
+
 export interface ISetMultipleTablesData {
   realyNeedTables: string[];
   tablesData: IMasterDataRepo;
+}
+
+export interface ISetMultipleLookupTablesData {
+  realyNeedLookupTables: string[];
+  tablesData: ILookupDataRepo;
 }
 
 export interface IAdddMasterDataParameters {
@@ -29,7 +39,7 @@ export interface IAdddMasterDataParameters {
   navigate: NavigateFunction;
 }
 
-export interface ISetAddedMasterDataRecordAction {
+export interface ITableNameAndMasterDataRecord {
   tableName: string;
   mdItem: any;
 }
@@ -57,10 +67,29 @@ export interface ISetMdWorkingOnLoadingTablesListAction {
   switchOn: boolean;
 }
 
+export interface ISetItemEditorTablesAction {
+  tableNamesList: Array<string>;
+  editTableName: string;
+}
+
+export interface ILookupDataRepo {
+  [key: string]: ILookup[];
+}
+
 export interface IMasterDataRepo {
   [key: string]: any[];
 }
 
+export interface ILookup {
+  id: number;
+  key: string;
+  display: string;
+}
+
 export interface IMdTablesDataCommandResponse {
   entities: { [key: string]: any[] };
+}
+
+export interface IMdLookupTablesDataCommandResponse {
+  entities: { [key: string]: ILookup[] };
 }

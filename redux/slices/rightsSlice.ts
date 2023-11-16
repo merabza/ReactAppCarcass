@@ -169,13 +169,13 @@ export const rightsSlice = createSlice({
     },
 
     addRight: (state, action: PayloadAction<IAddRightAction>) => {
-      const { dataType, oneRight, curParentDtKey, curRViewId } = action.payload;
+      const { dtId, oneRight, curParentDtKey, curRViewId } = action.payload;
 
       fnAddRight(state, oneRight);
 
       funAddOneRightAndChildren(
         state,
-        dataType,
+        dtId,
         oneRight,
         curParentDtKey,
         curRViewId
@@ -195,8 +195,8 @@ export const rightsSlice = createSlice({
 
       selectedChildDataType.returnValues.forEach((item) => {
         const oneRight = createOneRight(
-          selectedChildDataType,
-          item,
+          selectedChildDataType.dtId,
+          item.key,
           curRViewId,
           curKey,
           drParentsRepo,
@@ -206,7 +206,7 @@ export const rightsSlice = createSlice({
         fnAddRight(state, oneRight);
         funAddOneRightAndChildren(
           state,
-          selectedChildDataType,
+          selectedChildDataType.dtId,
           oneRight,
           curParentDtKey,
           curRViewId

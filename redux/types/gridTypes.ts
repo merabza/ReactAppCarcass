@@ -63,6 +63,10 @@ export interface LookupCell extends IntegerCell {
   displayMember: string | null;
 }
 
+export interface MdLookupCell extends IntegerCell {
+  dtTable: string | null;
+}
+
 export interface IntRule {
   val: number;
   err: Err;
@@ -107,6 +111,11 @@ export function DeserializeGridModel(
         var intCell = JSON.parse(cJson) as IntegerCell;
         // console.log("DeserializeGridModel 7 intCell=", intCell);
         gridResult.cells.push(intCell);
+        break;
+      }
+      case "MdLookup": {
+        var mdLookupCell = JSON.parse(cJson) as MdLookupCell;
+        gridResult.cells.push(mdLookupCell);
         break;
       }
       case "Lookup": {

@@ -3,6 +3,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { FC, useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
+import { ILookup } from "../redux/types/masterdataTypes";
 // import { ValueType } from "react-select/lib/types";
 
 interface IMasterDataFilterType {
@@ -24,22 +25,13 @@ export const MasterDataFilterOptionType = {
 
 type MasterDataFilterComboBoxProps = {
   controlId?: string;
-  masterDataTable: any[];
-  valueMember: string;
-  displayMembar: string;
+  lookupTable: ILookup[];
   isNullable?: boolean | undefined;
   onChangeValue: (newValue: number | null | undefined) => void;
 };
 
 const MasterDataFilterComboBox: FC<MasterDataFilterComboBoxProps> = (props) => {
-  const {
-    controlId,
-    masterDataTable,
-    valueMember,
-    displayMembar,
-    isNullable,
-    onChangeValue,
-  } = props;
+  const { controlId, lookupTable, isNullable, onChangeValue } = props;
   // console.log("MasterDataFilterComboBox props=", props);
 
   // const [curValue, setCurValue] = useState<string>(
@@ -62,11 +54,9 @@ const MasterDataFilterComboBox: FC<MasterDataFilterComboBoxProps> = (props) => {
   // let dataArray: Array<string> = [] as Array<string>;
   // let dataArrayContainsEmpyValues: boolean = false;
 
-  const masterDataTableSorted = masterDataTable
+  const masterDataTableSorted = lookupTable
     .slice()
-    .sort((a, b) =>
-      a[displayMembar].toString().localeCompare(b[displayMembar].toString())
-    );
+    .sort((a, b) => a.display.localeCompare(b.display));
 
   //console.log("MasterDataFilterComboBox dataArray=", dataArray);
   // console.log("MasterDataFilterComboBox firstItem=", firstItem);
@@ -135,16 +125,16 @@ const MasterDataFilterComboBox: FC<MasterDataFilterComboBoxProps> = (props) => {
             </option>
           )}
           {masterDataTableSorted &&
-            masterDataTableSorted.map((mdItm, index) => (
+            masterDataTableSorted.map((mdItm) => (
               <option
-                key={mdItm[displayMembar]}
+                key={mdItm.key}
                 value={JSON.stringify({
                   type: MasterDataFilterOptionType.SomeValue.type,
-                  id: mdItm[valueMember],
-                  display: mdItm[displayMembar],
+                  id: mdItm.id,
+                  display: mdItm.display,
                 } as IMasterDataOptionValue)}
               >
-                {mdItm[displayMembar]}
+                {mdItm.display}
               </option>
             ))}
         </Form.Select>

@@ -12,10 +12,9 @@ import Loading from "../common/Loading";
 import AlertMessages from "../common/AlertMessages";
 import {
   ConvertGridModelToGridColumns,
-  CountDisplayValues,
   CountRowDataDisplayValues,
 } from "./mdFunctions";
-import { useMasterDataLists } from "./masterDataHooks/useMasterDataLists";
+import { useMasterDataLookupLists } from "./masterDataHooks/useMasterDataLookupLists";
 import GridView from "../grid/GridView";
 import { IGridColumn, IRowsData } from "../grid/GridViewTypes";
 import { useLazyGetTableRowsDataQuery } from "../redux/api/masterdataApi";
@@ -24,23 +23,22 @@ type MdGridViewProps = {
   tableName: string;
   recId?: number | undefined;
   readOnly?: boolean | undefined;
-  serverSidePagination?: boolean | undefined;
 };
 
 const MdGridView: FC<MdGridViewProps> = (props) => {
-  const { tableName, recId, readOnly, serverSidePagination } = props;
-  console.log("MdGridView props=", props);
+  const { tableName, recId, readOnly } = props;
+  //console.log("MdGridView props=", props);
 
   const [curDataType, setCurDataType] = useState<DataTypeFfModel | null>(null);
   const [curGridColumns, setCurGridColumns] = useState<IGridColumn[] | null>(
     null
   );
   const [curGridRules, setCurGridRules] = useState<GridModel | null>(null);
-  const [curRowsData, setCurRowsData] = useState<IRowsData | undefined>(
-    undefined
-  );
+  // const [curRowsData, setCurRowsData] = useState<IRowsData | undefined>(
+  //   undefined
+  // );
 
-  const [loadListData] = useMasterDataLists();
+  const [loadListData] = useMasterDataLookupLists();
   const masterData = useAppSelector((state) => state.masterDataState);
   const dataTypesState = useAppSelector((state) => state.dataTypesState);
 
@@ -71,15 +69,10 @@ const MdGridView: FC<MdGridViewProps> = (props) => {
     }
 
     setCurDataType(null);
-    setCurRowsData(undefined);
-    loadListData(tableName, serverSidePagination);
+    // setCurRowsData(undefined);
+    loadListData(tableName);
 
-    const checkResult = checkDataLoaded(
-      masterData,
-      dataTypesState,
-      tableName,
-      serverSidePagination
-    );
+    const checkResult = checkDataLoaded(masterData, dataTypesState, tableName);
 
     // console.log("MdGridView useEffect 5 checkResult=", tableName, checkResult);
 
@@ -132,24 +125,24 @@ const MdGridView: FC<MdGridViewProps> = (props) => {
   // console.log("MdGridView tableName=", tableName);
   // console.log("MdGridView serverSidePagination=", serverSidePagination);
   // console.log(
-  //   "MdGridView masterData.mdRepo[tableName]=",
-  //   masterData.mdRepo[tableName]
+  //   "MdGridView masterData.mdLookupRepo[tableName]=",
+  //   masterData.mdLookupRepo[tableName]
   // );
 
   let curMasterDataTable: any[] = [];
   let countedRowData: IRowsData | undefined = undefined;
-  if (serverSidePagination) {
-    countedRowData = CountRowDataDisplayValues(
-      tableRowData[tableName],
-      curGridRules,
-      masterData
-    );
-  } else
-    curMasterDataTable = CountDisplayValues(
-      masterData.mdRepo[tableName],
-      curGridRules,
-      masterData
-    );
+  // if (serverSidePagination) {
+  countedRowData = CountRowDataDisplayValues(
+    tableRowData[tableName],
+    curGridRules,
+    masterData
+  );
+  // } else
+  //   curMasterDataTable = CountDisplayValues(
+  //     masterData.mdLookupRepo[tableName],
+  //     curGridRules,
+  //     masterData
+  //   );
 
   // if ( serverSidePagination &&  !countedRowData || !serverSidePagination && !curMasterDataTable)
   //   return (
@@ -188,8 +181,9 @@ const MdGridView: FC<MdGridViewProps> = (props) => {
   if (
     !curGridColumns ||
     curscrollTo === null ||
-    !curDataType ||
-    (!serverSidePagination && !curMasterDataTable)
+    !curDataType
+    // ||
+    // (!serverSidePagination && !curMasterDataTable)
     //  ||
     // !curRowsData
   ) {
@@ -216,7 +210,7 @@ const MdGridView: FC<MdGridViewProps> = (props) => {
       editorLink={`/mdItemEdit/${curDataType.dtTable}`}
       showCountColumn
       columns={curGridColumns}
-      rowsData={serverSidePagination ? countedRowData : curRowsData}
+      rowsData={countedRowData}
       loading={mdWorkingOnLoadingListData}
       onLoadRows={(offset, rowsCount, sortByFields, filterFields) => {
         // console.log(
@@ -225,16 +219,15 @@ const MdGridView: FC<MdGridViewProps> = (props) => {
         // );
         // console.log("MdGridView GridView onLoadRows curDataType=", curDataType);
 
-        if (serverSidePagination)
-          getTableRowsData({
-            tableName: tableName,
-            filterSortRequest: {
-              offset,
-              rowsCount,
-              filterFields,
-              sortByFields,
-            },
-          });
+        getTableRowsData({
+          tableName: tableName,
+          filterSortRequest: {
+            offset,
+            rowsCount,
+            filterFields,
+            sortByFields,
+          },
+        });
 
         let RealOffset = offset;
         if (RealOffset >= curMasterDataTable.length)
@@ -247,78 +240,78 @@ const MdGridView: FC<MdGridViewProps> = (props) => {
         if (endElementNom > curMasterDataTable.length)
           endElementNom = curMasterDataTable.length;
 
-        const filteredMasterDataTable = curMasterDataTable.filter((row) => {
-          let filterResult = true;
-          filterFields.every((filterField) => {
-            // const col = curGridColumns.find(
-            //   (f) => f.fieldName === filterField.fieldName
-            // );
+        // const filteredMasterDataTable = curMasterDataTable.filter((row) => {
+        //   let filterResult = true;
+        //   filterFields.every((filterField) => {
+        //     // const col = curGridColumns.find(
+        //     //   (f) => f.fieldName === filterField.fieldName
+        //     // );
 
-            // switch (col?.typeName) {
-            //   case "Integer":
-            //     const intValue = parseInt(filterField.value);
-            //     if (row[filterField.fieldName] !== intValue) {
-            //       filterResult = false;
-            //       return false;
-            //     }
-            //     return true;
-            //   case "Boolean":
-            //     const boolValue = filterField.value.toLowerCase() === "true";
-            //     if (row[filterField.fieldName] !== boolValue) {
-            //       filterResult = false;
-            //       return false;
-            //     }
-            //     return true;
+        //     // switch (col?.typeName) {
+        //     //   case "Integer":
+        //     //     const intValue = parseInt(filterField.value);
+        //     //     if (row[filterField.fieldName] !== intValue) {
+        //     //       filterResult = false;
+        //     //       return false;
+        //     //     }
+        //     //     return true;
+        //     //   case "Boolean":
+        //     //     const boolValue = filterField.value.toLowerCase() === "true";
+        //     //     if (row[filterField.fieldName] !== boolValue) {
+        //     //       filterResult = false;
+        //     //       return false;
+        //     //     }
+        //     //     return true;
 
-            //   case "Date":
-            //     const dateValue = new Date(filterField.value);
-            //     if (row[filterField.fieldName] !== dateValue) {
-            //       filterResult = false;
-            //       return false;
-            //     }
-            //     return true;
-            // }
+        //     //   case "Date":
+        //     //     const dateValue = new Date(filterField.value);
+        //     //     if (row[filterField.fieldName] !== dateValue) {
+        //     //       filterResult = false;
+        //     //       return false;
+        //     //     }
+        //     //     return true;
+        //     // }
 
-            // if ( filterField.value === null )
-            // {
-            //   if (row[filterField.fieldName] !== null && row[filterField.fieldName] !== "") {
-            //     filterResult = false;
-            //     return false;
-            //   }
-            //   return true;
-            // }
+        //     // if ( filterField.value === null )
+        //     // {
+        //     //   if (row[filterField.fieldName] !== null && row[filterField.fieldName] !== "") {
+        //     //     filterResult = false;
+        //     //     return false;
+        //     //   }
+        //     //   return true;
+        //     // }
 
-            if (row[filterField.fieldName] !== filterField.value) {
-              filterResult = false;
-              return false;
-            }
-            return true;
-          });
-          return filterResult;
-        });
+        //     if (row[filterField.fieldName] !== filterField.value) {
+        //       filterResult = false;
+        //       return false;
+        //     }
+        //     return true;
+        //   });
+        //   return filterResult;
+        // });
 
-        setCurRowsData({
-          allRowsCount: filteredMasterDataTable.length,
-          offset: RealOffset,
-          rows: filteredMasterDataTable
-            .slice()
-            .sort((a, b) => {
-              let compareResult = 0;
-              sortByFields.every((f) => {
-                if (a[f.fieldName] < b[f.fieldName]) {
-                  compareResult = f.ascending ? -1 : 1;
-                  return false;
-                }
-                if (a[f.fieldName] > b[f.fieldName]) {
-                  compareResult = f.ascending ? 1 : -1;
-                  return false;
-                }
-                return true;
-              });
-              return compareResult;
-            })
-            .slice(RealOffset, endElementNom),
-        } as IRowsData);
+        // setCurRowsData({
+        //   allRowsCount: filteredMasterDataTable.length,
+        //   offset: RealOffset,
+        //   rows: filteredMasterDataTable
+        //     .slice()
+        //     .sort((a, b) => {
+        //       let compareResult = 0;
+        //       sortByFields.every((f) => {
+        //         if (a[f.fieldName] < b[f.fieldName]) {
+        //           compareResult = f.ascending ? -1 : 1;
+        //           return false;
+        //         }
+        //         if (a[f.fieldName] > b[f.fieldName]) {
+        //           compareResult = f.ascending ? 1 : -1;
+        //           return false;
+        //         }
+        //         return true;
+        //       });
+        //       return compareResult;
+        //     })
+        //     .slice(RealOffset, endElementNom),
+        // } as IRowsData);
       }}
     ></GridView>
   );
