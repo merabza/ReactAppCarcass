@@ -415,15 +415,12 @@ const FrmRights: FC = () => {
       );
     }
 
-    // console.log(
-    //   "FtmRights getChildsRender {curParentDtKey, curRViewId, drChildrenRepo, drChecksRepo}=",
-    //   {
-    //     curParentDtKey,
-    //     curRViewId,
-    //     drChildrenRepo,
-    //     drChecksRepo,
-    //   }
-    // );
+    // console.log("FtmRights getChildsRender ", {
+    //   curParentDtKey,
+    //   curRViewId,
+    //   drChildrenRepo,
+    //   drChecksRepo,
+    // });
 
     if (
       curParentDtKey === null ||
