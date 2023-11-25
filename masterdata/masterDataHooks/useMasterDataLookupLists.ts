@@ -80,7 +80,7 @@ export function useMasterDataLookupLists(): [fnloadListData] {
           if (gridData !== undefined) {
             const grid = DeserializeGridModel(gridData);
             grid?.cells.forEach((cell) => {
-              if (cell.typeName === "Lookup") {
+              if (cell.typeName === "MdLookup") {
                 const lookupCol = cell as LookupCell;
                 // console.log(
                 //   "useMasterDataLists loadListData lookupCol=",
@@ -89,7 +89,7 @@ export function useMasterDataLookupLists(): [fnloadListData] {
                 if (lookupCol.dataMember)
                   requiredMdNames.push(lookupCol.dataMember);
               }
-              if (cell.typeName === "MdLookup") {
+              if (cell.typeName === "Lookup") {
                 const mdLookupCol = cell as MdLookupCell;
                 if (mdLookupCol.dtTable)
                   requiredMdLookupNames.push(mdLookupCol.dtTable);
