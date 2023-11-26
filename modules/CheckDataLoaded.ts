@@ -22,16 +22,10 @@ export function checkDataLoaded(
     return false;
   }
 
-  const datatypes = dataTypes.dataTypes;
+  const dataTypesByTableNames = dataTypes.dataTypesByTableNames;
 
-  if (!datatypes) {
+  if (!dataTypesByTableNames) {
     if (printLogs) console.log("checkDataLoaded 2 datatypes not loaded");
-    return false;
-  }
-
-  if (datatypes.length === 0) {
-    if (printLogs)
-      console.log("checkDataLoaded 3 datatypes has not any element");
     return false;
   }
 
@@ -62,47 +56,52 @@ export function checkDataLoaded(
   //   return false;
   // }
 
-  if (tableName === undefined) {
-    if (printLogs) console.log("checkDataLoaded 9 gridName does not specified");
-    return false;
-  }
+  // if (tableName === undefined) {
+  //   if (printLogs) console.log("checkDataLoaded 9 gridName does not specified");
+  //   return false;
+  // }
 
-  if (!(tableName in dataTypes.gridsDatas)) {
+  if (!(tableName in dataTypes.dataTypesByTableNames)) {
     if (printLogs)
       console.log(
-        "checkDataLoaded 10 grid rules not found gridName=",
+        "checkDataLoaded 14 dataTypesByTableNames tableName=",
         tableName
       );
     return false;
   }
 
-  if (!dataTypes.gridsDatas[tableName]) {
+  if (!(tableName in dataTypes.gridRules)) {
+    if (printLogs)
+      console.log(
+        "checkDataLoaded 10 grid rules not found tableName=",
+        tableName
+      );
+    return false;
+  }
+
+  if (!dataTypes.gridRules[tableName]) {
     if (printLogs)
       console.log("checkDataLoaded 11 grid rules empty gridName=", tableName);
     return false;
   }
 
-  const dataType = datatypes.find((dt) => {
-    return dt.dtTable === tableName;
-  });
+  // const dataType = datatypes.find((dt) => {
+  //   return dt.dtTable === tableName;
+  // });
 
-  if (!dataType) {
-    if (printLogs)
-      console.log(
-        "checkDataLoaded 12 datatype not found for table ",
-        tableName
-      );
-    return false;
-  }
+  // if (!dataType) {
+  //   if (printLogs)
+  //     console.log(
+  //       "checkDataLoaded 12 datatype not found for table ",
+  //       tableName
+  //     );
+  //   return false;
+  // }
 
-  const gridData = dataTypes.gridsDatas[tableName];
+  // const gridRules = dataTypes.gridRules[tableName];
 
-  if (printLogs)
-    console.log("checkDataLoaded 13 return {dataType, gridData}", {
-      dataType,
-      gridData,
-    });
-  return { dataType, gridData };
+  if (printLogs) console.log("checkDataLoaded 13 return tableName=", tableName);
+  return true;
 }
 
 export function checkDataTypeLoaded(

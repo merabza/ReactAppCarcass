@@ -1,10 +1,7 @@
 //MdGridView.tsx
 
-import { FC, useEffect, useState } from "react";
-import { DataTypeFfModel } from "../redux/types/dataTypesTypes";
-import { DeserializeGridModel, GridModel } from "../redux/types/gridTypes";
+import { FC, useEffect } from "react";
 import { useAppSelector } from "../redux/hooks";
-import { checkDataLoaded } from "../modules/CheckDataLoaded";
 import { useScroller } from "../hooks/useScroller";
 import { useAlert } from "../hooks/useAlert";
 import { EAlertKind } from "../redux/slices/alertSlice";
@@ -16,7 +13,7 @@ import {
 } from "./mdFunctions";
 import { useMasterDataLookupLists } from "./masterDataHooks/useMasterDataLookupLists";
 import GridView from "../grid/GridView";
-import { IGridColumn, IRowsData } from "../grid/GridViewTypes";
+import { IRowsData } from "../grid/GridViewTypes";
 import { useLazyGetTableRowsDataQuery } from "../redux/api/masterdataApi";
 
 type MdGridViewProps = {
@@ -29,11 +26,11 @@ const MdGridView: FC<MdGridViewProps> = (props) => {
   const { tableName, recId, readOnly } = props;
   //console.log("MdGridView props=", props);
 
-  const [curDataType, setCurDataType] = useState<DataTypeFfModel | null>(null);
-  const [curGridColumns, setCurGridColumns] = useState<IGridColumn[] | null>(
-    null
-  );
-  const [curGridRules, setCurGridRules] = useState<GridModel | null>(null);
+  //  const [curDataType, setCurDataType] = useState<DataTypeFfModel | null>(null);
+  // const [curGridColumns, setCurGridColumns] = useState<IGridColumn[] | null>(
+  //   null
+  // );
+  // const [curGridRules, setCurGridRules] = useState<GridModel | null>(null);
   // const [curRowsData, setCurRowsData] = useState<IRowsData | undefined>(
   //   undefined
   // );
@@ -68,27 +65,30 @@ const MdGridView: FC<MdGridViewProps> = (props) => {
       return;
     }
 
-    setCurDataType(null);
+    //setCurDataType(null);
     // setCurRowsData(undefined);
     loadListData(tableName);
 
-    const checkResult = checkDataLoaded(masterData, dataTypesState, tableName);
+    // const successLoaded = checkDataLoaded(
+    //   masterData,
+    //   dataTypesState,
+    //   tableName
+    // );
 
     // console.log("MdGridView useEffect 5 checkResult=", tableName, checkResult);
 
-    if (checkResult) {
-      const { dataType, gridData } = checkResult;
-      const gridRules = gridData ? DeserializeGridModel(gridData) : null;
+    // if (successLoaded) {
+    //   const gridRules = gridData ? DeserializeGridModel(gridData) : null;
 
-      // console.log("MdGridView useEffect new dataType=", dataType);
-      // console.log("MdGridView useEffect new gridData=", gridData);
-      setCurDataType(dataType);
-      setCurGridRules(gridRules);
-      // console.log("MdGridView useEffect new gridRules=", gridRules);
-      // console.log("MdGridView useEffect new dataType=", dataType);
-      if (gridRules)
-        setCurGridColumns(ConvertGridModelToGridColumns(gridRules, dataType));
-    }
+    //   // console.log("MdGridView useEffect new dataType=", dataType);
+    //   // console.log("MdGridView useEffect new gridData=", gridData);
+    //   //setCurDataType(dataType);
+    //   setCurGridRules(gridRules);
+    //   // console.log("MdGridView useEffect new gridRules=", gridRules);
+    //   // console.log("MdGridView useEffect new dataType=", dataType);
+    //   if (gridRules)
+    //     setCurGridColumns(ConvertGridModelToGridColumns(gridRules, dataType));
+    // }
 
     // const dataType = checkDataTypeLoaded(masterData, dataTypesState, tableName);
     // const gridData = checkGridLoaded(masterData, dataTypesState, tableName);
@@ -123,20 +123,26 @@ const MdGridView: FC<MdGridViewProps> = (props) => {
     return <Loading />;
 
   // console.log("MdGridView tableName=", tableName);
+  // console.log("MdGridView masterData=", masterData);
+  // console.log("MdGridView tableRowData=", tableRowData);
   // console.log("MdGridView serverSidePagination=", serverSidePagination);
   // console.log(
   //   "MdGridView masterData.mdLookupRepo[tableName]=",
   //   masterData.mdLookupRepo[tableName]
   // );
+  const gridRules = dataTypesState.gridRules[tableName];
 
   let curMasterDataTable: any[] = [];
   let countedRowData: IRowsData | undefined = undefined;
   // if (serverSidePagination) {
   countedRowData = CountRowDataDisplayValues(
     tableRowData[tableName],
-    curGridRules,
+    gridRules,
     masterData
   );
+
+  console.log("MdGridView countedRowData=", countedRowData);
+
   // } else
   //   curMasterDataTable = CountDisplayValues(
   //     masterData.mdLookupRepo[tableName],
@@ -151,6 +157,12 @@ const MdGridView: FC<MdGridViewProps> = (props) => {
   //       <AlertMessages alertKind={EAlertKind.ApiLoad} />
   //     </div>
   //   );
+  const dataType = dataTypesState.dataTypesByTableNames[tableName];
+
+  const curGridColumns =
+    gridRules && dataType
+      ? ConvertGridModelToGridColumns(gridRules, dataType)
+      : null;
 
   curGridColumns?.forEach((col) => {
     col.possibleValues = curMasterDataTable
@@ -181,7 +193,8 @@ const MdGridView: FC<MdGridViewProps> = (props) => {
   if (
     !curGridColumns ||
     curscrollTo === null ||
-    !curDataType
+    !dataType ||
+    !curGridColumns
     // ||
     // (!serverSidePagination && !curMasterDataTable)
     //  ||
@@ -202,12 +215,12 @@ const MdGridView: FC<MdGridViewProps> = (props) => {
 
   return (
     <GridView
-      gridHeader={curDataType.dtName}
+      gridHeader={dataType.dtName}
       readOnly={readOnly}
-      allowCreate={curDataType.create}
-      allowUpdate={curDataType.update}
-      allowDelete={curDataType.delete}
-      editorLink={`/mdItemEdit/${curDataType.dtTable}`}
+      allowCreate={dataType.create}
+      allowUpdate={dataType.update}
+      allowDelete={dataType.delete}
+      editorLink={`/mdItemEdit/${tableName}`}
       showCountColumn
       columns={curGridColumns}
       rowsData={countedRowData}

@@ -17,6 +17,9 @@ type OneNumberControlProps = {
 const OneNumberControl: FC<OneNumberControlProps> = (props) => {
   const { controlId, label, value, getError, onChangeValue, minv, stepv } =
     props;
+
+  console.log("OneNumberControl props=", props);
+
   const error = getError(controlId);
 
   const min = !minv && minv !== 0 ? 1 : minv;

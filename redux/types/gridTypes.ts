@@ -57,10 +57,13 @@ export interface IntegerCell extends NumberCell {
 }
 
 export interface LookupCell extends IntegerCell {
-  rowSource: string | null;
   dataMember: string | null;
   valueMember: string | null;
   displayMember: string | null;
+}
+
+export interface RsLookupCell extends IntegerCell {
+  rowSource: string | null;
 }
 
 export interface MdLookupCell extends IntegerCell {
@@ -121,6 +124,11 @@ export function DeserializeGridModel(
       case "Lookup": {
         var lookupCell = JSON.parse(cJson) as LookupCell;
         gridResult.cells.push(lookupCell);
+        break;
+      }
+      case "RsLookup": {
+        var rsLookupCell = JSON.parse(cJson) as RsLookupCell;
+        gridResult.cells.push(rsLookupCell);
         break;
       }
       case "Mixed": {

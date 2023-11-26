@@ -7,6 +7,7 @@ import {
   DateCell,
   LookupCell,
   MdLookupCell,
+  RsLookupCell,
 } from "../redux/types/gridTypes";
 import { ILookup } from "../redux/types/masterdataTypes";
 
@@ -51,6 +52,18 @@ export function GetDisplayValue(
     }
   }
 
+  if (col.typeName === "RsLookup") {
+    const lookupCol = col as RsLookupCell;
+    if (!!lookupCol.rowSource && value !== null && value !== undefined) {
+      // console.log("GetDisplayValue col.rowSource=", lookupCol.rowSource);
+      var rsarr = lookupCol.rowSource.split(";");
+      // console.log("GetDisplayValue rsarr=", rsarr);
+      // console.log("GetDisplayValue value=", value);
+      var ind = rsarr.indexOf(value.toString()) + 1;
+      if (ind > 0 && ind < rsarr.length && !!rsarr[ind]) return rsarr[ind];
+    }
+  }
+
   if (col.typeName === "Lookup") {
     const lookupCol = col as LookupCell;
     const { dataMember } = lookupCol;
@@ -68,15 +81,6 @@ export function GetDisplayValue(
         lookupCol.valueMember,
         lookupCol.displayMember
       );
-    }
-
-    if (!!lookupCol.rowSource && !!value) {
-      // console.log("GetDisplayValue col.rowSource=", lookupCol.rowSource);
-      var rsarr = lookupCol.rowSource.split(";");
-      // console.log("GetDisplayValue rsarr=", rsarr);
-      // console.log("GetDisplayValue value=", value);
-      var ind = rsarr.indexOf(value.toString()) + 1;
-      if (ind > 0 && ind < rsarr.length && !!rsarr[ind]) return rsarr[ind];
     }
   }
 

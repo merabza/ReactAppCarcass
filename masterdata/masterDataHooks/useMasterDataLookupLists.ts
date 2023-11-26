@@ -62,7 +62,7 @@ export function useMasterDataLookupLists(): [fnloadListData] {
         await getDataTypes();
       }
 
-      if (!(tableName in dataTypesState.gridsDatas)) {
+      if (!(tableName in dataTypesState.gridRules)) {
         await getGridModel(tableName);
       }
 
@@ -73,14 +73,13 @@ export function useMasterDataLookupLists(): [fnloadListData] {
         !(tableName in masterDataState.itemEditorTables) ||
         !(tableName in masterDataState.itemEditorLookupTables)
       ) {
-        const { gridsDatas } = dataTypesState;
-        // console.log("useMasterDataLists loadListData gridsDatas=", gridsDatas);
-        if (tableName in gridsDatas) {
-          const gridData = gridsDatas[tableName];
-          if (gridData !== undefined) {
-            const grid = DeserializeGridModel(gridData);
+        const { gridRules } = dataTypesState;
+        // console.log("useMasterDataLists loadListData gridRules=", gridRules);
+        if (tableName in gridRules) {
+          const grid = gridRules[tableName];
+          if (grid !== undefined) {
             grid?.cells.forEach((cell) => {
-              if (cell.typeName === "MdLookup") {
+              if (cell.typeName === "Lookup") {
                 const lookupCol = cell as LookupCell;
                 // console.log(
                 //   "useMasterDataLists loadListData lookupCol=",
@@ -89,7 +88,7 @@ export function useMasterDataLookupLists(): [fnloadListData] {
                 if (lookupCol.dataMember)
                   requiredMdNames.push(lookupCol.dataMember);
               }
-              if (cell.typeName === "Lookup") {
+              if (cell.typeName === "MdLookup") {
                 const mdLookupCol = cell as MdLookupCell;
                 if (mdLookupCol.dtTable)
                   requiredMdLookupNames.push(mdLookupCol.dtTable);

@@ -15,6 +15,7 @@ export function countMdSchema(gridRules: GridModel) {
 
     switch (col.typeName) {
       case "Integer":
+      case "RsLookup":
       case "Lookup":
       case "MdLookup":
         yupResult = yup.number();

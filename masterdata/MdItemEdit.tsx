@@ -4,7 +4,6 @@ import React, { useState, useEffect, FC } from "react";
 import { Form, Row, Col } from "react-bootstrap";
 import * as yup from "yup";
 
-import { checkDataLoaded } from "../modules/CheckDataLoaded";
 import WaitPage from "../common/WaitPage";
 import EditorHeader from "../editorParts/EditorHeader";
 import OneTextControl from "../editorParts/OneTextControl";
@@ -17,13 +16,10 @@ import OneErrorRow from "../editorParts/OneErrorRow";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   DateCell,
-  DeserializeGridModel,
   GridModel,
-  IntegerCell,
   LookupCell,
   MdLookupCell,
-  MixedCell,
-  StringCell,
+  RsLookupCell,
 } from "../redux/types/gridTypes";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { DataTypeFfModel } from "../redux/types/dataTypesTypes";
@@ -51,9 +47,9 @@ const MdItemEdit: FC = () => {
   const [curTableName, setCurTableName] = useState<string | undefined>(
     undefined
   );
-  //1.2. მონაცემთა ტიპის შესახებ ინფორმაცია
+  // //1.2. მონაცემთა ტიპის შესახებ ინფორმაცია
   const [curDataType, setCurDataType] = useState<DataTypeFfModel | null>(null);
-  //1.3. ველების შესახები ინფორმაცია
+  // //1.3. ველების შესახები ინფორმაცია
   const [curGridRules, setCurGridRules] = useState<
     GridModel | undefined | null
   >(null);
@@ -72,8 +68,6 @@ const MdItemEdit: FC = () => {
     deletingKey,
     mdWorkingOnSave,
     mdWorkingOnLoadingListData,
-    itemEditorTables,
-    itemEditorLookupTables,
     deleteFailure,
     mdRecordForEdit,
   } = masterData;
@@ -126,12 +120,15 @@ const MdItemEdit: FC = () => {
 
     if (mdWorkingOnLoadingListData) return;
 
-    const checkResult = checkDataLoaded(masterData, dataTypesState, tableName);
-    if (!checkResult) return;
+    const gridRules = dataTypesState.gridRules[tableName];
+    const dataType = dataTypesState.dataTypesByTableNames[tableName];
 
-    const { dataType, gridData } = checkResult;
+    // const checkResult = checkDataLoaded(masterData, dataTypesState, tableName);
+    // if (!checkResult) return;
+
+    // const { dataType, gridData } = checkResult;
     setCurDataType(dataType);
-    const gridRules = gridData ? DeserializeGridModel(gridData) : null;
+    // const gridRules = gridData ? DeserializeGridModel(gridData) : null;
     setCurGridRules(gridRules);
 
     if (gridRules) {
@@ -326,9 +323,36 @@ const MdItemEdit: FC = () => {
               const fieldName = field.fieldName ? field.fieldName : "";
 
               switch (field.typeName) {
+                case "RsLookup":
+                  const rsLookupField = field as RsLookupCell;
+                  if (rsLookupField.rowSource) {
+                    const rows = [] as any[];
+                    const rsarr = rsLookupField.rowSource.split(";");
+                    rsarr.forEach((item, index) => {
+                      if (index % 2 === 0) return;
+                      rows.push({ val: rsarr[index - 1], disp: item });
+                    });
+                    return (
+                      <OneComboBoxControl
+                        key={fieldName}
+                        controlId={fieldName}
+                        label={caption}
+                        value={frm[fieldName]}
+                        dataMember={rows}
+                        valueMember="val"
+                        displayMember="disp"
+                        getError={getError}
+                        onChangeValue={changeField}
+                        firstItem={{ id: -1, name: `აირჩიე ${caption}` }}
+                      />
+                    );
+                  }
+                  //თუ აქ მოვიდა კოდი, ნიშნავს, რომ კი არის მითითებული კომბო ბოქსი, მაგრამ პარამეტრები არ აქვს საკმარისი,
+                  //ამიტომ გამოვა ტექსტ ბოქსი
+                  break;
                 case "MdLookup":
                   const mdLookupField = field as MdLookupCell;
-                  if (mdLookupField.dtTable) {
+                  if (mdLookupField.dtTable)
                     return (
                       <OneComboBoxControl
                         key={fieldName}
@@ -345,8 +369,6 @@ const MdItemEdit: FC = () => {
                         firstItem={{ id: -1, name: `აირჩიე ${caption}` }}
                       />
                     );
-                  }
-
                   break;
                 case "Lookup":
                   const lookupField = field as LookupCell;
@@ -371,28 +393,6 @@ const MdItemEdit: FC = () => {
                         firstItem={{ id: -1, name: `აირჩიე ${caption}` }}
                       />
                     );
-                  if (lookupField.rowSource) {
-                    const rows = [] as any[];
-                    const rsarr = lookupField.rowSource.split(";");
-                    rsarr.forEach((item, index) => {
-                      if (index % 2 === 0) return;
-                      rows.push({ val: rsarr[index - 1], disp: item });
-                    });
-                    return (
-                      <OneComboBoxControl
-                        key={fieldName}
-                        controlId={fieldName}
-                        label={caption}
-                        value={frm[fieldName]}
-                        dataMember={rows}
-                        valueMember="val"
-                        displayMember="disp"
-                        getError={getError}
-                        onChangeValue={changeField}
-                        firstItem={{ id: -1, name: `აირჩიე ${caption}` }}
-                      />
-                    );
-                  }
                   //თუ აქ მოვიდა კოდი, ნიშნავს, რომ კი არის მითითებული კომბო ბოქსი, მაგრამ პარამეტრები არ აქვს საკმარისი,
                   //ამიტომ გამოვა ტექსტ ბოქსი
                   break;
