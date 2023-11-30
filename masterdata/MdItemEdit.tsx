@@ -70,6 +70,8 @@ const MdItemEdit: FC = () => {
     mdWorkingOnLoadingListData,
     deleteFailure,
     mdRecordForEdit,
+    itemEditorTables,
+    itemEditorLookupTables,
   } = masterData;
 
   const { tableName } = useParams<string>();
@@ -107,21 +109,25 @@ const MdItemEdit: FC = () => {
   // });
 
   //7. იდენტიფიკატორის ეფექტი
-  // eslint-disable-next-line
   useEffect(() => {
     if (tableName === undefined) return;
 
     if (curTableName !== tableName) {
       setCurTableName(tableName);
       dispatch(clearAllAlerts());
-      loadListData(tableName);
-      return;
     }
 
-    if (mdWorkingOnLoadingListData) return;
-
-    const gridRules = dataTypesState.gridRules[tableName];
     const dataType = dataTypesState.dataTypesByTableNames[tableName];
+    const gridRules = dataTypesState.gridRules[tableName];
+    if (
+      !dataType ||
+      !gridRules ||
+      !(tableName in itemEditorTables) ||
+      !(tableName in itemEditorLookupTables)
+    )
+      loadListData(tableName);
+
+    if (mdWorkingOnLoadingListData) return;
 
     // const checkResult = checkDataLoaded(masterData, dataTypesState, tableName);
     // if (!checkResult) return;
@@ -171,6 +177,8 @@ const MdItemEdit: FC = () => {
     dataTypesState,
     tableName,
     mdRecordForEdit,
+    itemEditorTables,
+    itemEditorLookupTables,
   ]);
 
   // //8. ჩატვირთვის შემოწმება

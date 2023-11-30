@@ -42,12 +42,18 @@ export function GetDisplayValue(
   if (col.typeName === "MdLookup") {
     const mdLookupCol = col as MdLookupCell;
     const { dtTable } = mdLookupCol;
+    // console.log("GetDisplayValue MdLookupCell dtTable=", dtTable);
+    // console.log(
+    //   "GetDisplayValue MdLookupCell masterData.mdLookupRepo=",
+    //   masterData.mdLookupRepo
+    // );
     if (
       dtTable &&
       dtTable in masterData.mdLookupRepo &&
       masterData.mdLookupRepo[dtTable]
     ) {
       const lookupTable = masterData.mdataRepo[dtTable];
+      // console.log("GetDisplayValue MdLookupCell lookupTable=", lookupTable);
       return GetDisplayValueForMdLookup(lookupTable, value);
     }
   }
@@ -67,6 +73,11 @@ export function GetDisplayValue(
   if (col.typeName === "Lookup") {
     const lookupCol = col as LookupCell;
     const { dataMember } = lookupCol;
+    // console.log("GetDisplayValue LookupCell dataMember=", dataMember);
+    // console.log(
+    //   "GetDisplayValue LookupCell masterData.mdataRepo=",
+    //   masterData.mdataRepo
+    // );
 
     if (
       dataMember &&
@@ -74,6 +85,7 @@ export function GetDisplayValue(
       masterData.mdataRepo[dataMember]
     ) {
       const dataTable = masterData.mdataRepo[dataMember];
+      // console.log("GetDisplayValue MdLookupCell dataTable=", dataTable);
 
       return GetDisplayValueForLookup(
         dataTable,

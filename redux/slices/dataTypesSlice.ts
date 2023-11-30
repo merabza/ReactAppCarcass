@@ -33,22 +33,27 @@ export const dataTypesSlice = createSlice({
     },
     setGrid: (state, action: PayloadAction<ISetGridAction>) => {
       const { gridName, gridData } = action.payload;
+      console.log("dataTypesSlice setDataTypes { gridName, gridData } =", {
+        gridName,
+        gridData,
+      });
       if (gridData === null) return;
       state.gridsDatas[gridName] = gridData;
       const gridRules = gridData ? DeserializeGridModel(gridData) : null;
+      console.log("dataTypesSlice setDataTypes gridRules =", gridRules);
       if (gridRules) state.gridRules[gridName] = gridRules;
     },
     setMultipleGrids: (state, action: PayloadAction<ISetMultipleGrids>) => {
-      // console.log(
-      //   "dataTypesSlice setMultipleGrids action.payload = ",
-      //   action.payload
-      // );
+      console.log(
+        "dataTypesSlice setMultipleGrids action.payload = ",
+        action.payload
+      );
       const { realyNeedGrids, gridsData } = action.payload;
-      // console.log("dataTypesSlice setMultipleGrids gridsData = ", gridsData);
-      // console.log(
-      //   "dataTypesSlice setMultipleGrids realyNeedGrids = ",
-      //   realyNeedGrids
-      // );
+      console.log("dataTypesSlice setMultipleGrids gridsData = ", gridsData);
+      console.log(
+        "dataTypesSlice setMultipleGrids realyNeedGrids = ",
+        realyNeedGrids
+      );
 
       realyNeedGrids.forEach((gridName) => {
         if (!(gridName in gridsData)) return;

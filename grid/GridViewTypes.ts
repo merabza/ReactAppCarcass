@@ -27,7 +27,7 @@ export interface IGridColumn {
   changingFieldName: string; //
   possibleValues: any[]; //
   typeName: string;
-  mdLookupColumnPart: ILookup[] | null; //
+  lookupColumnPart: ILookup[] | null; //
 }
 
 // export interface IMdLookupColumnPart {

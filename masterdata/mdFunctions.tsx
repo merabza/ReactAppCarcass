@@ -13,14 +13,14 @@ export function ConvertGridModelToGridColumns(
   // console.log("ConvertGridModelToGridColumns sourceGrid=", sourceGrid);
   // console.log("ConvertGridModelToGridColumns dataType=", dataType);
 
-  return sourceGrid.cells.map((element) => {
+  return sourceGrid.cells.map((field) => {
     return {
-      caption: element.caption,
-      visible: element.visible,
-      sortable: element.visible,
-      fieldName: element.fieldName,
-      typeName: element.typeName,
-      isKey: element.fieldName === dataType.idFieldName ? true : false,
+      caption: field.caption,
+      visible: field.visible,
+      sortable: field.visible,
+      fieldName: field.fieldName,
+      typeName: field.typeName,
+      isKey: field.fieldName === dataType.idFieldName ? true : false,
     } as IGridColumn;
   });
 }

@@ -17,7 +17,7 @@ import {
 import { NzInt } from "../common/myFunctions";
 import Loading from "../common/Loading";
 import PosibleValuesFilterComboBox from "./PosibleValuesFilterComboBox";
-import MdLookupColumn from "./MdLookupColumn";
+import LookupColumn from "./LookupColumn";
 import MasterDataFilterComboBox from "./MasterDataFilterComboBox";
 
 type GridViewProps = {
@@ -58,7 +58,7 @@ const GridView: FC<GridViewProps> = (props) => {
     editorLink,
   } = props;
 
-  console.log("GridView props=", props);
+  //console.log("GridView props=", props);
 
   const [curShowRowsCount, setCurShowRowsCount] = useState<number>(10); //ცხრილში საჩვენებელი სტრიქონების რაოდენობა
 
@@ -179,9 +179,9 @@ const GridView: FC<GridViewProps> = (props) => {
                         }}
                       ></PosibleValuesFilterComboBox>
                     )}
-                    {!!col.mdLookupColumnPart && (
+                    {!!col.lookupColumnPart && (
                       <MasterDataFilterComboBox
-                        lookupTable={col.mdLookupColumnPart}
+                        lookupTable={col.lookupColumnPart}
                         isNullable={col.nullable}
                         onChangeValue={(
                           newValue: number | null | undefined
@@ -211,9 +211,9 @@ const GridView: FC<GridViewProps> = (props) => {
     return (
       <tbody>
         {rowsData.rows.map((row, i) => {
-          console.log("GridView row=", row);
-          console.log("GridView keyCol=", keyCol);
-          console.log("GridView row[keyCol.fieldName]=", row[keyCol.fieldName]);
+          // console.log("GridView row=", row);
+          // console.log("GridView keyCol=", keyCol);
+          // console.log("GridView row[keyCol.fieldName]=", row[keyCol.fieldName]);
           const index = rowsData.offset + i + 1;
           const bl = curscrollTo?.index === index;
           return (
@@ -255,11 +255,11 @@ const GridView: FC<GridViewProps> = (props) => {
                           },
                           null
                         )
-                      ) : col.mdLookupColumnPart ? (
-                        <MdLookupColumn
-                          lookupTable={col.mdLookupColumnPart}
+                      ) : col.lookupColumnPart ? (
+                        <LookupColumn
+                          lookupTable={col.lookupColumnPart}
                           value={value}
-                        ></MdLookupColumn>
+                        ></LookupColumn>
                       ) : (
                         value
                       )}

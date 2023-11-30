@@ -16,73 +16,92 @@ import {
   SetMdWorkingOnLoadingListData,
   SetWorkingOnLoad,
 } from "../../redux/slices/masterdataSlice";
-import {
-  DeserializeGridModel,
-  LookupCell,
-  MdLookupCell,
-} from "../../redux/types/gridTypes";
+import { LookupCell, MdLookupCell } from "../../redux/types/gridTypes";
 import { ISetItemEditorTablesAction } from "../../redux/types/masterdataTypes";
 export type fnloadListData = (
   tableName: string,
   loadListDataExceptThisTable?: boolean
 ) => void;
 
-export function useMasterDataLookupLists(): [fnloadListData] {
+export function useMasterDataLookupLists(): [fnloadListData, boolean] {
   const dispatch = useAppDispatch();
   const masterDataState = useAppSelector((state) => state.masterDataState);
   const dataTypesState = useAppSelector((state) => state.dataTypesState);
 
-  const [getDataTypes] = useLazyGetDataTypesQuery();
+  const [getDataTypes, { isLoading: loadingDataTypes }] =
+    useLazyGetDataTypesQuery();
 
-  const [getGridModel] = useLazyGetGridModelQuery();
+  const [getGridModel, { isLoading: loadingGridModel }] =
+    useLazyGetGridModelQuery();
 
-  const [getTables] = useLazyGetTablesQuery();
-  const [getLookupTables] = useLazyGetLookupTablesQuery();
+  const [getTables, { isLoading: loadingTables }] = useLazyGetTablesQuery();
+  const [getLookupTables, { isLoading: loadingLookupTables }] =
+    useLazyGetLookupTablesQuery();
 
   const loadListData = useCallback(
-    async (tableName: string) => {
+    (tableName: string) => {
       // console.log(
-      //   "useMasterDataLists loadListData {gridName, tableName, masterDataState, masterDataState.mdWorkingOnLoadingListData, dataTypesState.dataTypes.length}=",
+      //   "1 useMasterDataLists loadListData {tableName, masterDataState, dataTypesState}=",
       //   {
-      //     gridName,
       //     tableName,
       //     masterDataState,
-      //     mdWorkingOnLoadingListData:
-      //       masterDataState.mdWorkingOnLoadingListData,
-      //     b: dataTypesState.dataTypes.length,
+      //     dataTypesState,
       //   }
       // );
 
       if (masterDataState.mdWorkingOnLoadingListData) return;
 
-      dispatch(SetWorkingOnLoad(true));
+      // console.log(
+      //   "2 useMasterDataLists loadListData {tableName, masterDataState, dataTypesState}=",
+      //   {
+      //     tableName,
+      //     masterDataState,
+      //     dataTypesState,
+      //   }
+      // );
+
+      // console.log("3 useMasterDataLists SetMdWorkingOnLoadingListData");
+
       dispatch(SetMdWorkingOnLoadingListData(true));
+      dispatch(SetWorkingOnLoad(true));
 
       if (dataTypesState.dataTypes.length === 0) {
-        await getDataTypes();
+        // console.log("4 useMasterDataLists getDataTypes");
+        getDataTypes();
       }
 
       if (!(tableName in dataTypesState.gridRules)) {
-        await getGridModel(tableName);
+        // console.log("5 useMasterDataLists getGridModel");
+        getGridModel(tableName);
       }
 
       const requiredMdNames: Array<string> = [];
       const requiredMdLookupNames: Array<string> = [];
+
+      // console.log(
+      //   "6 useMasterDataLists masterDataState.itemEditorTables=",
+      //   masterDataState.itemEditorTables
+      // );
+      // console.log(
+      //   "7 useMasterDataLists masterDataState.itemEditorLookupTables=",
+      //   masterDataState.itemEditorLookupTables
+      // );
 
       if (
         !(tableName in masterDataState.itemEditorTables) ||
         !(tableName in masterDataState.itemEditorLookupTables)
       ) {
         const { gridRules } = dataTypesState;
-        // console.log("useMasterDataLists loadListData gridRules=", gridRules);
+        // console.log("8 useMasterDataLists loadListData gridRules=", gridRules);
         if (tableName in gridRules) {
           const grid = gridRules[tableName];
           if (grid !== undefined) {
             grid?.cells.forEach((cell) => {
+              // console.log("8-1 useMasterDataLists loadListData cell=", cell);
               if (cell.typeName === "Lookup") {
                 const lookupCol = cell as LookupCell;
                 // console.log(
-                //   "useMasterDataLists loadListData lookupCol=",
+                //   "9 useMasterDataLists loadListData lookupCol=",
                 //   lookupCol
                 // );
                 if (lookupCol.dataMember)
@@ -90,26 +109,31 @@ export function useMasterDataLookupLists(): [fnloadListData] {
               }
               if (cell.typeName === "MdLookup") {
                 const mdLookupCol = cell as MdLookupCell;
+                // console.log(
+                //   "10 useMasterDataLists loadListData mdLookupCol=",
+                //   mdLookupCol
+                // );
+
                 if (mdLookupCol.dtTable)
                   requiredMdLookupNames.push(mdLookupCol.dtTable);
               }
             });
           }
+
+          dispatch(
+            SetItemEditorTables({
+              tableNamesList: requiredMdNames,
+              editTableName: tableName,
+            } as ISetItemEditorTablesAction)
+          );
+
+          dispatch(
+            SetItemEditorLookupTables({
+              tableNamesList: requiredMdLookupNames,
+              editTableName: tableName,
+            } as ISetItemEditorTablesAction)
+          );
         }
-
-        dispatch(
-          SetItemEditorTables({
-            tableNamesList: requiredMdNames,
-            editTableName: tableName,
-          } as ISetItemEditorTablesAction)
-        );
-
-        dispatch(
-          SetItemEditorLookupTables({
-            tableNamesList: requiredMdLookupNames,
-            editTableName: tableName,
-          } as ISetItemEditorTablesAction)
-        );
       } else {
         requiredMdNames.push(...masterDataState.itemEditorTables[tableName]);
         requiredMdLookupNames.push(
@@ -145,11 +169,18 @@ export function useMasterDataLookupLists(): [fnloadListData] {
       }
 
       // console.log(
-      //   "useMasterDataLists loadListData realyNeedTables=",
+      //   "11 useMasterDataLists loadListData realyNeedTables=",
       //   realyNeedTables
       // );
-      await getTables(realyNeedTables);
-      await getLookupTables(realyNeedLookupTables);
+      // console.log(
+      //   "12 useMasterDataLists loadListData realyNeedLookupTables=",
+      //   realyNeedLookupTables
+      // );
+
+      if (realyNeedTables.length > 0) getTables(realyNeedTables);
+
+      if (realyNeedLookupTables.length > 0)
+        getLookupTables(realyNeedLookupTables);
 
       // console.log("useMasterDataLists loadListData getTables Finished");
       dispatch(SetMdWorkingOnLoadingListData(false));
@@ -157,13 +188,19 @@ export function useMasterDataLookupLists(): [fnloadListData] {
     },
     [
       dataTypesState,
-      // dispatch,
-      // getDataTypes,
-      // getGridModel,
-      // getTables,
+      loadingDataTypes,
+      loadingGridModel,
+      loadingTables,
+      loadingLookupTables,
       masterDataState,
     ]
   );
 
-  return [loadListData];
+  return [
+    loadListData,
+    loadingDataTypes ||
+      loadingGridModel ||
+      loadingTables ||
+      loadingLookupTables,
+  ];
 }

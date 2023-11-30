@@ -35,7 +35,7 @@ const MdGridView: FC<MdGridViewProps> = (props) => {
   //   undefined
   // );
 
-  const [loadListData] = useMasterDataLookupLists();
+  const [loadListData, loadingListData] = useMasterDataLookupLists();
   const masterData = useAppSelector((state) => state.masterDataState);
   const dataTypesState = useAppSelector((state) => state.dataTypesState);
 
@@ -46,6 +46,8 @@ const MdGridView: FC<MdGridViewProps> = (props) => {
     tableRowData,
     mdWorkingOnLoadingTables,
     mdWorkingOnLoad,
+    itemEditorTables,
+    itemEditorLookupTables,
   } = masterData;
 
   // console.log("MdGridView mdWorkingOnLoadingTables=", mdWorkingOnLoadingTables);
@@ -53,21 +55,31 @@ const MdGridView: FC<MdGridViewProps> = (props) => {
   const [getTableRowsData, { isLoading: loadingTableRowsData }] =
     useLazyGetTableRowsDataQuery();
 
-  useEffect(() => {
-    if (
-      mdWorkingOnLoadingListData ||
-      deletingKey ||
-      mdWorkingOnSave ||
-      mdWorkingOnLoad ||
-      loadingTableRowsData ||
-      Object.values(mdWorkingOnLoadingTables).some((s: boolean) => s)
-    ) {
-      return;
-    }
+  const dataType = dataTypesState.dataTypesByTableNames[tableName];
+  const gridRules = dataTypesState.gridRules[tableName];
 
+  useEffect(() => {
+    // if (
+    //   mdWorkingOnLoadingListData ||
+    //   deletingKey ||
+    //   mdWorkingOnSave ||
+    //   mdWorkingOnLoad ||
+    //   loadingTableRowsData ||
+    //   loadingListData ||
+    //   Object.values(mdWorkingOnLoadingTables).some((s: boolean) => s)
+    // ) {
+    //   return;
+    // }
+
+    if (
+      !dataType ||
+      !gridRules ||
+      !(tableName in itemEditorTables) ||
+      !(tableName in itemEditorLookupTables)
+    )
+      loadListData(tableName);
     //setCurDataType(null);
     // setCurRowsData(undefined);
-    loadListData(tableName);
 
     // const successLoaded = checkDataLoaded(
     //   masterData,
@@ -103,11 +115,17 @@ const MdGridView: FC<MdGridViewProps> = (props) => {
     // }
   }, [
     tableName,
-    mdWorkingOnLoadingListData,
-    deletingKey,
-    mdWorkingOnSave,
-    dataTypesState,
-    mdWorkingOnLoadingTables,
+    // mdWorkingOnLoadingListData,
+    // deletingKey,
+    // mdWorkingOnSave,
+    // dataTypesState,
+    // mdWorkingOnLoadingTables,
+    // loadingListData,
+    dataType,
+    gridRules,
+    loadingListData,
+    itemEditorTables,
+    itemEditorLookupTables,
   ]);
 
   const [curscrollTo, backLigth] = useScroller<number | undefined>(recId);
@@ -130,7 +148,6 @@ const MdGridView: FC<MdGridViewProps> = (props) => {
   //   "MdGridView masterData.mdLookupRepo[tableName]=",
   //   masterData.mdLookupRepo[tableName]
   // );
-  const gridRules = dataTypesState.gridRules[tableName];
 
   let curMasterDataTable: any[] = [];
   let countedRowData: IRowsData | undefined = undefined;
@@ -141,7 +158,7 @@ const MdGridView: FC<MdGridViewProps> = (props) => {
     masterData
   );
 
-  console.log("MdGridView countedRowData=", countedRowData);
+  //console.log("MdGridView countedRowData=", countedRowData);
 
   // } else
   //   curMasterDataTable = CountDisplayValues(
@@ -157,7 +174,6 @@ const MdGridView: FC<MdGridViewProps> = (props) => {
   //       <AlertMessages alertKind={EAlertKind.ApiLoad} />
   //     </div>
   //   );
-  const dataType = dataTypesState.dataTypesByTableNames[tableName];
 
   const curGridColumns =
     gridRules && dataType
