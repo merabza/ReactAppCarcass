@@ -52,7 +52,8 @@ export function GetDisplayValue(
       dtTable in masterData.mdLookupRepo &&
       masterData.mdLookupRepo[dtTable]
     ) {
-      const lookupTable = masterData.mdataRepo[dtTable];
+      const lookupTable = masterData.mdLookupRepo[dtTable];
+      // console.log("GetDisplayValue MdLookupCell value=", value);
       // console.log("GetDisplayValue MdLookupCell lookupTable=", lookupTable);
       return GetDisplayValueForMdLookup(lookupTable, value);
     }
@@ -120,10 +121,7 @@ export function GetDisplayValueForMdLookup(
   lookupTable: ILookup[] | undefined,
   value: number
 ) {
-  if (!!lookupTable) {
-    const fval = lookupTable.find((mdItm) => mdItm.id === value);
-    if (!!fval && !!fval.display) return fval.display;
-  }
-
-  return value;
+  if (!lookupTable) return value;
+  const fval = lookupTable.find((mdItm) => mdItm.id === value);
+  if (!!fval && !!fval.name) return fval.name;
 }

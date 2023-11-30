@@ -95,6 +95,7 @@ const MdItemEdit: FC = () => {
     clearToDefaults,
     setFormData,
     setSchema,
+    FormSet,
   ] = useForman<any, any>(curYupSchema);
 
   // console.log("MdItemEdit Before UseEffect {}=", {
@@ -129,17 +130,12 @@ const MdItemEdit: FC = () => {
 
     if (mdWorkingOnLoadingListData) return;
 
-    // const checkResult = checkDataLoaded(masterData, dataTypesState, tableName);
-    // if (!checkResult) return;
-
-    // const { dataType, gridData } = checkResult;
     setCurDataType(dataType);
-    // const gridRules = gridData ? DeserializeGridModel(gridData) : null;
     setCurGridRules(gridRules);
 
     if (gridRules) {
       const YupSchema = countMdSchema(gridRules);
-      console.log("MdItemEdit useEffect setCurYupSchema YupSchema=", YupSchema);
+      // console.log("MdItemEdit useEffect setCurYupSchema YupSchema=", YupSchema);
       setCurYupSchema(YupSchema);
       setSchema(YupSchema);
     }
@@ -181,39 +177,6 @@ const MdItemEdit: FC = () => {
     itemEditorLookupTables,
   ]);
 
-  // //8. ჩატვირთვის შემოწმება
-  // let allNeedTablesLoaded = true;
-
-  // if (!curTableName || !(curTableName in itemEditorTables)) {
-  //   allNeedTablesLoaded = false;
-  // } else if (!curTableName || !(curTableName in itemEditorLookupTables)) {
-  //   allNeedTablesLoaded = false;
-  // } else if (itemEditorTables) {
-  //   for (let i = 0; i < itemEditorTables[curTableName].length; i++) {
-  //     const tname: string = itemEditorTables[curTableName][i];
-  //     if (!(tname in masterData.mdataRepo)) {
-  //       allNeedTablesLoaded = false;
-  //       break;
-  //     }
-  //     if (!masterData.mdataRepo[tname]) {
-  //       allNeedTablesLoaded = false;
-  //       break;
-  //     }
-  //   }
-  // } else if (itemEditorLookupTables) {
-  //   for (let i = 0; i < itemEditorLookupTables[curTableName].length; i++) {
-  //     const ltname: string = itemEditorLookupTables[curTableName][i];
-  //     if (!(ltname in masterData.mdLookupRepo)) {
-  //       allNeedTablesLoaded = false;
-  //       break;
-  //     }
-  //     if (!masterData.mdLookupRepo[ltname]) {
-  //       allNeedTablesLoaded = false;
-  //       break;
-  //     }
-  //   }
-  // }
-
   // console.log(
   //   "MdItemEdit before Check Loading {curDataType, curGridRules, curYupSchema, frm, allNeedTablesLoaded, mdWorkingOnLoadingListData}=",
   //   {
@@ -237,12 +200,7 @@ const MdItemEdit: FC = () => {
       </div>
     );
 
-  if (
-    loadingMdRecord ||
-    // mdWorkingOnLoad ||
-    // Object.values(mdWorkingOnLoadingTables).some((s: boolean) => s) ||
-    mdWorkingOnLoadingListData
-  )
+  if (loadingMdRecord || mdWorkingOnLoadingListData)
     //თუ ინფორმაციის ჩატვირთვა ჯერ კიდევ მიმდინარეობა
     return <WaitPage />;
 
@@ -276,14 +234,14 @@ const MdItemEdit: FC = () => {
     }
   }
 
-  console.log("MdItemEdit CheckLoad ", {
-    frm,
-    curDataType,
-    curMdIdVal,
-    curGridRules,
-  });
+  // console.log("MdItemEdit CheckLoad ", {
+  //   frm,
+  //   curDataType,
+  //   curMdIdVal,
+  //   curGridRules,
+  // });
 
-  if (!frm || !curDataType || !curGridRules) {
+  if (!frm || !FormSet || !curDataType || !curGridRules) {
     return <h5>ჩატვირთვის პრობლემა</h5>;
   }
 
@@ -329,7 +287,7 @@ const MdItemEdit: FC = () => {
             .map((field) => {
               const caption = field.caption ? field.caption : "";
               const fieldName = field.fieldName ? field.fieldName : "";
-
+              // console.log("MdItemEdit fieldName=", fieldName);
               switch (field.typeName) {
                 case "RsLookup":
                   const rsLookupField = field as RsLookupCell;
@@ -371,7 +329,7 @@ const MdItemEdit: FC = () => {
                           masterData.mdLookupRepo[mdLookupField.dtTable]
                         }
                         valueMember={"id"}
-                        displayMember={"display"}
+                        displayMember={"name"}
                         getError={getError}
                         onChangeValue={changeField}
                         firstItem={{ id: -1, name: `აირჩიე ${caption}` }}

@@ -16,7 +16,7 @@ const LookupColumn: FC<lookupColumnProps> = (props) => {
 
   if (!!lookupTable) {
     const fval = lookupTable.find((mdItm) => mdItm.id === value);
-    if (!!fval && !!fval.display) return fval.display;
+    if (!!fval && !!fval.name) return fval.name;
   }
 
   return value;

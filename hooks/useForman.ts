@@ -1,6 +1,6 @@
 //useForman.ts
 
-import { useReducer, useCallback, Reducer } from "react";
+import { useReducer, useCallback, Reducer, useState } from "react";
 import { InferType, ObjectSchema, ValidationError } from "yup";
 import { IDictionary } from "../common/types";
 
@@ -25,8 +25,11 @@ export function useForman<
   fngetAllErrors,
   fnClearToDefaults,
   fnSetFormData<TFormData>,
-  fnSetSchema<TSchema>
+  fnSetSchema<TSchema>,
+  boolean
 ] {
+  const [curFormSet, setFormSet] = useState<boolean>(false);
+
   function getValidationErrMsg(
     scema: TSchema,
     path: string,
@@ -125,6 +128,7 @@ export function useForman<
         return { ...prevState, frm: newfrm, err: newerr };
       }
       case "setForm":
+        setFormSet(true);
         return {
           ...prevState,
           frm: { ...action.payload },
@@ -193,17 +197,12 @@ export function useForman<
   return [
     //frm
     formState.frm,
-
     changeField,
-
     getError,
-
     getAllErrors,
-
     clearToDefaults,
-
     setFormData,
-
     setSchema,
+    curFormSet,
   ];
 }

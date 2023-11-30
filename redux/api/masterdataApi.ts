@@ -89,11 +89,11 @@ export const masterdataApi = createApi({
         try {
           const queryResult = await queryFulfilled;
           const { data } = queryResult;
-          console.log(
-            "masterdataApi getTables realyNeedTables=",
-            realyNeedTables
-          );
-          console.log("masterdataApi getTables queryResult=", queryResult);
+          // console.log(
+          //   "masterdataApi getTables realyNeedTables=",
+          //   realyNeedTables
+          // );
+          // console.log("masterdataApi getTables queryResult=", queryResult);
           dispatch(
             setMultipleTableData({
               realyNeedTables,
@@ -139,18 +139,22 @@ export const masterdataApi = createApi({
         try {
           const queryResult = await queryFulfilled;
           const { data } = queryResult;
-          console.log(
-            "masterdataApi getTables realyNeedTables=",
-            realyNeedLookupTables
-          );
-          console.log("masterdataApi getTables queryResult=", queryResult);
+          // console.log(
+          //   "masterdataApi getLookupTables realyNeedTables=",
+          //   realyNeedLookupTables
+          // );
+          // console.log(
+          //   "masterdataApi getLookupTables queryResult=",
+          //   queryResult
+          // );
           dispatch(
             setMultipleLookupTableData({
               realyNeedLookupTables,
-              tablesData: data.entities,
+              tablesData: data.returnValues,
             } as ISetMultipleLookupTablesData)
           );
         } catch (error) {
+          // console.log("masterdataApi getLookupTables error=", error);
           dispatch(setAlertApiLoadError(buildErrorMessage(error)));
         }
         dispatch(

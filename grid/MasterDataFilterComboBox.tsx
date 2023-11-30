@@ -56,7 +56,7 @@ const MasterDataFilterComboBox: FC<MasterDataFilterComboBoxProps> = (props) => {
 
   const masterDataTableSorted = lookupTable
     .slice()
-    .sort((a, b) => a.display.localeCompare(b.display));
+    .sort((a, b) => a.name.localeCompare(b.name));
 
   //console.log("MasterDataFilterComboBox dataArray=", dataArray);
   // console.log("MasterDataFilterComboBox firstItem=", firstItem);
@@ -131,10 +131,10 @@ const MasterDataFilterComboBox: FC<MasterDataFilterComboBoxProps> = (props) => {
                 value={JSON.stringify({
                   type: MasterDataFilterOptionType.SomeValue.type,
                   id: mdItm.id,
-                  display: mdItm.display,
+                  display: mdItm.name,
                 } as IMasterDataOptionValue)}
               >
-                {mdItm.display}
+                {mdItm.name}
               </option>
             ))}
         </Form.Select>

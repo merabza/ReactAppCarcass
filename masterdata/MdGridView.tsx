@@ -26,15 +26,6 @@ const MdGridView: FC<MdGridViewProps> = (props) => {
   const { tableName, recId, readOnly } = props;
   //console.log("MdGridView props=", props);
 
-  //  const [curDataType, setCurDataType] = useState<DataTypeFfModel | null>(null);
-  // const [curGridColumns, setCurGridColumns] = useState<IGridColumn[] | null>(
-  //   null
-  // );
-  // const [curGridRules, setCurGridRules] = useState<GridModel | null>(null);
-  // const [curRowsData, setCurRowsData] = useState<IRowsData | undefined>(
-  //   undefined
-  // );
-
   const [loadListData, loadingListData] = useMasterDataLookupLists();
   const masterData = useAppSelector((state) => state.masterDataState);
   const dataTypesState = useAppSelector((state) => state.dataTypesState);
@@ -59,18 +50,6 @@ const MdGridView: FC<MdGridViewProps> = (props) => {
   const gridRules = dataTypesState.gridRules[tableName];
 
   useEffect(() => {
-    // if (
-    //   mdWorkingOnLoadingListData ||
-    //   deletingKey ||
-    //   mdWorkingOnSave ||
-    //   mdWorkingOnLoad ||
-    //   loadingTableRowsData ||
-    //   loadingListData ||
-    //   Object.values(mdWorkingOnLoadingTables).some((s: boolean) => s)
-    // ) {
-    //   return;
-    // }
-
     if (
       !dataType ||
       !gridRules ||
@@ -78,49 +57,8 @@ const MdGridView: FC<MdGridViewProps> = (props) => {
       !(tableName in itemEditorLookupTables)
     )
       loadListData(tableName);
-    //setCurDataType(null);
-    // setCurRowsData(undefined);
-
-    // const successLoaded = checkDataLoaded(
-    //   masterData,
-    //   dataTypesState,
-    //   tableName
-    // );
-
-    // console.log("MdGridView useEffect 5 checkResult=", tableName, checkResult);
-
-    // if (successLoaded) {
-    //   const gridRules = gridData ? DeserializeGridModel(gridData) : null;
-
-    //   // console.log("MdGridView useEffect new dataType=", dataType);
-    //   // console.log("MdGridView useEffect new gridData=", gridData);
-    //   //setCurDataType(dataType);
-    //   setCurGridRules(gridRules);
-    //   // console.log("MdGridView useEffect new gridRules=", gridRules);
-    //   // console.log("MdGridView useEffect new dataType=", dataType);
-    //   if (gridRules)
-    //     setCurGridColumns(ConvertGridModelToGridColumns(gridRules, dataType));
-    // }
-
-    // const dataType = checkDataTypeLoaded(masterData, dataTypesState, tableName);
-    // const gridData = checkGridLoaded(masterData, dataTypesState, tableName);
-
-    // if (dataType) {
-    //   setCurDataType(dataType);
-
-    //   const gridRules = gridData ? DeserializeGridModel(gridData) : null;
-
-    //   if (gridRules)
-    //     setCurGridColumns(ConvertGridModelToGridColumns(gridRules, dataType));
-    // }
   }, [
     tableName,
-    // mdWorkingOnLoadingListData,
-    // deletingKey,
-    // mdWorkingOnSave,
-    // dataTypesState,
-    // mdWorkingOnLoadingTables,
-    // loadingListData,
     dataType,
     gridRules,
     loadingListData,
@@ -151,7 +89,6 @@ const MdGridView: FC<MdGridViewProps> = (props) => {
 
   let curMasterDataTable: any[] = [];
   let countedRowData: IRowsData | undefined = undefined;
-  // if (serverSidePagination) {
   countedRowData = CountRowDataDisplayValues(
     tableRowData[tableName],
     gridRules,
@@ -159,21 +96,6 @@ const MdGridView: FC<MdGridViewProps> = (props) => {
   );
 
   //console.log("MdGridView countedRowData=", countedRowData);
-
-  // } else
-  //   curMasterDataTable = CountDisplayValues(
-  //     masterData.mdLookupRepo[tableName],
-  //     curGridRules,
-  //     masterData
-  //   );
-
-  // if ( serverSidePagination &&  !countedRowData || !serverSidePagination && !curMasterDataTable)
-  //   return (
-  //     <div>
-  //       <h5>ჩატვირთვის პრობლემა 0</h5>
-  //       <AlertMessages alertKind={EAlertKind.ApiLoad} />
-  //     </div>
-  //   );
 
   const curGridColumns =
     gridRules && dataType
@@ -206,28 +128,13 @@ const MdGridView: FC<MdGridViewProps> = (props) => {
   //   serverSidePagination,
   // });
 
-  if (
-    !curGridColumns ||
-    curscrollTo === null ||
-    !dataType ||
-    !curGridColumns
-    // ||
-    // (!serverSidePagination && !curMasterDataTable)
-    //  ||
-    // !curRowsData
-  ) {
+  if (!curGridColumns || curscrollTo === null || !dataType || !curGridColumns) {
     return (
       <div>
         <h5>ჩატვირთვის პრობლემა 2</h5>
       </div>
     );
   }
-
-  // return <div>{tableName}</div>;
-
-  //const gridColumns = [] as IGridColumn[];
-  //const mdRows = [] as any[];
-  //const allRowsCount = 100;
 
   return (
     <GridView
@@ -268,79 +175,6 @@ const MdGridView: FC<MdGridViewProps> = (props) => {
         let endElementNom = RealOffset + rowsCount;
         if (endElementNom > curMasterDataTable.length)
           endElementNom = curMasterDataTable.length;
-
-        // const filteredMasterDataTable = curMasterDataTable.filter((row) => {
-        //   let filterResult = true;
-        //   filterFields.every((filterField) => {
-        //     // const col = curGridColumns.find(
-        //     //   (f) => f.fieldName === filterField.fieldName
-        //     // );
-
-        //     // switch (col?.typeName) {
-        //     //   case "Integer":
-        //     //     const intValue = parseInt(filterField.value);
-        //     //     if (row[filterField.fieldName] !== intValue) {
-        //     //       filterResult = false;
-        //     //       return false;
-        //     //     }
-        //     //     return true;
-        //     //   case "Boolean":
-        //     //     const boolValue = filterField.value.toLowerCase() === "true";
-        //     //     if (row[filterField.fieldName] !== boolValue) {
-        //     //       filterResult = false;
-        //     //       return false;
-        //     //     }
-        //     //     return true;
-
-        //     //   case "Date":
-        //     //     const dateValue = new Date(filterField.value);
-        //     //     if (row[filterField.fieldName] !== dateValue) {
-        //     //       filterResult = false;
-        //     //       return false;
-        //     //     }
-        //     //     return true;
-        //     // }
-
-        //     // if ( filterField.value === null )
-        //     // {
-        //     //   if (row[filterField.fieldName] !== null && row[filterField.fieldName] !== "") {
-        //     //     filterResult = false;
-        //     //     return false;
-        //     //   }
-        //     //   return true;
-        //     // }
-
-        //     if (row[filterField.fieldName] !== filterField.value) {
-        //       filterResult = false;
-        //       return false;
-        //     }
-        //     return true;
-        //   });
-        //   return filterResult;
-        // });
-
-        // setCurRowsData({
-        //   allRowsCount: filteredMasterDataTable.length,
-        //   offset: RealOffset,
-        //   rows: filteredMasterDataTable
-        //     .slice()
-        //     .sort((a, b) => {
-        //       let compareResult = 0;
-        //       sortByFields.every((f) => {
-        //         if (a[f.fieldName] < b[f.fieldName]) {
-        //           compareResult = f.ascending ? -1 : 1;
-        //           return false;
-        //         }
-        //         if (a[f.fieldName] > b[f.fieldName]) {
-        //           compareResult = f.ascending ? 1 : -1;
-        //           return false;
-        //         }
-        //         return true;
-        //       });
-        //       return compareResult;
-        //     })
-        //     .slice(RealOffset, endElementNom),
-        // } as IRowsData);
       }}
     ></GridView>
   );

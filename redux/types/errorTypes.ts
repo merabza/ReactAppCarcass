@@ -4,11 +4,11 @@ export interface Err {
 }
 
 export function buildErrorMessage(error: any, additionalErro?: Err): Err[] {
-  // console.log("buildErrorMessage error=", error);
+  console.log("buildErrorMessage error=", error);
   var err1 = error as any;
-  // console.log("buildErrorMessage err=", err);
+  console.log("buildErrorMessage err=", err);
   var err = err1.error as any;
-  // console.log("buildErrorMessage err=", err);
+  console.log("buildErrorMessage err=", err);
   if (err.data) {
     let errors = err.data as Err[];
     if (!additionalErro) return errors;

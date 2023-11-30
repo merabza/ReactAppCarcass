@@ -46,7 +46,7 @@ export const dataTypesApi = createApi({
           dispatch(SetWorkingOnLoad(true));
           const queryResult = await queryFulfilled;
           const { data } = queryResult;
-          console.log("dataTypesApi getGridModel data", data);
+          // console.log("dataTypesApi getGridModel data", data);
           dispatch(setGrid({ gridName, gridData: data } as ISetGridAction));
         } catch (error) {
           dispatch(setAlertApiLoadError(buildErrorMessage(error)));

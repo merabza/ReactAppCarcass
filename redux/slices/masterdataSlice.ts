@@ -207,32 +207,32 @@ export const masterdataSlice = createSlice({
       state,
       action: PayloadAction<ISetItemEditorTablesAction>
     ) => {
-      console.log(
-        "masterdataSlice SetItemEditorTables action.payload=",
-        action.payload
-      );
+      // console.log(
+      //   "masterdataSlice SetItemEditorTables action.payload=",
+      //   action.payload
+      // );
       const { tableNamesList, editTableName } = action.payload;
       state.itemEditorTables[editTableName] = tableNamesList;
-      console.log(
-        "masterdataSlice SetItemEditorTables state.itemEditorTables=",
-        state.itemEditorTables
-      );
+      // console.log(
+      //   "masterdataSlice SetItemEditorTables state.itemEditorTables=",
+      //   state.itemEditorTables
+      // );
     },
     /////////////////////////////////////
     SetItemEditorLookupTables: (
       state,
       action: PayloadAction<ISetItemEditorTablesAction>
     ) => {
-      console.log(
-        "masterdataSlice SetItemEditorLookupTables action.payload=",
-        action.payload
-      );
+      // console.log(
+      //   "masterdataSlice SetItemEditorLookupTables action.payload=",
+      //   action.payload
+      // );
       const { tableNamesList, editTableName } = action.payload;
       state.itemEditorLookupTables[editTableName] = tableNamesList;
-      console.log(
-        "masterdataSlice SetItemEditorLookupTables state.itemEditorLookupTables=",
-        state.itemEditorLookupTables
-      );
+      // console.log(
+      //   "masterdataSlice SetItemEditorLookupTables state.itemEditorLookupTables=",
+      //   state.itemEditorLookupTables
+      // );
     },
     /////////////////////////////////////
     saveReturnPageName: (state, action: PayloadAction<string>) => {
