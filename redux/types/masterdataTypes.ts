@@ -82,7 +82,6 @@ export interface IMasterDataRepo {
 
 export interface ILookup {
   id: number;
-  key: string;
   name: string;
 }
 
@@ -91,5 +90,5 @@ export interface IMdTablesDataCommandResponse {
 }
 
 export interface IMdLookupTablesDataCommandResponse {
-  returnValues: { [key: string]: ILookup[] };
+  srv: { [key: string]: ILookup[] };
 }

@@ -127,7 +127,7 @@ const MasterDataFilterComboBox: FC<MasterDataFilterComboBoxProps> = (props) => {
           {masterDataTableSorted &&
             masterDataTableSorted.map((mdItm) => (
               <option
-                key={mdItm.key}
+                key={mdItm.id}
                 value={JSON.stringify({
                   type: MasterDataFilterOptionType.SomeValue.type,
                   id: mdItm.id,
