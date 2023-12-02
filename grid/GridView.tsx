@@ -144,6 +144,9 @@ const GridView: FC<GridViewProps> = (props) => {
               const caption = col.caption ? col.caption : "";
               const sortable = !!col.sortable;
 
+              // console.log("GridView getTableHeader col=", col);
+              // console.log("GridView getTableHeader caption=", caption);
+
               if (sortable) {
                 let ascDescVal = 0;
                 const sortField = curSortFieldNames.find(
@@ -211,9 +214,9 @@ const GridView: FC<GridViewProps> = (props) => {
     return (
       <tbody>
         {rowsData.rows.map((row, i) => {
-          // console.log("GridView row=", row);
-          // console.log("GridView keyCol=", keyCol);
-          // console.log("GridView row[keyCol.fieldName]=", row[keyCol.fieldName]);
+          console.log("GridView row=", row);
+          console.log("GridView keyCol=", keyCol);
+          console.log("GridView row[keyCol.fieldName]=", row[keyCol.fieldName]);
           const index = rowsData.offset + i + 1;
           const bl = curscrollTo?.index === index;
           return (
@@ -233,7 +236,7 @@ const GridView: FC<GridViewProps> = (props) => {
                     ? row[changingFieldName]
                     : false;
                   // if (col.caption === "თოლია") {
-                  //   //console.log("GridView col=", col);
+                  // console.log("GridView col=", col);
                   //   //console.log("GridView changingFieldName=", changingFieldName);
                   //   //console.log("GridView changing=", changing);
                   // }
