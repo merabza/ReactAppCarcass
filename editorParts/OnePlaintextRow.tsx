@@ -13,12 +13,25 @@ interface OnePlaintextRowProps {
 const OnePlaintextRow: FC<OnePlaintextRowProps> = (props) => {
   const { controlId, label, text, color } = props;
 
+  console.log("OnePlaintextRow props=", props);
+
   return (
     <Form.Group className="mb-1" as={Row} controlId={controlId}>
       <Form.Label column md="2">
         {label}
       </Form.Label>
-      <Col md="8">
+      {!!color && (
+        <Form.Label column md="8" style={{ color: `${color}` }}>
+          {text}
+        </Form.Label>
+      )}
+      {!color && (
+        <Form.Label column md="8">
+          {text}
+        </Form.Label>
+      )}
+
+      {/* <Col md="8">
         {!!color && (
           <Form.Control
             plaintext
@@ -28,7 +41,7 @@ const OnePlaintextRow: FC<OnePlaintextRowProps> = (props) => {
           />
         )}
         {!color && <Form.Control plaintext readOnly defaultValue={text} />}
-      </Col>
+      </Col> */}
     </Form.Group>
   );
 };

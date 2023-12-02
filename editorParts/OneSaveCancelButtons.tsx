@@ -15,7 +15,7 @@ type OneSaveCancelButtonsProps = {
 const OneSaveCancelButtons: FC<OneSaveCancelButtonsProps> = (props) => {
   const { curIdVal, haveErrors, savingNow, onCloseClick, allowEdit } = props;
 
-  console.log("OneSaveCancelButtons props=", props);
+  // console.log("OneSaveCancelButtons props=", props);
 
   return (
     <Row className="mb-1 mt-1">
