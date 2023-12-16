@@ -214,13 +214,9 @@ const FrmRights: FC = () => {
   }
 
   function getNextSiblingExpKey(dataType: DataTypeModel, value: number) {
-    const curIndex = dataType.returnValues.findIndex(
-      (fi) => fi.value === value
-    );
+    const curIndex = dataType.returnValues.findIndex((fi) => fi.id === value);
     if (curIndex < dataType.returnValues.length - 1)
-      return (
-        dataType.dtKey + dataType.returnValues[curIndex + 1].value.toString()
-      );
+      return dataType.dtKey + dataType.returnValues[curIndex + 1].id.toString();
     return null;
   }
 
@@ -267,12 +263,21 @@ const FrmRights: FC = () => {
               (!!a.name ? a.name : "").localeCompare(!!b.name ? b.name : "")
             )
             .map((itm, ind) => {
-              const expKey = dataType.dtKey + itm.value.toString();
+              // console.log(
+              //   "FrmRights getDataList dataType.returnValues.map, itm=",
+              //   itm
+              // );
+              // console.log(
+              //   "FrmRights getDataList dataType.returnValues.map, ind=",
+              //   ind
+              // );
+
+              const expKey = dataType.dtKey + itm.id.toString();
 
               let childrenCount = 0;
               childrenDataTypes.forEach((fe) => {
                 childrenCount += fe.returnValues.filter(
-                  (f) => f.parentId === itm.value
+                  (f) => f.parentId === itm.id
                 ).length;
               });
 
@@ -370,7 +375,7 @@ const FrmRights: FC = () => {
                         if (usedSpace) {
                           const nextExpKey = getNextSiblingExpKey(
                             dataType,
-                            itm.value
+                            itm.id
                           );
                           if (nextExpKey) {
                             setSelectedChildKey(nextExpKey);
@@ -394,8 +399,11 @@ const FrmRights: FC = () => {
                     />
                   </span>
 
-                  {childrenDataTypes.map((chdt) => {
-                    return getDataList(chdt, expKey, itm.value);
+                  {childrenDataTypes.map((chdt, ind) => {
+                    // console.log("FrmRights childrenDataTypes.map, chdt=", chdt);
+                    // console.log("FrmRights childrenDataTypes.map, ind=", ind);
+
+                    return getDataList(chdt, expKey, itm.id);
                   })}
                 </li>
               );
@@ -452,6 +460,8 @@ const FrmRights: FC = () => {
         <div id="data-rights-tree" className="root-editor-scroll">
           <ul className="list-unstyled">
             {zeroLevelDataTypes.map((item, index) => {
+              // console.log("FrmRights zeroLevelDataTypes.map, item=", item);
+              // console.log("FrmRights zeroLevelDataTypes.map, index=", index);
               return (
                 <li key={item.dtId}>
                   <span
@@ -512,6 +522,15 @@ const FrmRights: FC = () => {
           <div id="data-rights-tree" className="root-editor-scroll">
             <ul className="list-unstyled">
               {drParentsRepo[curRViewId].map((item, index) => {
+                // console.log(
+                //   "FrmRights drParentsRepo[curRViewId].map, item=",
+                //   item
+                // );
+                // console.log(
+                //   "FrmRights drParentsRepo[curRViewId].map, index=",
+                //   index
+                // );
+
                 const exp = getExpByKey(item.dtKey);
                 return (
                   <li
@@ -549,9 +568,18 @@ const FrmRights: FC = () => {
                           )
                         )
                         .map((itm, ind) => {
+                          // console.log(
+                          //   "FrmRights item.returnValues.map, itm=",
+                          //   itm
+                          // );
+                          // console.log(
+                          //   "FrmRights item.returnValues.map, ind=",
+                          //   ind
+                          // );
+
                           return (
                             <li
-                              key={itm.value}
+                              key={itm.id}
                               onClick={() => {
                                 setSelectedChildKey(null);
                                 dispatch(setSelectedChildDataType(null));

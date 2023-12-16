@@ -20,7 +20,7 @@ const OnePlaintextRow: FC<OnePlaintextRowProps> = (props) => {
       <Form.Label column md="2">
         {label}
       </Form.Label>
-      {!!color && (
+      {/* {!!color && (
         <Form.Label column md="8" style={{ color: `${color}` }}>
           {text}
         </Form.Label>
@@ -29,7 +29,19 @@ const OnePlaintextRow: FC<OnePlaintextRowProps> = (props) => {
         <Form.Label column md="8">
           {text}
         </Form.Label>
-      )}
+      )} */}
+
+      <Col md="8">
+        {!!color && (
+          <Form.Control
+            plaintext
+            readOnly
+            value={text}
+            style={{ color: `${color}` }}
+          />
+        )}
+        {!color && <Form.Control plaintext readOnly value={text} />}
+      </Col>
 
       {/* <Col md="8">
         {!!color && (

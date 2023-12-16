@@ -24,7 +24,7 @@ export interface DataTypeModel {
 }
 
 export interface ReturnValueModel {
-  value: number;
+  id: number;
   key: string | null;
   name: string | null;
   parentId: number | null;

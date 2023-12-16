@@ -87,12 +87,16 @@ const BsComboBox: FC<BsComboBoxProps> = (props) => {
         </option>
       )}
       {dataArray &&
-        dataArray.map((mdItm) => (
-          <option key={mdItm[valueMember]} value={mdItm[valueMember]}>
-            {mdItm[displayMember]}
-            {secondDisplayMember && `-${mdItm[secondDisplayMember]}`}
-          </option>
-        ))}
+        dataArray.map((mdItm, index) => {
+          console.log("BsComboBox dataArray.map mdItm=", mdItm);
+          console.log("BsComboBox dataArray.map index=", index);
+          return (
+            <option key={mdItm[valueMember]} value={mdItm[valueMember]}>
+              {mdItm[displayMember]}
+              {secondDisplayMember && `-${mdItm[secondDisplayMember]}`}
+            </option>
+          );
+        })}
     </Form.Control>
   );
 };
