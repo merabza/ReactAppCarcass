@@ -88,8 +88,8 @@ const BsComboBox: FC<BsComboBoxProps> = (props) => {
       )}
       {dataArray &&
         dataArray.map((mdItm, index) => {
-          console.log("BsComboBox dataArray.map mdItm=", mdItm);
-          console.log("BsComboBox dataArray.map index=", index);
+          // console.log("BsComboBox dataArray.map mdItm=", mdItm);
+          // console.log("BsComboBox dataArray.map index=", index);
           return (
             <option key={mdItm[valueMember]} value={mdItm[valueMember]}>
               {mdItm[displayMember]}

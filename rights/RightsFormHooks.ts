@@ -174,13 +174,7 @@ export function useRightsForman(): [
 
       if (refresh) dispatchStore(finishRefresh());
     },
-    [
-      dispatchStore,
-      getHalfChecks,
-      rights,
-      getChildrenTreeData,
-      getParentsTreeData,
-    ]
+    [rights]
   );
 
   return [

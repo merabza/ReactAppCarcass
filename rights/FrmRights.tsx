@@ -128,7 +128,32 @@ const FrmRights: FC = () => {
       dispatch(setSelectedChildDataType(null));
     }
 
+    // console.log("FrmRights useEffect sameKeiesChanged=", sameKeiesChanged);
+    // console.log("FrmRights useEffect curRViewId=", curRViewId);
+    // console.log("FrmRights useEffect curParentDtKey=", curParentDtKey);
+    // console.log("FrmRights useEffect drChildrenRepo=", drChildrenRepo);
+    // console.log("FrmRights useEffect drChildrenRepo=", drChecksRepo);
+    // console.log("FrmRights useEffect !!drChildrenRepo=", !!drChecksRepo);
+
     if (sameKeiesChanged) {
+      // console.log(
+      //   "FrmRights useEffect loadChildsTreeDataAndChecks parames=",
+      //   rViewId,
+      //   dtKey,
+      //   key
+      // );
+      loadChildsTreeDataAndChecks(rViewId, dtKey, key, false);
+    } else if (
+      (curRViewId || curRViewId === 0) &&
+      curParentDtKey &&
+      (!drChecksRepo[curRViewId] || !drChecksRepo[curRViewId][curParentDtKey])
+    ) {
+      // console.log(
+      //   "FrmRights useEffect loadChildsTreeDataAndChecks 2 parames=",
+      //   rViewId,
+      //   dtKey,
+      //   key
+      // );
       loadChildsTreeDataAndChecks(rViewId, dtKey, key, false);
     }
   }, [
@@ -144,6 +169,9 @@ const FrmRights: FC = () => {
     curRView,
     drWorkingOnSave,
     wasSaving,
+    curRViewId,
+    drChecksRepo,
+    drChildrenRepo,
   ]);
 
   //   console.log("FrmRights expandedState=", expandedState);
@@ -186,7 +214,7 @@ const FrmRights: FC = () => {
 
   // console.log("drParentsRepo[curRViewId]=",drParentsRepo[curRViewId]);
 
-  if (curRViewId !== null && !drParentsRepo[curRViewId]) {
+  if ((curRViewId || curRViewId === 0) && !drParentsRepo[curRViewId]) {
     return (
       <div>
         <h5>უფლებების ჩატვირთვა ვერ მოხერხდა</h5>
@@ -311,7 +339,7 @@ const FrmRights: FC = () => {
               // );
 
               if (
-                curRViewId !== null &&
+                (curRViewId || curRViewId === 0) &&
                 curParentDtKey !== null &&
                 curParentDtKey !== undefined &&
                 curKey !== null &&
@@ -415,7 +443,7 @@ const FrmRights: FC = () => {
   function getChildsRender() {
     if (drChildsLoading || drChecksLoading) return <WaitPage />;
 
-    if (curRViewId === null) {
+    if (!curRViewId && curRViewId !== 0) {
       return (
         <div>
           <h5>ხედი არ არის არჩეული.</h5>
@@ -506,7 +534,7 @@ const FrmRights: FC = () => {
     return exp;
   }
 
-  if (curRViewId === null) {
+  if (!curRViewId && curRViewId !== 0) {
     return (
       <div>
         <h5>ხედი არ არის არჩეული.</h5>

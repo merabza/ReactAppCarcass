@@ -13,7 +13,7 @@ interface OnePlaintextRowProps {
 const OnePlaintextRow: FC<OnePlaintextRowProps> = (props) => {
   const { controlId, label, text, color } = props;
 
-  console.log("OnePlaintextRow props=", props);
+  // console.log("OnePlaintextRow props=", props);
 
   return (
     <Form.Group className="mb-1" as={Row} controlId={controlId}>
