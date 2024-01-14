@@ -25,7 +25,7 @@ export interface IGridColumn {
   isKey: boolean;
   control: React.ReactNode; //
   changingFieldName: string; //
-  possibleValues: any[]; //
+  // possibleValues: any[]; //
   typeName: string;
   lookupColumnPart: ILookup[] | null; //
 }

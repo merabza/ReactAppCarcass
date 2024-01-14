@@ -99,14 +99,14 @@ const MdGridView: FC<MdGridViewProps> = (props) => {
 
   const curGridColumns =
     gridRules && dataType
-      ? ConvertGridModelToGridColumns(gridRules, dataType)
+      ? ConvertGridModelToGridColumns(gridRules, dataType, masterData)
       : null;
 
-  curGridColumns?.forEach((col) => {
-    col.possibleValues = curMasterDataTable
-      .map((row) => row[col.fieldName])
-      .filter((item, pos, arr) => arr.indexOf(item) === pos); //distinct
-  });
+  // curGridColumns?.forEach((col) => {
+  //   col.possibleValues = curMasterDataTable
+  //     .map((row) => row[col.fieldName])
+  //     .filter((item, pos, arr) => arr.indexOf(item) === pos); //distinct
+  // });
 
   // console.log("MdGridView curMasterDataTable=", curMasterDataTable);
 

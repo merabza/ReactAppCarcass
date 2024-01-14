@@ -16,7 +16,7 @@ import {
 } from "./GridViewTypes";
 import { NzInt } from "../common/myFunctions";
 import Loading from "../common/Loading";
-import PosibleValuesFilterComboBox from "./PosibleValuesFilterComboBox";
+//import PosibleValuesFilterComboBox from "./PosibleValuesFilterComboBox";
 import LookupColumn from "./LookupColumn";
 import MasterDataFilterComboBox from "./MasterDataFilterComboBox";
 
@@ -58,7 +58,7 @@ const GridView: FC<GridViewProps> = (props) => {
     editorLink,
   } = props;
 
-  //console.log("GridView props=", props);
+  console.log("GridView props=", props);
 
   const [curShowRowsCount, setCurShowRowsCount] = useState<number>(10); //ცხრილში საჩვენებელი სტრიქონების რაოდენობა
 
@@ -115,7 +115,7 @@ const GridView: FC<GridViewProps> = (props) => {
     if (value !== undefined)
       newFilterFields.push({
         fieldName: fieldName,
-        value: value.toString(),
+        value: value?.toString(),
       } as IFilterField);
 
     // console.log(
@@ -169,7 +169,7 @@ const GridView: FC<GridViewProps> = (props) => {
                       {caption}{" "}
                       <FontAwesomeIcon icon={sortIconName as IconName} />
                     </Link>
-                    {!!col.possibleValues && (
+                    {/* {!!col.possibleValues && (
                       <PosibleValuesFilterComboBox
                         // key={col.fieldName}
                         dataMember={col.possibleValues}
@@ -181,7 +181,7 @@ const GridView: FC<GridViewProps> = (props) => {
                           changeFilterField(col.fieldName, newValue);
                         }}
                       ></PosibleValuesFilterComboBox>
-                    )}
+                    )} */}
                     {!!col.lookupColumnPart && (
                       <MasterDataFilterComboBox
                         lookupTable={col.lookupColumnPart}
@@ -214,9 +214,9 @@ const GridView: FC<GridViewProps> = (props) => {
     return (
       <tbody>
         {rowsData.rows.map((row, i) => {
-          console.log("GridView row=", row);
-          console.log("GridView keyCol=", keyCol);
-          console.log("GridView row[keyCol.fieldName]=", row[keyCol.fieldName]);
+          // console.log("GridView row=", row);
+          // console.log("GridView keyCol=", keyCol);
+          // console.log("GridView row[keyCol.fieldName]=", row[keyCol.fieldName]);
           const index = rowsData.offset + i + 1;
           const bl = curscrollTo?.index === index;
           return (
@@ -245,27 +245,25 @@ const GridView: FC<GridViewProps> = (props) => {
                       key={col.fieldName}
                       className={bl ? "backLigth" : undefined}
                     >
-                      {col.control && React.isValidElement(col.control) ? (
-                        React.cloneElement(
-                          col.control as React.ReactElement<any>,
-                          {
-                            value,
-                            index,
-                            offset: rowsData.offset,
-                            showRows: curShowRowsCount,
-                            changing,
-                            record: row,
-                          },
-                          null
-                        )
-                      ) : col.lookupColumnPart ? (
-                        <LookupColumn
-                          lookupTable={col.lookupColumnPart}
-                          value={value}
-                        ></LookupColumn>
-                      ) : (
-                        value
-                      )}
+                      {col.control && React.isValidElement(col.control)
+                        ? React.cloneElement(
+                            col.control as React.ReactElement<any>,
+                            {
+                              value,
+                              index,
+                              offset: rowsData.offset,
+                              showRows: curShowRowsCount,
+                              changing,
+                              record: row,
+                            },
+                            null
+                          )
+                        : // ) : col.lookupColumnPart ? (
+                          //   <LookupColumn
+                          //     lookupTable={col.lookupColumnPart}
+                          //     value={value}
+                          //   ></LookupColumn>
+                          value}
                     </td>
                   );
                 })}

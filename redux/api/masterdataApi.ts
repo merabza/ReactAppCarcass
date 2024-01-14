@@ -62,7 +62,7 @@ export const masterdataApi = createApi({
         try {
           const { tableName } = args;
           const { data } = await queryFulfilled;
-          // console.log("masterdataApi getTableRowsData data=", data);
+          console.log("masterdataApi getTableRowsData data=", data);
           dispatch(setTableRowData({ tableName, data }));
         } catch (error) {
           dispatch(setAlertApiLoadError(buildErrorMessage(error)));

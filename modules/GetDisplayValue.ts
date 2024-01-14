@@ -72,6 +72,7 @@ export function GetDisplayValue(
   }
 
   if (col.typeName === "Lookup") {
+    //deprecated
     const lookupCol = col as LookupCell;
     const { dataMember } = lookupCol;
     // console.log("GetDisplayValue LookupCell dataMember=", dataMember);
