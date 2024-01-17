@@ -20,14 +20,13 @@ export interface IGridColumn {
   caption: string;
   visible: boolean;
   sortable: boolean;
-  nullable: boolean; //
+  nullable: boolean;
   fieldName: string;
   isKey: boolean;
-  control: React.ReactNode; //
-  changingFieldName: string; //
-  // possibleValues: any[]; //
+  control: React.ReactNode;
+  changingFieldName: string;
   typeName: string;
-  lookupColumnPart: ILookup[] | null; //
+  lookupColumnPart: ILookup[] | null;
 }
 
 // export interface IMdLookupColumnPart {

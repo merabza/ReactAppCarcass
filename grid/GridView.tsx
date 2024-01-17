@@ -16,16 +16,16 @@ import {
 } from "./GridViewTypes";
 import { NzInt } from "../common/myFunctions";
 import Loading from "../common/Loading";
-//import PosibleValuesFilterComboBox from "./PosibleValuesFilterComboBox";
-import LookupColumn from "./LookupColumn";
 import MasterDataFilterComboBox from "./MasterDataFilterComboBox";
+import FilterTextBox from "./FilterTextBox";
+import FilterNumberControl from "./FilterNumberControl";
 
 type GridViewProps = {
   gridHeader?: string;
-  columns: IGridColumn[]; //
+  columns: IGridColumn[];
   rowsData: IRowsData | undefined;
-  showCountColumn: boolean; //
-  loading: boolean; //
+  showCountColumn: boolean;
+  loading: boolean;
   curscrollTo?: IGridScrollTo;
   backLigth?: (node: HTMLElement | HTMLLIElement | null) => void;
   onLoadRows?: (
@@ -169,21 +169,9 @@ const GridView: FC<GridViewProps> = (props) => {
                       {caption}{" "}
                       <FontAwesomeIcon icon={sortIconName as IconName} />
                     </Link>
-                    {/* {!!col.possibleValues && (
-                      <PosibleValuesFilterComboBox
-                        // key={col.fieldName}
-                        dataMember={col.possibleValues}
-                        onChangeValue={(newValue) => {
-                          // console.log(
-                          //   "GridView FilterComboBox onChangeValue {name, newValue}=",
-                          //   { name, newValue }
-                          // );
-                          changeFilterField(col.fieldName, newValue);
-                        }}
-                      ></PosibleValuesFilterComboBox>
-                    )} */}
                     {!!col.lookupColumnPart && (
                       <MasterDataFilterComboBox
+                        controlId={col.fieldName}
                         lookupTable={col.lookupColumnPart}
                         isNullable={col.nullable}
                         onChangeValue={(
@@ -192,6 +180,28 @@ const GridView: FC<GridViewProps> = (props) => {
                           changeFilterField(col.fieldName, newValue);
                         }}
                       ></MasterDataFilterComboBox>
+                    )}
+                    {col.typeName === "String" && (
+                      <FilterTextBox
+                        controlId={col.fieldName}
+                        isNullable={col.nullable}
+                        onChangeValue={(
+                          newValue: string | null | undefined
+                        ) => {
+                          changeFilterField(col.fieldName, newValue);
+                        }}
+                      ></FilterTextBox>
+                    )}
+                    {col.typeName === "Integer" && (
+                      <FilterNumberControl
+                        controlId={col.fieldName}
+                        isNullable={col.nullable}
+                        onChangeValue={(
+                          newValue: number | null | undefined
+                        ) => {
+                          changeFilterField(col.fieldName, newValue);
+                        }}
+                      ></FilterNumberControl>
                     )}
                   </th>
                 );

@@ -102,12 +102,6 @@ const MdGridView: FC<MdGridViewProps> = (props) => {
       ? ConvertGridModelToGridColumns(gridRules, dataType, masterData)
       : null;
 
-  // curGridColumns?.forEach((col) => {
-  //   col.possibleValues = curMasterDataTable
-  //     .map((row) => row[col.fieldName])
-  //     .filter((item, pos, arr) => arr.indexOf(item) === pos); //distinct
-  // });
-
   // console.log("MdGridView curMasterDataTable=", curMasterDataTable);
 
   if (ApiLoadHaveErrors)

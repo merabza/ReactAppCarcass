@@ -38,6 +38,7 @@ import { useForman } from "../hooks/useForman";
 import { useMasterDataLookupLists } from "./masterDataHooks/useMasterDataLookupLists";
 import { countMdSchema } from "./mdSchemaFunctions";
 import { IGetOneMdRecordParameters } from "../redux/types/masterdataTypes";
+import { CreateArrayFromRowSource } from "./mdFunctions";
 
 const MdItemEdit: FC = () => {
   //1. იდენტიფიკატორი
@@ -291,28 +292,31 @@ const MdItemEdit: FC = () => {
               switch (field.typeName) {
                 case "RsLookup":
                   const rsLookupField = field as RsLookupCell;
-                  if (rsLookupField.rowSource) {
-                    const rows = [] as any[];
-                    const rsarr = rsLookupField.rowSource.split(";");
-                    rsarr.forEach((item, index) => {
-                      if (index % 2 === 0) return;
-                      rows.push({ val: rsarr[index - 1], disp: item });
-                    });
-                    return (
-                      <OneComboBoxControl
-                        key={fieldName}
-                        controlId={fieldName}
-                        label={caption}
-                        value={frm[fieldName]}
-                        dataMember={rows}
-                        valueMember="val"
-                        displayMember="disp"
-                        getError={getError}
-                        onChangeValue={changeField}
-                        firstItem={{ id: -1, name: `აირჩიე ${caption}` }}
-                      />
-                    );
-                  }
+                  const lookupData = CreateArrayFromRowSource(
+                    rsLookupField.rowSource
+                  );
+
+                  // if (rsLookupField.rowSource) {
+                  //   const rows = [] as any[];
+                  //   const rsarr = rsLookupField.rowSource.split(";");
+                  //   rsarr.forEach((item, index) => {
+                  //     if (index % 2 === 0) return;
+                  //     rows.push({ val: rsarr[index - 1], disp: item });
+                  //   });
+                  return (
+                    <OneComboBoxControl
+                      key={fieldName}
+                      controlId={fieldName}
+                      label={caption}
+                      value={frm[fieldName]}
+                      dataMember={lookupData}
+                      valueMember="id"
+                      displayMember="name"
+                      getError={getError}
+                      onChangeValue={changeField}
+                      firstItem={{ id: -1, name: `აირჩიე ${caption}` }}
+                    />
+                  );
                   //თუ აქ მოვიდა კოდი, ნიშნავს, რომ კი არის მითითებული კომბო ბოქსი, მაგრამ პარამეტრები არ აქვს საკმარისი,
                   //ამიტომ გამოვა ტექსტ ბოქსი
                   break;

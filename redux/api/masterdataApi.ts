@@ -54,7 +54,7 @@ export const masterdataApi = createApi({
         const { tableName, filterSortRequest } = args;
         return {
           url: `/masterdata/gettablerowsdata/${tableName}?filterSortRequest=${btoa(
-            JSON.stringify(filterSortRequest)
+            encodeURIComponent(JSON.stringify(filterSortRequest))
           )}`,
         };
       },

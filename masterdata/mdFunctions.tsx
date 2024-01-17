@@ -1,5 +1,6 @@
 //mdFunctions.ts
 
+import { NzInt } from "../common/myFunctions";
 import { IGridColumn, IRowsData } from "../grid/GridViewTypes";
 import { GetDisplayValue } from "../modules/GetDisplayValue";
 import { IMasterDataState } from "../redux/slices/masterdataSlice";
@@ -9,6 +10,7 @@ import {
   LookupCell,
   MdLookupCell,
   MixedCell,
+  RsLookupCell,
 } from "../redux/types/gridTypes";
 import { ILookup } from "../redux/types/masterdataTypes";
 
@@ -37,6 +39,11 @@ export function ConvertGridModelToGridColumns(
       ) {
         lookupData = masterData.mdataRepo[dataMember];
       }
+    }
+
+    if (field.typeName === "RsLookup") {
+      const rsLookupCol = field as RsLookupCell;
+      lookupData = CreateArrayFromRowSource(rsLookupCol.rowSource);
     }
 
     if (field.typeName === "MdLookup") {
@@ -98,4 +105,22 @@ export function CountRowDataDisplayValues(
     offset: rowData.offset,
     rows: CountDisplayValues(rowData.rows, gridRules, masterData),
   };
+}
+
+/*
+  id: number;
+  name: string;
+
+*/
+
+export function CreateArrayFromRowSource(rowSource: string | null): ILookup[] {
+  const rows = [] as ILookup[];
+  if (rowSource === null) return rows;
+  const rsarr = rowSource.split(";");
+  rsarr.forEach((item, index) => {
+    if (index % 2 === 0) return;
+    const idval = NzInt(rsarr[index - 1]);
+    if (idval !== null && item) rows.push({ id: idval, name: item } as ILookup);
+  });
+  return rows;
 }
