@@ -12,7 +12,7 @@ type FilterTextBoxProps = {
 
 const FilterTextBox: FC<FilterTextBoxProps> = (props) => {
   const { controlId, isNullable, onChangeValue } = props;
-  console.log("FilterTextBox props=", props);
+  // console.log("FilterTextBox props=", props);
 
   const [curValue, setCurValue] = useState<string | null | undefined>(
     undefined

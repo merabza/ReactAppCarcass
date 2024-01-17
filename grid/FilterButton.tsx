@@ -9,7 +9,7 @@ type FilterButtonProps = {
 
 const FilterButton: FC<FilterButtonProps> = (props) => {
   const { onButtonClick } = props;
-  console.log("FilterTextBox props=", props);
+  // console.log("FilterButton props=", props);
 
   function handleButtonClick(
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>

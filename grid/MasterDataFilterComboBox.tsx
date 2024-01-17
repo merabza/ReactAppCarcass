@@ -31,7 +31,7 @@ type MasterDataFilterComboBoxProps = {
 
 const MasterDataFilterComboBox: FC<MasterDataFilterComboBoxProps> = (props) => {
   const { controlId, lookupTable, isNullable, onChangeValue } = props;
-  console.log("MasterDataFilterComboBox props=", props);
+  // console.log("MasterDataFilterComboBox props=", props);
 
   const defaultValue = JSON.stringify({
     type: MasterDataFilterOptionType.All.type,

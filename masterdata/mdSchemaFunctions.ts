@@ -29,8 +29,11 @@ export function countMdSchema(gridRules: GridModel) {
         if (IntegerCol.isPositiveErr) {
           yupResult = yupResult.positive(IntegerCol.isPositiveErr.errorMessage);
         }
-        if (IntegerCol.def) {
+        if (IntegerCol.def || IntegerCol.def === 0) {
+          // console.log("1 yupResult=", yupResult);
           yupResult = yupResult.default(IntegerCol.def);
+          // console.log("IntegerCol.def=", IntegerCol.def);
+          // console.log("2 yupResult=", yupResult);
         }
         break;
       case "Boolean":
@@ -41,8 +44,9 @@ export function countMdSchema(gridRules: GridModel) {
         break;
       case "String":
         const StringCol = col as StringCell;
+        console.log("StringCol=", StringCol);
         yupResult = yup.string();
-        if (StringCol.def) {
+        if (StringCol.def || StringCol.def === "") {
           yupResult = yupResult.default(StringCol.def);
         }
         if (StringCol.maxLenRule) {

@@ -136,7 +136,7 @@ const MdItemEdit: FC = () => {
 
     if (gridRules) {
       const YupSchema = countMdSchema(gridRules);
-      // console.log("MdItemEdit useEffect setCurYupSchema YupSchema=", YupSchema);
+      //console.log("MdItemEdit useEffect setCurYupSchema YupSchema=", YupSchema);
       setCurYupSchema(YupSchema);
       setSchema(YupSchema);
     }
@@ -162,6 +162,13 @@ const MdItemEdit: FC = () => {
       clearToDefaults();
       return;
     }
+
+    console.log("MdItemEdit useEffect", {
+      loadingMdRecord,
+      tableName,
+      mdRecordForEdit,
+      mdIdValue,
+    });
 
     if (loadingMdRecord || !mdRecordForEdit[tableName]) return;
 
@@ -235,14 +242,18 @@ const MdItemEdit: FC = () => {
     }
   }
 
+  const formSetCheck = !curMdIdVal || (!!curMdIdVal && FormSet);
+
   // console.log("MdItemEdit CheckLoad ", {
   //   frm,
+  //   FormSet,
   //   curDataType,
-  //   curMdIdVal,
   //   curGridRules,
+  //   curMdIdVal,
+  //   formSetCheck,
   // });
 
-  if (!frm || !FormSet || !curDataType || !curGridRules) {
+  if (!frm || !formSetCheck || !curDataType || !curGridRules) {
     return <h5>ჩატვირთვის პრობლემა</h5>;
   }
 

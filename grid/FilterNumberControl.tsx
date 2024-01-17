@@ -13,7 +13,7 @@ type FilterNumberControlProps = {
 
 const FilterNumberControl: FC<FilterNumberControlProps> = (props) => {
   const { controlId, isNullable, onChangeValue } = props;
-  console.log("FilterNumberControl props=", props);
+  // console.log("FilterNumberControl props=", props);
 
   const [curValue, setCurValue] = useState<number | null | undefined>(
     undefined

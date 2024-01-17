@@ -18,11 +18,11 @@ const OneNumberControl: FC<OneNumberControlProps> = (props) => {
   const { controlId, label, value, getError, onChangeValue, minv, stepv } =
     props;
 
-  console.log("OneNumberControl props=", props);
+  // console.log("OneNumberControl props=", props);
 
   const error = getError(controlId);
 
-  const min = !minv && minv !== 0 ? 1 : minv;
+  // const min = !minv && minv !== 0 ? 1 : minv;
   const step = !stepv && stepv !== 0 ? 1 : stepv;
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -39,7 +39,7 @@ const OneNumberControl: FC<OneNumberControlProps> = (props) => {
         <Form.Control
           type="number"
           placeholder={label}
-          min={min}
+          min={minv}
           step={step}
           value={value}
           onChange={handleChange}

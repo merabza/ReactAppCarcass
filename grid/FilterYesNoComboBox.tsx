@@ -25,7 +25,7 @@ type FilterYesNoComboBoxProps = {
 
 const FilterYesNoComboBox: FC<FilterYesNoComboBoxProps> = (props) => {
   const { controlId, isNullable, onChangeValue } = props;
-  console.log("FilterYesNoComboBox props=", props);
+  // console.log("FilterYesNoComboBox props=", props);
 
   const defaultValue = JSON.stringify(YesNoFilterOption.All);
   const emptyValue = JSON.stringify(YesNoFilterOption.Empty);

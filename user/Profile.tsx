@@ -41,7 +41,7 @@ const Profile: FC = () => {
         firstName: user.firstName,
         lastName: user.lastName,
       } as ProfileModel);
-  }, [setFormData, user]);
+  }, [user]);
 
   //9. შეცდომების შესახებ ინფორმაცია გამოიყენება საბმიტის ფუნქციაში
   const allErrors = getAllErrors();
