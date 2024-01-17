@@ -19,6 +19,7 @@ import Loading from "../common/Loading";
 import MasterDataFilterComboBox from "./MasterDataFilterComboBox";
 import FilterTextBox from "./FilterTextBox";
 import FilterNumberControl from "./FilterNumberControl";
+import FilterYesNoComboBox from "./FilterYesNoComboBox";
 
 type GridViewProps = {
   gridHeader?: string;
@@ -202,6 +203,17 @@ const GridView: FC<GridViewProps> = (props) => {
                           changeFilterField(col.fieldName, newValue);
                         }}
                       ></FilterNumberControl>
+                    )}
+                    {col.typeName === "Boolean" && (
+                      <FilterYesNoComboBox
+                        controlId={col.fieldName}
+                        isNullable={col.nullable}
+                        onChangeValue={(
+                          newValue: boolean | null | undefined
+                        ) => {
+                          changeFilterField(col.fieldName, newValue);
+                        }}
+                      ></FilterYesNoComboBox>
                     )}
                   </th>
                 );
