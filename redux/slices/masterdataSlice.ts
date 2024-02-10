@@ -31,6 +31,7 @@ export interface IMasterDataState {
   itemEditorTables: { [key: string]: Array<string> };
   itemEditorLookupTables: { [key: string]: Array<string> };
   tableRowData: { [key: string]: IRowsData };
+  tablesForClearAfterCrudOperations: Array<string>;
 }
 
 const initialState: IMasterDataState = {
@@ -49,6 +50,7 @@ const initialState: IMasterDataState = {
   itemEditorTables: {} as { [key: string]: Array<string> },
   itemEditorLookupTables: {} as { [key: string]: Array<string> },
   tableRowData: {} as { [key: string]: IRowsData },
+  tablesForClearAfterCrudOperations: [] as Array<string>,
 };
 
 export const masterdataSlice = createSlice({
@@ -158,11 +160,11 @@ export const masterdataSlice = createSlice({
       if (tableName in state.mdLookupRepo) delete state.mdLookupRepo[tableName];
     },
     /////////////////////////////////////
-    SetMdWorkingOnLoadingListData: (state, action: PayloadAction<boolean>) => {
+    setMdWorkingOnLoadingListData: (state, action: PayloadAction<boolean>) => {
       state.mdWorkingOnLoadingListData = action.payload;
     },
     /////////////////////////////////////
-    SetMdWorkingOnLoadingOneTable: (
+    setMdWorkingOnLoadingOneTable: (
       state,
       action: PayloadAction<ISetMdWorkingOnLoadingOneTableAction>
     ) => {
@@ -170,7 +172,7 @@ export const masterdataSlice = createSlice({
       state.mdWorkingOnLoadingTables[tableName] = switchOn;
     },
     /////////////////////////////////////
-    SetMdWorkingOnLoadingOneLookupTable: (
+    setMdWorkingOnLoadingOneLookupTable: (
       state,
       action: PayloadAction<ISetMdWorkingOnLoadingOneTableAction>
     ) => {
@@ -178,7 +180,7 @@ export const masterdataSlice = createSlice({
       state.mdWorkingOnLoadingLookupTables[tableName] = switchOn;
     },
     /////////////////////////////////////
-    SetMdWorkingOnLoadingTablesList: (
+    setMdWorkingOnLoadingTablesList: (
       state,
       action: PayloadAction<ISetMdWorkingOnLoadingTablesListAction>
     ) => {
@@ -188,7 +190,7 @@ export const masterdataSlice = createSlice({
       );
     },
     /////////////////////////////////////
-    SetMdWorkingOnLoadingLookupTablesList: (
+    setMdWorkingOnLoadingLookupTablesList: (
       state,
       action: PayloadAction<ISetMdWorkingOnLoadingTablesListAction>
     ) => {
@@ -199,38 +201,38 @@ export const masterdataSlice = createSlice({
       );
     },
     /////////////////////////////////////
-    SetMdWorkingOnClearingTables: (state, action: PayloadAction<boolean>) => {
+    setMdWorkingOnClearingTables: (state, action: PayloadAction<boolean>) => {
       state.mdWorkingOnClearingTables = action.payload;
     },
     /////////////////////////////////////
-    SetItemEditorTables: (
+    setItemEditorTables: (
       state,
       action: PayloadAction<ISetItemEditorTablesAction>
     ) => {
       // console.log(
-      //   "masterdataSlice SetItemEditorTables action.payload=",
+      //   "masterdataSlice setItemEditorTables action.payload=",
       //   action.payload
       // );
       const { tableNamesList, editTableName } = action.payload;
       state.itemEditorTables[editTableName] = tableNamesList;
       // console.log(
-      //   "masterdataSlice SetItemEditorTables state.itemEditorTables=",
+      //   "masterdataSlice setItemEditorTables state.itemEditorTables=",
       //   state.itemEditorTables
       // );
     },
     /////////////////////////////////////
-    SetItemEditorLookupTables: (
+    setItemEditorLookupTables: (
       state,
       action: PayloadAction<ISetItemEditorTablesAction>
     ) => {
       // console.log(
-      //   "masterdataSlice SetItemEditorLookupTables action.payload=",
+      //   "masterdataSlice setItemEditorLookupTables action.payload=",
       //   action.payload
       // );
       const { tableNamesList, editTableName } = action.payload;
       state.itemEditorLookupTables[editTableName] = tableNamesList;
       // console.log(
-      //   "masterdataSlice SetItemEditorLookupTables state.itemEditorLookupTables=",
+      //   "masterdataSlice setItemEditorLookupTables state.itemEditorLookupTables=",
       //   state.itemEditorLookupTables
       // );
     },
@@ -239,23 +241,23 @@ export const masterdataSlice = createSlice({
       state.returnPageName = action.payload;
     },
     /////////////////////////////////////
-    SetDeletingKey: (state, action: PayloadAction<string | null>) => {
+    setDeletingKey: (state, action: PayloadAction<string | null>) => {
       state.deletingKey = action.payload;
     },
     /////////////////////////////////////
-    SetWorkingOnSave: (state, action: PayloadAction<boolean>) => {
+    setWorkingOnSave: (state, action: PayloadAction<boolean>) => {
       state.mdWorkingOnSave = action.payload;
     },
     /////////////////////////////////////
-    SetWorkingOnLoad: (state, action: PayloadAction<boolean>) => {
+    setWorkingOnLoad: (state, action: PayloadAction<boolean>) => {
       state.mdWorkingOnLoad = action.payload;
     },
     /////////////////////////////////////
-    SetDeleteFailure: (state, action: PayloadAction<boolean>) => {
+    setDeleteFailure: (state, action: PayloadAction<boolean>) => {
       state.deleteFailure = action.payload;
     },
     /////////////////////////////////////
-    ClearTablesFromRepo: (state, action: PayloadAction<null | string[]>) => {
+    clearTablesFromRepo: (state, action: PayloadAction<null | string[]>) => {
       const mdRepo = state.mdLookupRepo;
       const tableNames = action.payload;
       if (tableNames && Array.isArray(tableNames))
@@ -263,6 +265,40 @@ export const masterdataSlice = createSlice({
           if (tn in mdRepo) delete mdRepo[tn];
         });
     },
+    /////////////////////////////////////
+    clearTablesFromRepoAfterCrudOperations: (state) => {
+      const mdataRepo = state.mdataRepo;
+      const tableNames = state.tablesForClearAfterCrudOperations;
+      if (tableNames && Array.isArray(tableNames))
+        tableNames.forEach((tn) => {
+          if (tn in mdataRepo) delete mdataRepo[tn];
+        });
+      state.tablesForClearAfterCrudOperations = [] as Array<string>;
+    },
+    /////////////////////////////////////
+    setTablesForClearAfterCrudOperations: (
+      state,
+      action: PayloadAction<string[]>
+    ) => {
+      const tableNames = action.payload;
+      tableNames.forEach((tableName) =>
+        state.tablesForClearAfterCrudOperations.push(tableName)
+      );
+    },
+    /////////////////////////////////////
+    clearTablesForClearAfterCrudOperations: (state) => {
+      state.tablesForClearAfterCrudOperations = [] as Array<string>;
+    },
+    /////////////////////////////////////
+    // ClearTableFromRepoIfTableIsWithSortId: (state, action: PayloadAction<string>) => {
+    //   const mdRepo = state.mdLookupRepo;
+    //   const tableName = action.payload;
+    //   const reduxStore = store.getState();
+    //   const gridRules = state.dataTypesState.gridRules[tableName];
+
+    //   if (tableName in mdRepo) delete mdRepo[tableName];
+    // },
+    /////////////////////////////////////
   },
 });
 
@@ -274,20 +310,23 @@ export const {
   setAddedMasterDataRecord,
   setUpdatedMasterDataRecord,
   setDeleteMasterDataRecord,
-  SetMdWorkingOnLoadingListData,
-  SetMdWorkingOnLoadingOneTable,
-  SetMdWorkingOnLoadingOneLookupTable,
-  SetMdWorkingOnLoadingTablesList,
-  SetMdWorkingOnLoadingLookupTablesList,
-  SetMdWorkingOnClearingTables,
-  SetItemEditorTables,
-  SetItemEditorLookupTables,
+  setMdWorkingOnLoadingListData,
+  setMdWorkingOnLoadingOneTable,
+  setMdWorkingOnLoadingOneLookupTable,
+  setMdWorkingOnLoadingTablesList,
+  setMdWorkingOnLoadingLookupTablesList,
+  setMdWorkingOnClearingTables,
+  setItemEditorTables,
+  setItemEditorLookupTables,
   saveReturnPageName,
-  SetDeletingKey,
-  SetWorkingOnSave,
-  SetWorkingOnLoad,
-  SetDeleteFailure,
-  ClearTablesFromRepo,
+  setDeletingKey,
+  setWorkingOnSave,
+  setWorkingOnLoad,
+  setDeleteFailure,
+  clearTablesFromRepo,
   setTableRowData,
   setMasterDataRecord,
+  clearTablesFromRepoAfterCrudOperations,
+  setTablesForClearAfterCrudOperations,
+  clearTablesForClearAfterCrudOperations,
 } = masterdataSlice.actions;

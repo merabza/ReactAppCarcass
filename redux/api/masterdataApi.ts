@@ -22,26 +22,46 @@ import {
 } from "../types/masterdataTypes";
 import {
   setAddedMasterDataRecord,
-  SetDeleteFailure,
+  setDeleteFailure,
   setDeleteMasterDataRecord,
-  SetDeletingKey,
-  SetMdWorkingOnLoadingLookupTablesList,
-  SetMdWorkingOnLoadingTablesList,
+  setDeletingKey,
+  setMdWorkingOnLoadingLookupTablesList,
+  setMdWorkingOnLoadingTablesList,
   setMultipleTableData,
   setMultipleLookupTableData,
   setTableRowData,
   setUpdatedMasterDataRecord,
-  SetWorkingOnLoad,
-  SetWorkingOnSave,
+  setWorkingOnLoad,
+  setWorkingOnSave,
   setMasterDataRecord,
+  clearTablesFromRepoAfterCrudOperations,
 } from "../slices/masterdataSlice";
 import { RootState } from "../../../redux/store";
 import { buildErrorMessage } from "../types/errorTypes";
 import { IFilterSortRequest, IRowsData } from "../../grid/GridViewTypes";
+import { GridModel, IntegerCell } from "../types/gridTypes";
 
 export interface IGetTableRowsDataParameters {
   tableName: string;
   filterSortRequest: IFilterSortRequest;
+}
+
+function IsGridWithSortId(
+  gridRules: {
+    [key: string]: GridModel;
+  },
+  tableName: string
+): boolean {
+  if (!(tableName in gridRules)) return false;
+  const gridModel = gridRules[tableName];
+  // console.log("IsGridWithSortId gridModel=", gridModel);
+  const index = gridModel.cells.findIndex((fc) => {
+    if (fc.typeName !== "Integer") return false;
+    const IntegerCol = fc as IntegerCell;
+    return IntegerCol.isSortId;
+  });
+  // console.log("IsGridWithSortId index=", index);
+  return index > -1;
 }
 
 export const masterdataApi = createApi({
@@ -79,9 +99,9 @@ export const masterdataApi = createApi({
         };
       },
       async onQueryStarted(realyNeedTables, { dispatch, queryFulfilled }) {
-        dispatch(SetWorkingOnLoad(true));
+        dispatch(setWorkingOnLoad(true));
         dispatch(
-          SetMdWorkingOnLoadingTablesList({
+          setMdWorkingOnLoadingTablesList({
             tableNamesList: realyNeedTables,
             switchOn: true,
           } as ISetMdWorkingOnLoadingTablesListAction)
@@ -104,7 +124,7 @@ export const masterdataApi = createApi({
           dispatch(setAlertApiLoadError(buildErrorMessage(error)));
         }
         dispatch(
-          SetMdWorkingOnLoadingTablesList({
+          setMdWorkingOnLoadingTablesList({
             tableNamesList: realyNeedTables,
             switchOn: false,
           } as ISetMdWorkingOnLoadingTablesListAction)
@@ -129,9 +149,9 @@ export const masterdataApi = createApi({
         realyNeedLookupTables,
         { dispatch, queryFulfilled }
       ) {
-        dispatch(SetWorkingOnLoad(true));
+        dispatch(setWorkingOnLoad(true));
         dispatch(
-          SetMdWorkingOnLoadingLookupTablesList({
+          setMdWorkingOnLoadingLookupTablesList({
             tableNamesList: realyNeedLookupTables,
             switchOn: true,
           } as ISetMdWorkingOnLoadingTablesListAction)
@@ -158,7 +178,7 @@ export const masterdataApi = createApi({
           dispatch(setAlertApiLoadError(buildErrorMessage(error)));
         }
         dispatch(
-          SetMdWorkingOnLoadingLookupTablesList({
+          setMdWorkingOnLoadingLookupTablesList({
             tableNamesList: realyNeedLookupTables,
             switchOn: false,
           } as ISetMdWorkingOnLoadingTablesListAction)
@@ -201,7 +221,7 @@ export const masterdataApi = createApi({
         { dispatch, getState, queryFulfilled }
       ) {
         try {
-          dispatch(SetWorkingOnSave(true));
+          dispatch(setWorkingOnSave(true));
           const queryResult = await queryFulfilled;
           const { data } = queryResult;
           //console.log("masterdataApi addMasterDataRecord data=", data);
@@ -216,6 +236,14 @@ export const masterdataApi = createApi({
           //   idFielName
           // );
 
+          // const gridRules = (getState() as RootState).dataTypesState.gridRules;
+          // if (IsGridWithSortId(gridRules, tableName)) {
+          //   console.log("IsGridWithSortId on add");
+          //   dispatch(clearTablesFromRepo([tableName]));
+          // }
+
+          dispatch(clearTablesFromRepoAfterCrudOperations());
+
           const idValue = data.entry[idFielName];
           const returnPageName = (getState() as RootState).masterDataState
             .returnPageName;
@@ -224,7 +252,7 @@ export const masterdataApi = createApi({
         } catch (error) {
           dispatch(setAlertApiMutationError(buildErrorMessage(error)));
         }
-        dispatch(SetWorkingOnSave(false));
+        dispatch(setWorkingOnSave(false));
       },
     }),
     //////////////////////////////////////////////////////
@@ -244,7 +272,7 @@ export const masterdataApi = createApi({
         { dispatch, getState, queryFulfilled }
       ) {
         try {
-          dispatch(SetWorkingOnSave(true));
+          dispatch(setWorkingOnSave(true));
           await queryFulfilled;
           dispatch(
             setUpdatedMasterDataRecord({
@@ -254,6 +282,15 @@ export const masterdataApi = createApi({
               mdItem,
             } as ISetUpdatedMasterDataRecordAction)
           );
+
+          // const gridRules = (getState() as RootState).dataTypesState.gridRules;
+          // if (IsGridWithSortId(gridRules, tableName)) {
+          //   console.log("IsGridWithSortId on update");
+          //   dispatch(clearTablesFromRepo([tableName]));
+          // }
+
+          dispatch(clearTablesFromRepoAfterCrudOperations());
+
           const returnPageName = (getState() as RootState).masterDataState
             .returnPageName;
           const realReturnPageName = returnPageName ? returnPageName : "mdList";
@@ -261,7 +298,7 @@ export const masterdataApi = createApi({
         } catch (error) {
           dispatch(setAlertApiMutationError(buildErrorMessage(error)));
         }
-        dispatch(SetWorkingOnSave(false));
+        dispatch(setWorkingOnSave(false));
       },
     }),
     //////////////////////////////////////////////////////
@@ -277,11 +314,11 @@ export const masterdataApi = createApi({
       },
       async onQueryStarted(
         { tableName, idFielName, id, navigate },
-        { dispatch, queryFulfilled }
+        { dispatch, getState, queryFulfilled }
       ) {
         try {
-          dispatch(SetDeleteFailure(false));
-          dispatch(SetDeletingKey(tableName + id.toString()));
+          dispatch(setDeleteFailure(false));
+          dispatch(setDeletingKey(tableName + id.toString()));
           await queryFulfilled;
           dispatch(
             setDeleteMasterDataRecord({
@@ -290,13 +327,26 @@ export const masterdataApi = createApi({
               id,
             } as ISetDeleteMasterDataRecordAction)
           );
-          dispatch(SetDeleteFailure(false));
-          navigate(`/mdList/${tableName}`);
+          dispatch(setDeleteFailure(false));
+
+          // const gridRules = (getState() as RootState).dataTypesState.gridRules;
+          // if (IsGridWithSortId(gridRules, tableName)) {
+          //   console.log("IsGridWithSortId on delete");
+          //   dispatch(clearTablesFromRepo([tableName]));
+          // }
+
+          dispatch(clearTablesFromRepoAfterCrudOperations());
+
+          const returnPageName = (getState() as RootState).masterDataState
+            .returnPageName;
+          const realReturnPageName = returnPageName ? returnPageName : "mdList";
+
+          navigate(`/${realReturnPageName}/${tableName}`);
         } catch (error) {
-          dispatch(SetDeleteFailure(true));
+          dispatch(setDeleteFailure(true));
           dispatch(setAlertApiMutationError(buildErrorMessage(error)));
         }
-        dispatch(SetDeletingKey(null));
+        dispatch(setDeletingKey(null));
       },
     }),
     //////////////////////////////////////////////////////

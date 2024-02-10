@@ -3,9 +3,9 @@
 import { useCallback } from "react";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import {
-  ClearTablesFromRepo,
-  SetMdWorkingOnClearingTables,
-  SetWorkingOnLoad,
+  clearTablesFromRepo,
+  setMdWorkingOnClearingTables,
+  setWorkingOnLoad,
 } from "../../redux/slices/masterdataSlice";
 import { useCheckLoadMdTables } from "./useCheckLoadMdTables";
 
@@ -19,24 +19,24 @@ export function useClearTablesFromRepo(): [fnClearTablesFromRepo] {
   const masterDataState = useAppSelector((state) => state.masterDataState);
   const [checkLoadMdTables] = useCheckLoadMdTables();
 
-  const clearTablesFromRepo = useCallback(
+  const clearTables = useCallback(
     async (
       tableNamesForClear: null | string[],
       tableNamesForLoad: null | string[]
     ) => {
       if (masterDataState.mdWorkingOnClearingTables) return;
 
-      dispatch(SetMdWorkingOnClearingTables(true));
+      dispatch(setMdWorkingOnClearingTables(true));
 
-      dispatch(ClearTablesFromRepo(tableNamesForClear));
+      dispatch(clearTablesFromRepo(tableNamesForClear));
 
       if (tableNamesForLoad) checkLoadMdTables(tableNamesForLoad);
 
-      dispatch(SetMdWorkingOnClearingTables(false));
-      dispatch(SetWorkingOnLoad(false));
+      dispatch(setMdWorkingOnClearingTables(false));
+      dispatch(setWorkingOnLoad(false));
     },
     [masterDataState.mdWorkingOnClearingTables]
   );
 
-  return [clearTablesFromRepo];
+  return [clearTables];
 }

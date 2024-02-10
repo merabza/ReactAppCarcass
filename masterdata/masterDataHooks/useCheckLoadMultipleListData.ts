@@ -8,8 +8,8 @@
 // } from "../../redux/api/dataTypesApi";
 // import { DeserializeGridModel, LookupCell } from "../../redux/types/gridTypes";
 // import {
-//   SetItemEditorTables,
-//   SetMdWorkingOnLoadingListData,
+//   setItemEditorTables,
+//   setMdWorkingOnLoadingListData,
 // } from "../../redux/slices/masterdataSlice";
 // import { useCheckLoadMdTables } from "./useCheckLoadMdTables";
 
@@ -46,7 +46,7 @@ export type fnLoadMultipleListData = (
 
 //       if (masterDataState.mdWorkingOnLoadingListData) return;
 
-//       dispatch(SetMdWorkingOnLoadingListData(true));
+//       dispatch(setMdWorkingOnLoadingListData(true));
 
 //       if (dataTypesState.dataTypes.length === 0) {
 //         await getDataTypes();
@@ -56,7 +56,7 @@ export type fnLoadMultipleListData = (
 //         (gridName) => !isGridNameIngridRules(gridName)
 //       );
 //       if (realyNeedGrids.length === 0) {
-//         dispatch(SetMdWorkingOnLoadingListData(false));
+//         dispatch(setMdWorkingOnLoadingListData(false));
 //         return;
 //       }
 
@@ -99,11 +99,11 @@ export type fnLoadMultipleListData = (
 
 //       // console.log("loadMultipleListData distinctMdNames=", distinctMdNames);
 
-//       dispatch(SetItemEditorTables(distinctMdNames));
+//       dispatch(setItemEditorTables(distinctMdNames));
 
 //       checkLoadMdTables(distinctMdNames);
 
-//       dispatch(SetMdWorkingOnLoadingListData(false));
+//       dispatch(setMdWorkingOnLoadingListData(false));
 //     },
 //     [dataTypesState.gridsDatas, masterDataState.mdWorkingOnLoadingListData]
 //   );

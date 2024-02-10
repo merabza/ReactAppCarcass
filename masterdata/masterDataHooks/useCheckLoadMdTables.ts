@@ -4,7 +4,7 @@ import { useCallback } from "react";
 import { useLazyGetDataTypesQuery } from "../../redux/api/dataTypesApi";
 import { useLazyGetTablesQuery } from "../../redux/api/masterdataApi";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import { SetWorkingOnLoad } from "../../redux/slices/masterdataSlice";
+import { setWorkingOnLoad } from "../../redux/slices/masterdataSlice";
 
 export type fnCheckLoadMdTables = (tableNames: null | string[]) => void;
 
@@ -33,7 +33,7 @@ export function useCheckLoadMdTables(): [fnCheckLoadMdTables] {
 
       await getTables(realyNeedTables);
 
-      dispatch(SetWorkingOnLoad(false));
+      dispatch(setWorkingOnLoad(false));
     },
     [dataTypesState.dataTypes.length, masterDataState.mdWorkingOnLoadingTables]
   );

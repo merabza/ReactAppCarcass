@@ -10,7 +10,7 @@ import {
 } from "../slices/dataTypesSlice";
 import { DataTypeFfModel } from "../types/dataTypesTypes";
 import { ISetGridAction, ISetMultipleGrids } from "../types/rightsTypes";
-import { SetWorkingOnLoad } from "../slices/masterdataSlice";
+import { setWorkingOnLoad } from "../slices/masterdataSlice";
 import { buildErrorMessage } from "../types/errorTypes";
 
 export const dataTypesApi = createApi({
@@ -43,7 +43,7 @@ export const dataTypesApi = createApi({
       },
       async onQueryStarted(gridName, { dispatch, queryFulfilled }) {
         try {
-          dispatch(SetWorkingOnLoad(true));
+          dispatch(setWorkingOnLoad(true));
           const queryResult = await queryFulfilled;
           const { data } = queryResult;
           // console.log("dataTypesApi getGridModel data", data);
@@ -64,7 +64,7 @@ export const dataTypesApi = createApi({
       },
       async onQueryStarted(realyNeedGrids, { dispatch, queryFulfilled }) {
         try {
-          dispatch(SetWorkingOnLoad(true));
+          dispatch(setWorkingOnLoad(true));
           const queryResult = await queryFulfilled;
           const { data } = queryResult;
           dispatch(

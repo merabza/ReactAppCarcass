@@ -44,7 +44,7 @@ export function countMdSchema(gridRules: GridModel) {
         break;
       case "String":
         const StringCol = col as StringCell;
-        console.log("StringCol=", StringCol);
+        // console.log("StringCol=", StringCol);
         yupResult = yup.string();
         if (StringCol.def || StringCol.def === "") {
           yupResult = yupResult.default(StringCol.def);

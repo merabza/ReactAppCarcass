@@ -30,7 +30,10 @@ import {
   useUpdateMasterDataRecordMutation,
 } from "../redux/api/masterdataApi";
 import { clearAllAlerts, EAlertKind } from "../redux/slices/alertSlice";
-import { SetDeleteFailure } from "../redux/slices/masterdataSlice";
+import {
+  clearTablesForClearAfterCrudOperations,
+  setDeleteFailure,
+} from "../redux/slices/masterdataSlice";
 //import { useMasterDataLists } from "./masterDataHooks/useMasterDataLookupLists";
 import { useAlert } from "../hooks/useAlert";
 import AlertMessages from "../common/AlertMessages";
@@ -163,12 +166,12 @@ const MdItemEdit: FC = () => {
       return;
     }
 
-    console.log("MdItemEdit useEffect", {
-      loadingMdRecord,
-      tableName,
-      mdRecordForEdit,
-      mdIdValue,
-    });
+    // console.log("MdItemEdit useEffect", {
+    //   loadingMdRecord,
+    //   tableName,
+    //   mdRecordForEdit,
+    //   mdIdValue,
+    // });
 
     if (loadingMdRecord || !mdRecordForEdit[tableName]) return;
 
@@ -291,7 +294,7 @@ const MdItemEdit: FC = () => {
                   navigate,
                 });
             }}
-            onClearDeletingFailure={() => dispatch(SetDeleteFailure(false))}
+            onClearDeletingFailure={() => dispatch(setDeleteFailure(false))}
             allowDelete={curDataType.delete}
           />
           {curGridRules.cells
@@ -435,6 +438,7 @@ const MdItemEdit: FC = () => {
             savingNow={mdWorkingOnSave}
             onCloseClick={() => {
               dispatch(clearAllAlerts());
+              dispatch(clearTablesForClearAfterCrudOperations());
               const realReturnPageName = masterData.returnPageName
                 ? masterData.returnPageName
                 : "mdList";

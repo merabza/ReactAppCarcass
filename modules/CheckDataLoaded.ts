@@ -109,7 +109,7 @@ export function checkDataTypeLoaded(
   dataTypes: IDataTypesState,
   tableName: string
 ) {
-  console.log("checkDataLoaded masterData=", masterData);
+  // console.log("checkDataLoaded masterData=", masterData);
 
   if (masterData.mdWorkingOnLoadingListData) {
     //console.log("checkDataLoaded 1 steel loading");

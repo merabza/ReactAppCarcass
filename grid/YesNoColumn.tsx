@@ -9,8 +9,8 @@ type YesNoColumnProps = {
 const YesNoColumn: FC<YesNoColumnProps> = (props): any => {
   const { value } = props;
 
-  console.log("YesNoColumn props=", props);
-  console.log("YesNoColumn value=", value);
+  // console.log("YesNoColumn props=", props);
+  // console.log("YesNoColumn value=", value);
 
   if (value === true) return "დიახ";
   if (value === false) return "არა";

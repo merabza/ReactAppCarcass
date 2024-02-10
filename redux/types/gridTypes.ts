@@ -54,6 +54,7 @@ export interface IntegerCell extends NumberCell {
   isIntegerErr: Err | null;
   minValRule: IntRule | null;
   isShort: boolean;
+  isSortId: boolean;
 }
 
 export interface LookupCell extends IntegerCell {

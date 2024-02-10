@@ -11,10 +11,10 @@ import {
 } from "../../redux/api/masterdataApi";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import {
-  SetItemEditorLookupTables,
-  SetItemEditorTables,
-  SetMdWorkingOnLoadingListData,
-  SetWorkingOnLoad,
+  setItemEditorLookupTables,
+  setItemEditorTables,
+  setMdWorkingOnLoadingListData,
+  setWorkingOnLoad,
 } from "../../redux/slices/masterdataSlice";
 import { LookupCell, MdLookupCell } from "../../redux/types/gridTypes";
 import { ISetItemEditorTablesAction } from "../../redux/types/masterdataTypes";
@@ -60,10 +60,10 @@ export function useMasterDataLookupLists(): [fnloadListData, boolean] {
       //   }
       // );
 
-      // console.log("3 useMasterDataLists SetMdWorkingOnLoadingListData");
+      // console.log("3 useMasterDataLists setMdWorkingOnLoadingListData");
 
-      dispatch(SetMdWorkingOnLoadingListData(true));
-      dispatch(SetWorkingOnLoad(true));
+      dispatch(setMdWorkingOnLoadingListData(true));
+      dispatch(setWorkingOnLoad(true));
 
       if (dataTypesState.dataTypes.length === 0) {
         // console.log("4 useMasterDataLists getDataTypes");
@@ -121,14 +121,14 @@ export function useMasterDataLookupLists(): [fnloadListData, boolean] {
           }
 
           dispatch(
-            SetItemEditorTables({
+            setItemEditorTables({
               tableNamesList: requiredMdNames,
               editTableName: tableName,
             } as ISetItemEditorTablesAction)
           );
 
           dispatch(
-            SetItemEditorLookupTables({
+            setItemEditorLookupTables({
               tableNamesList: requiredMdLookupNames,
               editTableName: tableName,
             } as ISetItemEditorTablesAction)
@@ -163,8 +163,8 @@ export function useMasterDataLookupLists(): [fnloadListData, boolean] {
           (s: boolean) => s
         )
       ) {
-        dispatch(SetMdWorkingOnLoadingListData(false));
-        dispatch(SetWorkingOnLoad(false));
+        dispatch(setMdWorkingOnLoadingListData(false));
+        dispatch(setWorkingOnLoad(false));
         return;
       }
 
@@ -183,8 +183,8 @@ export function useMasterDataLookupLists(): [fnloadListData, boolean] {
         getLookupTables(realyNeedLookupTables);
 
       // console.log("useMasterDataLists loadListData getTables Finished");
-      dispatch(SetMdWorkingOnLoadingListData(false));
-      dispatch(SetWorkingOnLoad(false));
+      dispatch(setMdWorkingOnLoadingListData(false));
+      dispatch(setWorkingOnLoad(false));
     },
     [
       dataTypesState,

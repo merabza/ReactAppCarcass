@@ -86,7 +86,7 @@ const RegistrationPage: FC = () => {
         navigate("/");
       }
     } catch (error) {
-      console.log("error=", error);
+      // console.log("error=", error);
     }
   }
 

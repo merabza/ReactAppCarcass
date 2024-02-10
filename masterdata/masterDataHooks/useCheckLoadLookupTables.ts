@@ -3,7 +3,7 @@
 import { useCallback } from "react";
 import { useLazyGetLookupTablesQuery } from "../../redux/api/masterdataApi";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import { SetWorkingOnLoad } from "../../redux/slices/masterdataSlice";
+import { setWorkingOnLoad } from "../../redux/slices/masterdataSlice";
 
 export type fnCheckLoadLookupTables = (tableNames: null | string[]) => void;
 
@@ -27,7 +27,7 @@ export function useCheckLoadLookupTables(): [fnCheckLoadLookupTables, boolean] {
 
       await getLookupTables(realyNeedTables);
 
-      dispatch(SetWorkingOnLoad(false));
+      dispatch(setWorkingOnLoad(false));
     },
     [masterDataState.mdWorkingOnLoadingLookupTables]
   );

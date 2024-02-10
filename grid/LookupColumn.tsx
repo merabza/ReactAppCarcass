@@ -11,8 +11,8 @@ type lookupColumnProps = {
 const LookupColumn: FC<lookupColumnProps> = (props) => {
   const { lookupTable, value } = props;
 
-  console.log("LookupColumn props=", props);
-  console.log("LookupColumn value=", value);
+  // console.log("LookupColumn props=", props);
+  // console.log("LookupColumn value=", value);
 
   if (!!lookupTable) {
     const fval = lookupTable.find((mdItm) => mdItm.id === value);
