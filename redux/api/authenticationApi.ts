@@ -63,7 +63,7 @@ export const authenticationApi = createApi({
         };
       },
 
-      async onQueryStarted(args, { dispatch, queryFulfilled }) {
+      async onQueryStarted(_args, { dispatch, queryFulfilled }) {
         // console.log("authenticationApi login onQueryStarted started");
         try {
           dispatch(setloggingIn(true));
@@ -85,7 +85,7 @@ export const authenticationApi = createApi({
           body: loginRequest,
         };
       },
-      async onQueryStarted(args, { dispatch, queryFulfilled }) {
+      async onQueryStarted(_args, { dispatch, queryFulfilled }) {
         try {
           dispatch(setloggingIn(true));
           const { data } = await queryFulfilled;

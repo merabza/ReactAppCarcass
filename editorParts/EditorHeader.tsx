@@ -1,6 +1,6 @@
 //EditorHeader.tsx
 
-import React, { FC, useState } from "react";
+import { FC, useState } from "react";
 import { Form, Row, Col, Button, Spinner } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import MessageBox from "../common/MessageBox";
@@ -90,10 +90,10 @@ const EditorHeader: FC<EditorHeaderRowProps> = (props) => {
           text={`${EditorNameGenitive} წაშლაისას მოხდა შეცდომა, წაშლა ვერ მოხერხდა`}
           primaryButtonText="კარგი"
           onConfirmed={() => {
-            if (!!onClearDeletingFailure) onClearDeletingFailure();
+            if (onClearDeletingFailure) onClearDeletingFailure();
           }}
           onClosed={() => {
-            if (!!onClearDeletingFailure) onClearDeletingFailure();
+            if (onClearDeletingFailure) onClearDeletingFailure();
           }}
         />
       )}

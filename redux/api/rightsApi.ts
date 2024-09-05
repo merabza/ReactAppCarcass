@@ -117,7 +117,7 @@ export const rightsApi = createApi({
           body: saveDataRequest,
         };
       },
-      async onQueryStarted(args, { dispatch, queryFulfilled }) {
+      async onQueryStarted(_args, { dispatch, queryFulfilled }) {
         try {
           await queryFulfilled;
           dispatch(clearChanges());
@@ -134,7 +134,7 @@ export const rightsApi = createApi({
           method: "POST",
         };
       },
-      async onQueryStarted(args, { dispatch, queryFulfilled }) {
+      async onQueryStarted(_args, { dispatch, queryFulfilled }) {
         try {
           await queryFulfilled;
           dispatch(clearChanges());

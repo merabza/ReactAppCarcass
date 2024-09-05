@@ -59,10 +59,10 @@ const LoginPage: FC = () => {
     changeField,
     getError,
     haveErrors,
-    // eslint-disable-next-line
-    clearToDefaults,
-    // eslint-disable-next-line
-    setFormData,
+  //  // eslint-disable-next-line
+  //  clearToDefaults,
+  //  // eslint-disable-next-line
+  //  setFormData,
   ] = useForman<typeof loginPageSchema, LoginPageData>(loginPageSchema);
 
   async function handleSubmit(e: React.SyntheticEvent) {

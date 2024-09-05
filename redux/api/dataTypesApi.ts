@@ -24,7 +24,7 @@ export const dataTypesApi = createApi({
           url: `/datatypes/getdatatypes`,
         };
       },
-      async onQueryStarted(args, { dispatch, queryFulfilled }) {
+      async onQueryStarted(_args, { dispatch, queryFulfilled }) {
         try {
           const queryResult = await queryFulfilled;
           const { data } = queryResult;

@@ -51,7 +51,7 @@ export const userRightsApi = createApi({
           url: "userrights/getmainmenu",
         };
       },
-      async onQueryStarted(args, { dispatch, queryFulfilled }) {
+      async onQueryStarted(_args, { dispatch, queryFulfilled }) {
         try {
           dispatch(setMenuLoading(true));
           const { data } = await queryFulfilled;
@@ -69,7 +69,7 @@ export const userRightsApi = createApi({
           url: "userrights/iscurrentuservalid",
         };
       },
-      async onQueryStarted(args, { dispatch, queryFulfilled }) {
+      async onQueryStarted(_args, { dispatch, queryFulfilled }) {
         try {
           // console.log(
           //   "userRightsApi isCurrentUserValid onQueryStarted start setCheckingUser=true setIsCurrentUserValid=false"
@@ -130,7 +130,7 @@ export const userRightsApi = createApi({
         };
       },
       async onQueryStarted(
-        changePasswordRequest,
+        _changePasswordRequest,
         { dispatch, queryFulfilled }
       ) {
         // console.log("authenticationApi login onQueryStarted started")

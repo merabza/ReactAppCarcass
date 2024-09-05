@@ -121,7 +121,7 @@ export const masterdataSlice = createSlice({
       state,
       action: PayloadAction<ITableNameAndMasterDataRecord>
     ) => {
-      const { tableName, mdItem } = action.payload;
+      const { tableName } = action.payload;
       if (tableName in state.tableRowData) delete state.tableRowData[tableName];
       if (tableName in state.mdLookupRepo) delete state.mdLookupRepo[tableName];
     },

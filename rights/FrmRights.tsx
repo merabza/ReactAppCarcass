@@ -223,7 +223,7 @@ const FrmRights: FC = () => {
   }
 
   function getTopParentDataType(dataType: DataTypeModel): DataTypeModel {
-    let retDataType: DataTypeModel = dataType;
+    const retDataType: DataTypeModel = dataType;
     if (
       !drLinear &&
       curParentDtKey !== null &&
@@ -288,9 +288,9 @@ const FrmRights: FC = () => {
             .filter((f) => parentValue === null || f.parentId === parentValue)
             .slice()
             .sort((a, b) =>
-              (!!a.name ? a.name : "").localeCompare(!!b.name ? b.name : "")
+              (a.name ? a.name : "").localeCompare(b.name ? b.name : "")
             )
-            .map((itm, ind) => {
+            .map((itm) => {
               // console.log(
               //   "FrmRights getDataList dataType.returnValues.map, itm=",
               //   itm
@@ -427,7 +427,7 @@ const FrmRights: FC = () => {
                     />
                   </span>
 
-                  {childrenDataTypes.map((chdt, ind) => {
+                  {childrenDataTypes.map((chdt) => {
                     // console.log("FrmRights childrenDataTypes.map, chdt=", chdt);
                     // console.log("FrmRights childrenDataTypes.map, ind=", ind);
 
@@ -487,7 +487,7 @@ const FrmRights: FC = () => {
       <Form>
         <div id="data-rights-tree" className="root-editor-scroll">
           <ul className="list-unstyled">
-            {zeroLevelDataTypes.map((item, index) => {
+            {zeroLevelDataTypes.map((item) => {
               // console.log("FrmRights zeroLevelDataTypes.map, item=", item);
               // console.log("FrmRights zeroLevelDataTypes.map, index=", index);
               return (
@@ -527,7 +527,7 @@ const FrmRights: FC = () => {
   }
 
   function getExpByKey(dtKey: string): boolean {
-    let stateExp = parExp[dtKey];
+    const stateExp = parExp[dtKey];
     let exp = stateExp;
     if (dtKey === curParentDtKey && stateExp !== true && stateExp !== false)
       exp = true;
@@ -549,7 +549,7 @@ const FrmRights: FC = () => {
         <Col sm="5" className="root-editor-column">
           <div id="data-rights-tree" className="root-editor-scroll">
             <ul className="list-unstyled">
-              {drParentsRepo[curRViewId].map((item, index) => {
+              {drParentsRepo[curRViewId].map((item) => {
                 // console.log(
                 //   "FrmRights drParentsRepo[curRViewId].map, item=",
                 //   item
@@ -591,11 +591,11 @@ const FrmRights: FC = () => {
                       {item.returnValues
                         .slice()
                         .sort((a, b) =>
-                          (!!a.name ? a.name : "").localeCompare(
-                            !!b.name ? b.name : ""
+                          (a.name ? a.name : "").localeCompare(
+                            b.name ? b.name : ""
                           )
                         )
-                        .map((itm, ind) => {
+                        .map((itm) => {
                           // console.log(
                           //   "FrmRights item.returnValues.map, itm=",
                           //   itm

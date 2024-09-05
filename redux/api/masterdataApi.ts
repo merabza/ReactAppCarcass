@@ -39,30 +39,30 @@ import {
 import { RootState } from "../../../redux/store";
 import { buildErrorMessage } from "../types/errorTypes";
 import { IFilterSortRequest, IRowsData } from "../../grid/GridViewTypes";
-import { GridModel, IntegerCell } from "../types/gridTypes";
+//import { GridModel, IntegerCell } from "../types/gridTypes";
 
 export interface IGetTableRowsDataParameters {
   tableName: string;
   filterSortRequest: IFilterSortRequest;
 }
 
-function IsGridWithSortId(
-  gridRules: {
-    [key: string]: GridModel;
-  },
-  tableName: string
-): boolean {
-  if (!(tableName in gridRules)) return false;
-  const gridModel = gridRules[tableName];
-  // console.log("IsGridWithSortId gridModel=", gridModel);
-  const index = gridModel.cells.findIndex((fc) => {
-    if (fc.typeName !== "Integer") return false;
-    const IntegerCol = fc as IntegerCell;
-    return IntegerCol.isSortId;
-  });
-  // console.log("IsGridWithSortId index=", index);
-  return index > -1;
-}
+//function IsGridWithSortId(
+//  gridRules: {
+//    [key: string]: GridModel;
+//  },
+//  tableName: string
+//): boolean {
+//  if (!(tableName in gridRules)) return false;
+//  const gridModel = gridRules[tableName];
+//  // console.log("IsGridWithSortId gridModel=", gridModel);
+//  const index = gridModel.cells.findIndex((fc) => {
+//    if (fc.typeName !== "Integer") return false;
+//    const IntegerCol = fc as IntegerCell;
+//    return IntegerCol.isSortId;
+//  });
+//  // console.log("IsGridWithSortId index=", index);
+//  return index > -1;
+//}
 
 export const masterdataApi = createApi({
   reducerPath: "masterdataApi",
@@ -192,7 +192,7 @@ export const masterdataApi = createApi({
           url: `/masterdata/${tableName}/${id}`,
         };
       },
-      async onQueryStarted({ tableName, id }, { dispatch, queryFulfilled }) {
+      async onQueryStarted({ tableName }, { dispatch, queryFulfilled }) {
         try {
           const queryResult = await queryFulfilled;
           const { data } = queryResult;

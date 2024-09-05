@@ -3,7 +3,7 @@
 import { Row, Col, Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { FC } from "react";
-import { fnPlusButtonClick } from "../../editorParts/PhoneticsCombEditor";
+//import { fnPlusButtonClick } from "../../editorParts/PhoneticsCombEditor";
 
 type OnePlusButtonProps = {
   onClick: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;

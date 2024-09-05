@@ -67,10 +67,10 @@ const RegistrationPage: FC = () => {
     changeField,
     getError,
     haveErrors,
-    // eslint-disable-next-line
-    clearToDefaults,
-    // eslint-disable-next-line
-    setFormData,
+  //  // eslint-disable-next-line
+  //  clearToDefaults,
+  //  // eslint-disable-next-line
+  //  setFormData,
   ] = useForman<typeof registrationPageSchema, RegistrationPageData>(
     registrationPageSchema
   );
@@ -86,7 +86,7 @@ const RegistrationPage: FC = () => {
         navigate("/");
       }
     } catch (error) {
-      // console.log("error=", error);
+       console.log("error=", error);
     }
   }
 

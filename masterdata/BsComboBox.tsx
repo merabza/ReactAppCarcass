@@ -87,7 +87,7 @@ const BsComboBox: FC<BsComboBoxProps> = (props) => {
         </option>
       )}
       {dataArray &&
-        dataArray.map((mdItm, index) => {
+        dataArray.map((mdItm) => {
           // console.log("BsComboBox dataArray.map mdItm=", mdItm);
           // console.log("BsComboBox dataArray.map index=", index);
           return (

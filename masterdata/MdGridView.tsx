@@ -31,8 +31,8 @@ const MdGridView: FC<MdGridViewProps> = (props) => {
   const dataTypesState = useAppSelector((state) => state.dataTypesState);
 
   const {
-    deletingKey,
-    mdWorkingOnSave,
+    //deletingKey,
+    //mdWorkingOnSave,
     mdWorkingOnLoadingListData,
     tableRowData,
     mdWorkingOnLoadingTables,
@@ -66,7 +66,7 @@ const MdGridView: FC<MdGridViewProps> = (props) => {
     itemEditorLookupTables,
   ]);
 
-  const [curscrollTo, backLigth] = useScroller<number | undefined>(recId);
+  const [curscrollTo] = useScroller<number | undefined>(recId);
 
   const [ApiLoadHaveErrors] = useAlert(EAlertKind.ApiLoad);
 

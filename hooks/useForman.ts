@@ -3,7 +3,7 @@
 import { useReducer, useCallback, Reducer, useState } from "react";
 import { InferType, ObjectSchema, ValidationError } from "yup";
 import { IDictionary } from "../common/types";
-import { Console } from "console";
+//import { Console } from "console";
 
 export type fnGetError = (fieldPath: string) => string | null | undefined;
 export type fnChangeField = (fieldPath: string, value: any) => void; //value შეიძლება სხვადასხვა ტიპისა იყოს
