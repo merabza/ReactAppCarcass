@@ -13,7 +13,7 @@ export const rtkQueryErrorLogger: Middleware =
       console.warn("We got a rejected action!");
       //toast.warn({ title: 'Async error!', message: action.error.data.message })
       //action
-      // console.log("action=", action);
+      console.log("action=", action);
 
       //api.dispatch()
     }

@@ -64,14 +64,14 @@ export const authenticationApi = createApi({
       },
 
       async onQueryStarted(_args, { dispatch, queryFulfilled }) {
-        // console.log("authenticationApi login onQueryStarted started");
+        console.log("authenticationApi login onQueryStarted started");
         try {
           dispatch(setloggingIn(true));
           const { data } = await queryFulfilled;
-          // console.log("authenticationApi login onQueryStarted data=", data);
+          console.log("authenticationApi login onQueryStarted data=", data);
           dispatch(setUser(data));
         } catch (error) {
-          // console.log("authenticationApi login catched error");
+          console.log("authenticationApi login catched error=", error);
           dispatch(setUser(null));
         }
       },

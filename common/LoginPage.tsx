@@ -15,13 +15,15 @@ import "./LoginPage.css";
 import { useForman } from "../hooks/useForman";
 
 const LoginPage: FC = () => {
-  //console.log("LoginPage Start");
+  console.log("LoginPage Start");
 
   const [submitted, setSubmitted] = useState(false);
   const { appName } = useAppSelector((state) => state.appParametersState);
   const { userValidationChecked, user } = useAppSelector(
     (state) => state.userState
   );
+
+  console.log("LoginPage appName=", appName);
 
   const navigate = useNavigate();
 
@@ -34,10 +36,13 @@ const LoginPage: FC = () => {
   useEffect(() => {
     if (!submitted) dispatch(logout());
     else {
-      // console.log("LoginPage handleSubmit after loginUser user=", user);
+      console.log("LoginPage handleSubmit after loginUser user=", user);
       if (userValidationChecked && user && user.token) {
         const pathname = state?.from?.pathname || "/";
-        // console.log("LoginPage handleSubmit after loginUser pathname=", pathname);
+        console.log(
+          "LoginPage handleSubmit after loginUser pathname=",
+          pathname
+        );
         navigate(pathname);
       }
     }
@@ -59,10 +64,10 @@ const LoginPage: FC = () => {
     changeField,
     getError,
     haveErrors,
-  //  // eslint-disable-next-line
-  //  clearToDefaults,
-  //  // eslint-disable-next-line
-  //  setFormData,
+    //  // eslint-disable-next-line
+    //  clearToDefaults,
+    //  // eslint-disable-next-line
+    //  setFormData,
   ] = useForman<typeof loginPageSchema, LoginPageData>(loginPageSchema);
 
   async function handleSubmit(e: React.SyntheticEvent) {
