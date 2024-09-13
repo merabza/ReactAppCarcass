@@ -1,4 +1,5 @@
 /*
+    Layout.css
     DEMO STYLE
 */
 
@@ -9,6 +10,8 @@ body {
   background: #fafafa;
 }
   */
+
+  @import "../../Layout_Parameters.css";
 
 .backLigth {
     background-color: PaleTurquoise;
@@ -69,7 +72,7 @@ a:focus {
     left: 0;
     height: 100vh;
     z-index: 999;
-    background: #7386D5;
+    background: var(--sidebar-color);
     color: #fff;
     transition: all 0.3s;
     overflow: auto;
@@ -81,12 +84,12 @@ a:focus {
 
     #sidebar .sidebar-header {
         padding: 20px;
-        background: #6d7fcc;
+        background: var(--sidebar-background-color);
     }
 
     #sidebar ul.components {
         padding: 20px 0;
-        border-bottom: 1px solid #47748b;
+        border-bottom: 1px solid var(--sidebar-border-bottom-color);
     }
 
     #sidebar ul p {
@@ -101,14 +104,14 @@ a:focus {
     }
 
         #sidebar ul li a:hover {
-            color: #7386D5;
+            color: var(--sidebar-color);
             background: #fff;
         }
 
     #sidebar ul li.active > a,
     a[aria-expanded="true"] {
         color: #fff;
-        background: #6d7fcc;
+        background: var(--sidebar-background-color);
     }
 
     #sidebar a[data-toggle="collapse"] {
@@ -126,7 +129,7 @@ a:focus {
     #sidebar ul ul a {
         font-size: 0.9em !important;
         padding-left: 30px !important;
-        background: #6d7fcc;
+        background: var(--sidebar-background-color);
     }
 
     #sidebar ul.CTAs {
@@ -143,12 +146,12 @@ a:focus {
 
     #sidebar a.download {
         background: #fff;
-        color: #7386D5;
+        color: var(--sidebar-color);
     }
 
     #sidebar a.article,
     a.article:hover {
-        background: #6d7fcc !important;
+        background: var(--sidebar-background-color) !important;
         color: #fff !important;
     }
 
