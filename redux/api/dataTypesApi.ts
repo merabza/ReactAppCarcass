@@ -46,7 +46,8 @@ export const dataTypesApi = createApi({
           dispatch(setWorkingOnLoad(true));
           const queryResult = await queryFulfilled;
           const { data } = queryResult;
-          // console.log("dataTypesApi getGridModel data", data);
+          console.log("dataTypesApi getGridModel data", data);
+          console.log("dataTypesApi getGridModel gridName", gridName);
           dispatch(setGrid({ gridName, gridData: data } as ISetGridAction));
         } catch (error) {
           dispatch(setAlertApiLoadError(buildErrorMessage(error)));
@@ -67,6 +68,7 @@ export const dataTypesApi = createApi({
           dispatch(setWorkingOnLoad(true));
           const queryResult = await queryFulfilled;
           const { data } = queryResult;
+          console.log("dataTypesApi getMultipleGridRules data", data);
           dispatch(
             setMultipleGrids({
               realyNeedGrids,

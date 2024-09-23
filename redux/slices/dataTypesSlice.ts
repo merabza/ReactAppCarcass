@@ -33,14 +33,14 @@ export const dataTypesSlice = createSlice({
     },
     setGrid: (state, action: PayloadAction<ISetGridAction>) => {
       const { gridName, gridData } = action.payload;
-      // console.log("dataTypesSlice setDataTypes { gridName, gridData } =", {
-      //   gridName,
-      //   gridData,
-      // });
+      console.log("dataTypesSlice setDataTypes { gridName, gridData } =", {
+        gridName,
+        gridData,
+      });
       if (gridData === null) return;
       state.gridsDatas[gridName] = gridData;
       const gridRules = gridData ? DeserializeGridModel(gridData) : null;
-      // console.log("dataTypesSlice setDataTypes gridRules =", gridRules);
+      console.log("dataTypesSlice setDataTypes gridRules =", gridRules);
       if (gridRules) state.gridRules[gridName] = gridRules;
     },
     setMultipleGrids: (state, action: PayloadAction<ISetMultipleGrids>) => {

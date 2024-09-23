@@ -46,6 +46,8 @@ const MdGridView: FC<MdGridViewProps> = (props) => {
   const [getTableRowsData, { isLoading: loadingTableRowsData }] =
     useLazyGetTableRowsDataQuery();
 
+  console.log("dataTypesState=", dataTypesState);
+
   const dataType = dataTypesState.dataTypesByTableNames[tableName];
   const gridRules = dataTypesState.gridRules[tableName];
 
@@ -78,7 +80,7 @@ const MdGridView: FC<MdGridViewProps> = (props) => {
   )
     return <Loading />;
 
-  // console.log("MdGridView tableName=", tableName);
+  console.log("MdGridView tableName=", tableName);
   // console.log("MdGridView masterData=", masterData);
   // console.log("MdGridView tableRowData=", tableRowData);
   // console.log("MdGridView serverSidePagination=", serverSidePagination);
@@ -95,7 +97,10 @@ const MdGridView: FC<MdGridViewProps> = (props) => {
     masterData
   );
 
-  //console.log("MdGridView countedRowData=", countedRowData);
+  console.log("MdGridView before ConvertGridModelToGridColumns=", {
+    gridRules,
+    dataType,
+  });
 
   const curGridColumns =
     gridRules && dataType
@@ -112,15 +117,13 @@ const MdGridView: FC<MdGridViewProps> = (props) => {
       </div>
     );
 
-  // console.log("MdGridView CheckLoad ", {
-  //   tableName,
-  //   curGridColumns,
-  //   curscrollTo,
-  //   curDataType,
-  //   curMasterDataTable,
-  //   curRowsData,
-  //   serverSidePagination,
-  // });
+  console.log("MdGridView CheckLoad ", {
+    tableName,
+    curGridColumns,
+    curscrollTo,
+    curMasterDataTable,
+    dataType,
+  });
 
   if (!curGridColumns || curscrollTo === null || !dataType || !curGridColumns) {
     return (
