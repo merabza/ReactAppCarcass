@@ -164,24 +164,24 @@ a:focus {
     position: relative;
 }
 
-.root-editor-row {
+.editor-row {
     height: 100%;
     width: 100%;
     position: absolute;
 }
 
-.root-editor-column {
+.editor-column {
     height: 100%;
     overflow: hidden;
 }
 
-.root-editor-scroll {
+.editor-scroll {
     height: 100%;
     overflow-y: scroll;
     width: 100%;
 }
 
-.paradigm-scroll {
+.second-scroll {
     position: absolute;
     height: 100%;
     overflow-y: scroll;

@@ -485,7 +485,7 @@ const FrmRights: FC = () => {
 
     return (
       <Form>
-        <div id="data-rights-tree" className="root-editor-scroll">
+        <div id="data-rights-tree" className="editor-scroll">
           <ul className="list-unstyled">
             {zeroLevelDataTypes.map((item) => {
               // console.log("FrmRights zeroLevelDataTypes.map, item=", item);
@@ -545,9 +545,9 @@ const FrmRights: FC = () => {
   // console.log("FrmRights before render return drParentsRepo=", drParentsRepo);
   return (
     <div>
-      <Row className="root-editor-row">
-        <Col sm="5" className="root-editor-column">
-          <div id="data-rights-tree" className="root-editor-scroll">
+      <Row className="editor-row">
+        <Col sm="5" className="editor-column">
+          <div id="data-rights-tree" className="editor-scroll">
             <ul className="list-unstyled">
               {drParentsRepo[curRViewId].map((item) => {
                 // console.log(
