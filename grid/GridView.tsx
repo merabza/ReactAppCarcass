@@ -145,8 +145,8 @@ const GridView: FC<GridViewProps> = (props) => {
               const caption = col.caption ? col.caption : "";
               const sortable = !!col.sortable;
 
-              // console.log("GridView getTableHeader col=", col);
-              // console.log("GridView getTableHeader caption=", caption);
+              console.log("GridView getTableHeader col=", col);
+              console.log("GridView getTableHeader caption=", caption);
 
               if (sortable) {
                 let ascDescVal = 0;

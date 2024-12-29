@@ -23,7 +23,7 @@ export interface IGridColumn {
   nullable: boolean;
   fieldName: string;
   isKey: boolean;
-  control: React.ReactNode;
+  control: React.ReactNode | null;
   changingFieldName: string;
   typeName: string;
   lookupColumnPart: ILookup[] | null;

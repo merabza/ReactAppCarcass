@@ -16,9 +16,10 @@ export function GetDisplayValue(
   mdItem: any,
   col: Cell
 ) {
-  // console.log("GetDisplayValue mdItem=", mdItem);
-  // console.log("GetDisplayValue col.fieldName=", col.fieldName);
-  // console.log("GetDisplayValue mdItem=", mdItem);
+  console.log("GetDisplayValue mdItem=", mdItem);
+  console.log("GetDisplayValue col.fieldName=", col.fieldName);
+  console.log("GetDisplayValue mdItem=", mdItem);
+  console.log("GetDisplayValue col.typeName=", col.typeName);
 
   const value = mdItem[col.fieldName];
 
@@ -42,19 +43,21 @@ export function GetDisplayValue(
   if (col.typeName === "MdLookup") {
     const mdLookupCol = col as MdLookupCell;
     const { dtTable } = mdLookupCol;
-    // console.log("GetDisplayValue MdLookupCell dtTable=", dtTable);
-    // console.log(
-    //   "GetDisplayValue MdLookupCell masterData.mdLookupRepo=",
-    //   masterData.mdLookupRepo
-    // );
+
+    console.log("GetDisplayValue MdLookupCell dtTable=", dtTable);
+    console.log(
+      "GetDisplayValue MdLookupCell masterData.mdLookupRepo=",
+      masterData.mdLookupRepo
+    );
+
     if (
       dtTable &&
       dtTable in masterData.mdLookupRepo &&
       masterData.mdLookupRepo[dtTable]
     ) {
       const lookupTable = masterData.mdLookupRepo[dtTable];
-      // console.log("GetDisplayValue MdLookupCell value=", value);
-      // console.log("GetDisplayValue MdLookupCell lookupTable=", lookupTable);
+      console.log("GetDisplayValue MdLookupCell value=", value);
+      console.log("GetDisplayValue MdLookupCell lookupTable=", lookupTable);
       return GetDisplayValueForMdLookup(lookupTable, value);
     }
   }
@@ -62,10 +65,10 @@ export function GetDisplayValue(
   if (col.typeName === "RsLookup") {
     const lookupCol = col as RsLookupCell;
     if (!!lookupCol.rowSource && value !== null && value !== undefined) {
-      // console.log("GetDisplayValue col.rowSource=", lookupCol.rowSource);
+      console.log("GetDisplayValue col.rowSource=", lookupCol.rowSource);
       var rsarr = lookupCol.rowSource.split(";");
-      // console.log("GetDisplayValue rsarr=", rsarr);
-      // console.log("GetDisplayValue value=", value);
+      console.log("GetDisplayValue rsarr=", rsarr);
+      console.log("GetDisplayValue value=", value);
       var ind = rsarr.indexOf(value.toString()) + 1;
       if (ind > 0 && ind < rsarr.length && !!rsarr[ind]) return rsarr[ind];
     }
@@ -75,11 +78,11 @@ export function GetDisplayValue(
     //deprecated
     const lookupCol = col as LookupCell;
     const { dataMember } = lookupCol;
-    // console.log("GetDisplayValue LookupCell dataMember=", dataMember);
-    // console.log(
-    //   "GetDisplayValue LookupCell masterData.mdataRepo=",
-    //   masterData.mdataRepo
-    // );
+    console.log("GetDisplayValue LookupCell dataMember=", dataMember);
+    console.log(
+      "GetDisplayValue LookupCell masterData.mdataRepo=",
+      masterData.mdataRepo
+    );
 
     if (
       dataMember &&
@@ -87,7 +90,7 @@ export function GetDisplayValue(
       masterData.mdataRepo[dataMember]
     ) {
       const dataTable = masterData.mdataRepo[dataMember];
-      // console.log("GetDisplayValue MdLookupCell dataTable=", dataTable);
+      console.log("GetDisplayValue MdLookupCell dataTable=", dataTable);
 
       return GetDisplayValueForLookup(
         dataTable,
@@ -98,6 +101,7 @@ export function GetDisplayValue(
     }
   }
 
+  console.log("GetDisplayValue before return {mdItem, col, value}=", {mdItem, col, value});
   return value;
 }
 
@@ -122,6 +126,7 @@ export function GetDisplayValueForMdLookup(
   lookupTable: ILookup[] | undefined,
   value: number
 ) {
+  console.log("GetDisplayValueForMdLookup {lookupTable, value}=", {lookupTable, value});
   if (!lookupTable) return value;
   const fval = lookupTable.find((mdItm) => mdItm.id === value);
   if (!!fval && !!fval.name) return fval.name;
