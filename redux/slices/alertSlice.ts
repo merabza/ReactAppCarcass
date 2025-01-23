@@ -37,7 +37,7 @@ export const alertSlice = createSlice({
       }
     },
 
-    setAlertApiLoadError: (state, action: PayloadAction<Err[]>) => {
+    setAlertApiLoadError: (state, action: PayloadAction<IEnumerable<Err>>) => {
       const errors = action.payload;
       // console.log("setAlertApiLoadError errors=", errors);
       const alertKind = EAlertKind.ApiLoad;
@@ -52,7 +52,7 @@ export const alertSlice = createSlice({
       }
     },
 
-    setAlertApiMutationError: (state, action: PayloadAction<Err[]>) => {
+    setAlertApiMutationError: (state, action: PayloadAction<IEnumerable<Err>>) => {
       const errors = action.payload;
       const alert = state.alert;
       const alertKind = EAlertKind.ApiMutation;
