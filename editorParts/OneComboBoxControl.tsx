@@ -18,7 +18,7 @@ type OneComboBoxControlProps = {
   firstItemIsSelectable?: boolean;
   sortByDisplayMember?: boolean;
   onTrashButtonClick?: () => void;
-  getError: fnGetError;
+  getError?: fnGetError | undefined;
   onChangeValue: fnChangeField;
 };
 
@@ -43,7 +43,7 @@ const OneComboBoxControl: FC<OneComboBoxControlProps> = (props) => {
   //console.log("OneComboBoxControl sortByDisplayMember=", sortByDisplayMember);
   // console.log("OneComboBoxControl dataMember=", dataMember);
 
-  const error = getError(controlId);
+  const error = getError && getError(controlId);
   return (
     <Form.Group key={controlId} className="mb-1" as={Row} controlId={controlId}>
       <Form.Label column sm="4" className="text-right">
