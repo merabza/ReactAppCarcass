@@ -83,13 +83,13 @@ export const masterdataSlice = createSlice({
       action: PayloadAction<ISetMultipleLookupTablesData>
     ) => {
       const { realyNeedLookupTables, tablesData } = action.payload;
-      console.log(
-        "masterdataSlice setMultipleTableData { realyNeedLookupTables, tablesData }=",
-        {
-          realyNeedLookupTables,
-          tablesData,
-        }
-      );
+      // console.log(
+      //   "masterdataSlice setMultipleTableData { realyNeedLookupTables, tablesData }=",
+      //   {
+      //     realyNeedLookupTables,
+      //     tablesData,
+      //   }
+      // );
       realyNeedLookupTables.forEach((tableName) => {
         if (!tablesData[tableName]) return;
         const tableDate = tablesData[tableName];

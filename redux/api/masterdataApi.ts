@@ -159,14 +159,14 @@ export const masterdataApi = createApi({
         try {
           const queryResult = await queryFulfilled;
           const { data } = queryResult;
-          console.log(
-            "masterdataApi getLookupTables realyNeedTables=",
-            realyNeedLookupTables
-          );
-          console.log(
-            "masterdataApi getLookupTables queryResult=",
-            queryResult
-          );
+          // console.log(
+          //   "masterdataApi getLookupTables realyNeedTables=",
+          //   realyNeedLookupTables
+          // );
+          // console.log(
+          //   "masterdataApi getLookupTables queryResult=",
+          //   queryResult
+          // );
           dispatch(
             setMultipleLookupTableData({
               realyNeedLookupTables,
