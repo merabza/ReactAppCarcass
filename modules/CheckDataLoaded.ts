@@ -1,143 +1,148 @@
 //CheckDataLoaded.ts
 
-import { IDataTypesState } from "../redux/slices/dataTypesSlice";
-import { IMasterDataState } from "../redux/slices/masterdataSlice";
+//CheckDataLoaded.ts
+import type { IDataTypesState } from "../redux/slices/dataTypesSlice";
+import type { IMasterDataState } from "../redux/slices/masterdataSlice";
 
 export function checkDataLoaded(
-  masterData: IMasterDataState,
-  dataTypes: IDataTypesState,
-  tableName: string | undefined
+    masterData: IMasterDataState,
+    dataTypes: IDataTypesState,
+    tableName: string | undefined
 ) {
-  const printLogs = false;
+    const printLogs = false;
 
-  if (printLogs) console.log("checkDataLoaded 0 masterData=", masterData);
+    if (printLogs) console.log("checkDataLoaded 0 masterData=", masterData);
 
-  if (
-    masterData.mdWorkingOnLoadingListData ||
-    Object.values(masterData.mdWorkingOnLoadingLookupTables).some(
-      (s: boolean) => s
-    )
-  ) {
-    if (printLogs) console.log("checkDataLoaded 1 steel loading");
-    return false;
-  }
+    if (
+        masterData.mdWorkingOnLoadingListData ||
+        Object.values(masterData.mdWorkingOnLoadingLookupTables).some(
+            (s: boolean) => s
+        )
+    ) {
+        if (printLogs) console.log("checkDataLoaded 1 steel loading");
+        return false;
+    }
 
-  const dataTypesByTableNames = dataTypes.dataTypesByTableNames;
+    const dataTypesByTableNames = dataTypes.dataTypesByTableNames;
 
-  if (!dataTypesByTableNames) {
-    if (printLogs) console.log("checkDataLoaded 2 datatypes not loaded");
-    return false;
-  }
+    if (!dataTypesByTableNames) {
+        if (printLogs) console.log("checkDataLoaded 2 datatypes not loaded");
+        return false;
+    }
 
-  if (tableName === undefined) {
+    if (tableName === undefined) {
+        if (printLogs)
+            console.log("checkDataLoaded 4 tableName does not specified");
+        return false;
+    }
+
+    // if (!loadOnlyGridData && !(tableName in masterData.mdRepo)) {
+    //   if (printLogs)
+    //     console.log(
+    //       "checkDataLoaded 5 table not loaded tableName in masterData.mdRepo=",
+    //       tableName in masterData.mdRepo
+    //     );
+    //   if (printLogs)
+    //     console.log("checkDataLoaded 6 table not loaded tableName=", tableName);
+    //   if (printLogs)
+    //     console.log(
+    //       "checkDataLoaded 7 table not loaded masterData.mdRepo=",
+    //       masterData.mdRepo
+    //     );
+    //   return false;
+    // }
+
+    // if (!loadOnlyGridData && !masterData.mdRepo[tableName]) {
+    //   if (printLogs) console.log("checkDataLoaded 8 table is ampty");
+    //   return false;
+    // }
+
+    // if (tableName === undefined) {
+    //   if (printLogs) console.log("checkDataLoaded 9 gridName does not specified");
+    //   return false;
+    // }
+
+    if (!(tableName in dataTypes.dataTypesByTableNames)) {
+        if (printLogs)
+            console.log(
+                "checkDataLoaded 14 dataTypesByTableNames tableName=",
+                tableName
+            );
+        return false;
+    }
+
+    if (!(tableName in dataTypes.gridRules)) {
+        if (printLogs)
+            console.log(
+                "checkDataLoaded 10 grid rules not found tableName=",
+                tableName
+            );
+        return false;
+    }
+
+    if (!dataTypes.gridRules[tableName]) {
+        if (printLogs)
+            console.log(
+                "checkDataLoaded 11 grid rules empty gridName=",
+                tableName
+            );
+        return false;
+    }
+
+    // const dataType = datatypes.find((dt) => {
+    //   return dt.dtTable === tableName;
+    // });
+
+    // if (!dataType) {
+    //   if (printLogs)
+    //     console.log(
+    //       "checkDataLoaded 12 datatype not found for table ",
+    //       tableName
+    //     );
+    //   return false;
+    // }
+
+    // const gridRules = dataTypes.gridRules[tableName];
+
     if (printLogs)
-      console.log("checkDataLoaded 4 tableName does not specified");
-    return false;
-  }
-
-  // if (!loadOnlyGridData && !(tableName in masterData.mdRepo)) {
-  //   if (printLogs)
-  //     console.log(
-  //       "checkDataLoaded 5 table not loaded tableName in masterData.mdRepo=",
-  //       tableName in masterData.mdRepo
-  //     );
-  //   if (printLogs)
-  //     console.log("checkDataLoaded 6 table not loaded tableName=", tableName);
-  //   if (printLogs)
-  //     console.log(
-  //       "checkDataLoaded 7 table not loaded masterData.mdRepo=",
-  //       masterData.mdRepo
-  //     );
-  //   return false;
-  // }
-
-  // if (!loadOnlyGridData && !masterData.mdRepo[tableName]) {
-  //   if (printLogs) console.log("checkDataLoaded 8 table is ampty");
-  //   return false;
-  // }
-
-  // if (tableName === undefined) {
-  //   if (printLogs) console.log("checkDataLoaded 9 gridName does not specified");
-  //   return false;
-  // }
-
-  if (!(tableName in dataTypes.dataTypesByTableNames)) {
-    if (printLogs)
-      console.log(
-        "checkDataLoaded 14 dataTypesByTableNames tableName=",
-        tableName
-      );
-    return false;
-  }
-
-  if (!(tableName in dataTypes.gridRules)) {
-    if (printLogs)
-      console.log(
-        "checkDataLoaded 10 grid rules not found tableName=",
-        tableName
-      );
-    return false;
-  }
-
-  if (!dataTypes.gridRules[tableName]) {
-    if (printLogs)
-      console.log("checkDataLoaded 11 grid rules empty gridName=", tableName);
-    return false;
-  }
-
-  // const dataType = datatypes.find((dt) => {
-  //   return dt.dtTable === tableName;
-  // });
-
-  // if (!dataType) {
-  //   if (printLogs)
-  //     console.log(
-  //       "checkDataLoaded 12 datatype not found for table ",
-  //       tableName
-  //     );
-  //   return false;
-  // }
-
-  // const gridRules = dataTypes.gridRules[tableName];
-
-  if (printLogs) console.log("checkDataLoaded 13 return tableName=", tableName);
-  return true;
+        console.log("checkDataLoaded 13 return tableName=", tableName);
+    return true;
 }
 
 export function checkDataTypeLoaded(
-  masterData: IMasterDataState,
-  dataTypes: IDataTypesState,
-  tableName: string
+    masterData: IMasterDataState,
+    dataTypes: IDataTypesState,
+    tableName: string
 ) {
-  // console.log("checkDataLoaded masterData=", masterData);
+    // console.log("checkDataLoaded masterData=", masterData);
 
-  if (masterData.mdWorkingOnLoadingListData) {
-    //console.log("checkDataLoaded 1 steel loading");
-    return null;
-  }
+    if (masterData.mdWorkingOnLoadingListData) {
+        //console.log("checkDataLoaded 1 steel loading");
+        return null;
+    }
 
-  const datatypes = dataTypes.dataTypes;
+    const datatypes = dataTypes.dataTypes;
 
-  if (!datatypes) {
-    //console.log("checkDataLoaded 2 datatypes not loaded");
-    return null;
-  }
+    if (!datatypes) {
+        //console.log("checkDataLoaded 2 datatypes not loaded");
+        return null;
+    }
 
-  if (datatypes.length === 0) {
-    //console.log("checkDataLoaded 3 datatypes has not any element");
-    return null;
-  }
+    if (datatypes.length === 0) {
+        //console.log("checkDataLoaded 3 datatypes has not any element");
+        return null;
+    }
 
-  const dataType = datatypes.find((dt) => {
-    return dt.dtTable === tableName;
-  });
+    const dataType = datatypes.find((dt) => {
+        return dt.dtTable === tableName;
+    });
 
-  if (!dataType) {
-    //console.log("checkDataLoaded 10 datatype not found for table ", tableName);
-    return null;
-  }
+    if (!dataType) {
+        //console.log("checkDataLoaded 10 datatype not found for table ", tableName);
+        return null;
+    }
 
-  return dataType;
+    return dataType;
 }
 
 // export function checkDataTableLoaded(

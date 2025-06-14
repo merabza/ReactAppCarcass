@@ -1,94 +1,95 @@
 //masterdataTypes.ts
 
-import { NavigateFunction } from "react-router-dom";
+//masterdataTypes.ts
+import type { NavigateFunction } from "react-router-dom";
 
 export interface IMasterDataMutationParameters {
-  tableName: string;
-  idFielName: string;
-  id: number;
-  mdItem: any;
-  navigate: NavigateFunction;
+    tableName: string;
+    idFielName: string;
+    id: number;
+    mdItem: any;
+    navigate: NavigateFunction;
 }
 
 export interface IdeleteMasterDataRecordParameters {
-  tableName: string;
-  idFielName: string;
-  id: number;
-  navigate: NavigateFunction;
+    tableName: string;
+    idFielName: string;
+    id: number;
+    navigate: NavigateFunction;
 }
 
 export interface IGetOneMdRecordParameters {
-  tableName: string;
-  id: number;
+    tableName: string;
+    id: number;
 }
 
 export interface ISetMultipleTablesData {
-  realyNeedTables: string[];
-  tablesData: IMasterDataRepo;
+    realyNeedTables: string[];
+    tablesData: IMasterDataRepo;
 }
 
 export interface ISetMultipleLookupTablesData {
-  realyNeedLookupTables: string[];
-  tablesData: ILookupDataRepo;
+    realyNeedLookupTables: string[];
+    tablesData: ILookupDataRepo;
 }
 
 export interface IAdddMasterDataParameters {
-  tableName: string;
-  idFielName: string;
-  mdItem: any;
-  navigate: NavigateFunction;
+    tableName: string;
+    idFielName: string;
+    mdItem: any;
+    navigate: NavigateFunction;
 }
 
 export interface ITableNameAndMasterDataRecord {
-  tableName: string;
-  mdItem: any;
+    tableName: string;
+    mdItem: any;
 }
 
 export interface ISetUpdatedMasterDataRecordAction {
-  tableName: string;
-  idFielName: string;
-  id: number;
-  mdItem: any;
+    tableName: string;
+    idFielName: string;
+    id: number;
+    mdItem: any;
 }
 
 export interface ISetDeleteMasterDataRecordAction {
-  tableName: string;
-  idFielName: string;
-  id: number;
+    tableName: string;
+    idFielName: string;
+    id: number;
 }
 
 export interface ISetMdWorkingOnLoadingOneTableAction {
-  tableName: string;
-  switchOn: boolean;
+    tableName: string;
+    switchOn: boolean;
 }
 
 export interface ISetMdWorkingOnLoadingTablesListAction {
-  tableNamesList: Array<string>;
-  switchOn: boolean;
+    tableNamesList: Array<string>;
+    switchOn: boolean;
 }
 
 export interface ISetItemEditorTablesAction {
-  tableNamesList: Array<string>;
-  editTableName: string;
+    tableNamesList: Array<string>;
+    editTableName: string;
 }
 
 export interface ILookupDataRepo {
-  [key: string]: ILookup[];
+    [key: string]: ILookup[];
 }
 
 export interface IMasterDataRepo {
-  [key: string]: any[];
+    [key: string]: any[];
 }
 
 export interface ILookup {
-  id: number;
-  name: string;
+    id: number;
+    name: string;
 }
 
 export interface IMdTablesDataCommandResponse {
-  entities: { [key: string]: any[] };
+    entities: { [key: string]: any[] };
 }
 
 export interface IMdLookupTablesDataCommandResponse {
-  srv: { [key: string]: ILookup[] };
+    srv: { [key: string]: ILookup[] };
 }

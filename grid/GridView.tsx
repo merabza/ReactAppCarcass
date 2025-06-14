@@ -1,13 +1,13 @@
 //GridView.tsx
 
-import React, { useState, useEffect, FC } from "react";
+import React, { useState, useEffect, type FC } from "react";
 import { Table, Row, Col } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
-import { IconName } from "@fortawesome/fontawesome-svg-core";
+import type { IconName } from "@fortawesome/fontawesome-svg-core";
 
 import "./GridView.css";
-import {
+import type {
     IFilterField,
     IGridColumn,
     IGridScrollTo,

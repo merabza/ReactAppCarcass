@@ -2,206 +2,220 @@
 
 import { useCallback, useReducer } from "react";
 import {
-  useLazyGetChildrenTreeDataQuery,
-  useLazyGetHalfChecksQuery,
-  useLazyGetParentsTreeDataQuery,
-  useSaveDataMutation,
+    useLazyGetChildrenTreeDataQuery,
+    useLazyGetHalfChecksQuery,
+    useLazyGetParentsTreeDataQuery,
+    useSaveDataMutation,
 } from "../redux/api/rightsApi";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { clearForRefresh, finishRefresh } from "../redux/slices/rightsSlice";
 import { RightsViewKind } from "../redux/types/rightsTypes";
 
 export type fnTurnExpanded = (
-  forParent: boolean,
-  nodeKey: string,
-  expanded: boolean
+    forParent: boolean,
+    nodeKey: string,
+    expanded: boolean
 ) => void;
 export type fnSaveDtaRightChanges = () => void;
 export type fnLoadChildsTreeDataAndChecks = (
-  rView: RightsViewKind,
-  dtKey: string | undefined,
-  key: string | undefined,
-  refresh: boolean
+    rView: RightsViewKind,
+    dtKey: string | undefined,
+    key: string | undefined,
+    refresh: boolean
 ) => void;
 
 interface IExpDictionary {
-  [index: string]: boolean;
+    [index: string]: boolean;
 }
 
 export function useRightsForman(): [
-  boolean,
-  boolean,
-  boolean,
-  IExpDictionary,
-  IExpDictionary,
-  fnTurnExpanded,
-  fnLoadChildsTreeDataAndChecks
+    boolean,
+    boolean,
+    boolean,
+    IExpDictionary,
+    IExpDictionary,
+    fnTurnExpanded,
+    fnLoadChildsTreeDataAndChecks
 ] {
-  interface IRightFormState {
-    parExp: IExpDictionary;
-    chiExp: IExpDictionary;
-  }
-
-  type ActionType = {
-    type: "turnExpanded";
-    payload: { forParent: boolean; nodeKey: string; expanded: boolean };
-  };
-
-  function reducer(formRightState: IRightFormState, action: ActionType) {
-    //console.log("useForman changeField formState=", formState);
-    //console.log("useForman changeField action=", action);
-    const { type, payload } = action;
-    switch (type) {
-      case "turnExpanded": {
-        const { forParent, nodeKey, expanded } = payload;
-        const newExp = forParent
-          ? formRightState.parExp
-          : formRightState.chiExp;
-        newExp[nodeKey] = expanded;
-        if (forParent) return { ...formRightState, parExp: newExp };
-        return { ...formRightState, chiExp: newExp };
-      }
-      default:
-        throw new Error();
+    interface IRightFormState {
+        parExp: IExpDictionary;
+        chiExp: IExpDictionary;
     }
-  }
 
-  const initialState: IRightFormState = {
-    parExp: {} as IExpDictionary,
-    chiExp: {} as IExpDictionary,
-  };
+    type ActionType = {
+        type: "turnExpanded";
+        payload: { forParent: boolean; nodeKey: string; expanded: boolean };
+    };
 
-  const [formRightState, dispatchRightForm] = useReducer(reducer, initialState);
+    function reducer(formRightState: IRightFormState, action: ActionType) {
+        //console.log("useForman changeField formState=", formState);
+        //console.log("useForman changeField action=", action);
+        const { type, payload } = action;
+        switch (type) {
+            case "turnExpanded": {
+                const { forParent, nodeKey, expanded } = payload;
+                const newExp = forParent
+                    ? formRightState.parExp
+                    : formRightState.chiExp;
+                newExp[nodeKey] = expanded;
+                if (forParent) return { ...formRightState, parExp: newExp };
+                return { ...formRightState, chiExp: newExp };
+            }
+            default:
+                throw new Error();
+        }
+    }
 
-  const turnExpanded = useCallback(
-    (forParent: boolean, nodeKey: string, expanded: boolean) => {
-      dispatchRightForm({
-        type: "turnExpanded",
-        payload: { forParent, nodeKey, expanded },
-      });
-    },
-    [dispatchRightForm]
-  );
+    const initialState: IRightFormState = {
+        parExp: {} as IExpDictionary,
+        chiExp: {} as IExpDictionary,
+    };
 
-  const dispatchStore = useAppDispatch();
-  const rights = useAppSelector((state) => state.rightsState);
-  const [getParentsTreeData, { isLoading: drParentsLoading }] =
-    useLazyGetParentsTreeDataQuery();
-  const [getChildrenTreeData, { isLoading: drChildsLoading }] =
-    useLazyGetChildrenTreeDataQuery();
-  const [getHalfChecks, { isLoading: drChecksLoading }] =
-    useLazyGetHalfChecksQuery();
+    const [formRightState, dispatchRightForm] = useReducer(
+        reducer,
+        initialState
+    );
 
-  const loadChildsTreeDataAndChecks = useCallback(
-    async (
-      rView: RightsViewKind,
-      dtKey: string | undefined,
-      key: string | undefined,
-      refresh: boolean
-    ) => {
-      // console.log("loadChildsTreeDataAndChecks {rView, dtKey, key, refresh}=", {
-      //   rView,
-      //   dtKey,
-      //   key,
-      //   refresh,
-      // });
+    const turnExpanded = useCallback(
+        (forParent: boolean, nodeKey: string, expanded: boolean) => {
+            dispatchRightForm({
+                type: "turnExpanded",
+                payload: { forParent, nodeKey, expanded },
+            });
+        },
+        [dispatchRightForm]
+    );
 
-      async function funLoadParentsTreeData(rView: RightsViewKind) {
-        const { drParentsRepo } = rights;
+    const dispatchStore = useAppDispatch();
+    const rights = useAppSelector((state) => state.rightsState);
+    const [getParentsTreeData, { isLoading: drParentsLoading }] =
+        useLazyGetParentsTreeDataQuery();
+    const [getChildrenTreeData, { isLoading: drChildsLoading }] =
+        useLazyGetChildrenTreeDataQuery();
+    const [getHalfChecks, { isLoading: drChecksLoading }] =
+        useLazyGetHalfChecksQuery();
 
-        if (drParentsRepo && rView in drParentsRepo && drParentsRepo[rView])
-          return;
+    const loadChildsTreeDataAndChecks = useCallback(
+        async (
+            rView: RightsViewKind,
+            dtKey: string | undefined,
+            key: string | undefined,
+            refresh: boolean
+        ) => {
+            // console.log("loadChildsTreeDataAndChecks {rView, dtKey, key, refresh}=", {
+            //   rView,
+            //   dtKey,
+            //   key,
+            //   refresh,
+            // });
 
-        await getParentsTreeData(rView);
-      }
+            async function funLoadParentsTreeData(rView: RightsViewKind) {
+                const { drParentsRepo } = rights;
 
-      async function funLoadChildsTreeData(
-        rView: RightsViewKind,
-        dtKey: string | undefined
-      ) {
-        await funLoadParentsTreeData(rView);
+                if (
+                    drParentsRepo &&
+                    rView in drParentsRepo &&
+                    drParentsRepo[rView]
+                )
+                    return;
 
-        if (!dtKey) return;
+                await getParentsTreeData(rView);
+            }
 
-        const { drChildrenRepo } = rights;
+            async function funLoadChildsTreeData(
+                rView: RightsViewKind,
+                dtKey: string | undefined
+            ) {
+                await funLoadParentsTreeData(rView);
 
-        if (
-          drChildrenRepo &&
-          rView in drChildrenRepo &&
-          drChildrenRepo[rView] &&
-          dtKey in drChildrenRepo[rView] &&
-          drChildrenRepo[rView][dtKey]
-        )
-          return;
+                if (!dtKey) return;
 
-        await getChildrenTreeData({ dtKey, rViewId: rView });
-      }
+                const { drChildrenRepo } = rights;
 
-      async function CheckDataAndgetHalfChecks() {
-        if (!dtKey || !key) return;
+                if (
+                    drChildrenRepo &&
+                    rView in drChildrenRepo &&
+                    drChildrenRepo[rView] &&
+                    dtKey in drChildrenRepo[rView] &&
+                    drChildrenRepo[rView][dtKey]
+                )
+                    return;
 
-        const { drChecksRepo, drParentsRepo } = rights;
+                await getChildrenTreeData({ dtKey, rViewId: rView });
+            }
 
-        if (
-          drChecksRepo &&
-          rView in drChecksRepo &&
-          drChecksRepo[rView] &&
-          dtKey in drChecksRepo[rView] &&
-          drChecksRepo[rView][dtKey] &&
-          key in drChecksRepo[rView][dtKey] &&
-          drChecksRepo[rView][dtKey][key]
-        )
-          return;
+            async function CheckDataAndgetHalfChecks() {
+                if (!dtKey || !key) return;
 
-        if (
-          !drParentsRepo ||
-          !(rView in drParentsRepo) ||
-          !drParentsRepo[rView]
-        )
-          return;
-        const dt = drParentsRepo[rView].find((item) => item.dtKey === dtKey);
-        if (!dt) return;
-        const parentTypeId = dt.dtId;
+                const { drChecksRepo, drParentsRepo } = rights;
 
-        await getHalfChecks({ dtKey, parentTypeId, key, rViewId: rView });
-      }
+                if (
+                    drChecksRepo &&
+                    rView in drChecksRepo &&
+                    drChecksRepo[rView] &&
+                    dtKey in drChecksRepo[rView] &&
+                    drChecksRepo[rView][dtKey] &&
+                    key in drChecksRepo[rView][dtKey] &&
+                    drChecksRepo[rView][dtKey][key]
+                )
+                    return;
 
-      if (refresh) dispatchStore(clearForRefresh());
+                if (
+                    !drParentsRepo ||
+                    !(rView in drParentsRepo) ||
+                    !drParentsRepo[rView]
+                )
+                    return;
+                const dt = drParentsRepo[rView].find(
+                    (item) => item.dtKey === dtKey
+                );
+                if (!dt) return;
+                const parentTypeId = dt.dtId;
 
-      await funLoadChildsTreeData(rView, dtKey);
+                await getHalfChecks({
+                    dtKey,
+                    parentTypeId,
+                    key,
+                    rViewId: rView,
+                });
+            }
 
-      await CheckDataAndgetHalfChecks();
+            if (refresh) dispatchStore(clearForRefresh());
 
-      if (refresh) dispatchStore(finishRefresh());
-    },
-    [rights]
-  );
+            await funLoadChildsTreeData(rView, dtKey);
 
-  return [
-    drChildsLoading,
+            await CheckDataAndgetHalfChecks();
 
-    drChecksLoading,
+            if (refresh) dispatchStore(finishRefresh());
+        },
+        [rights]
+    );
 
-    drParentsLoading,
+    return [
+        drChildsLoading,
 
-    formRightState.parExp,
+        drChecksLoading,
 
-    formRightState.chiExp,
+        drParentsLoading,
 
-    turnExpanded,
+        formRightState.parExp,
 
-    loadChildsTreeDataAndChecks,
-  ];
+        formRightState.chiExp,
+
+        turnExpanded,
+
+        loadChildsTreeDataAndChecks,
+    ];
 }
 
 export function useSaveDataRightChanges(): [boolean, fnSaveDtaRightChanges] {
-  const [SaveDataRightChanges, { isLoading: drWorkingOnSave }] =
-    useSaveDataMutation();
-  const rights = useAppSelector((state) => state.rightsState);
+    const [SaveDataRightChanges, { isLoading: drWorkingOnSave }] =
+        useSaveDataMutation();
+    const rights = useAppSelector((state) => state.rightsState);
 
-  const saveDtaRightChanges = useCallback(async () => {
-    await SaveDataRightChanges(rights.changedRights);
-  }, [SaveDataRightChanges, rights.changedRights]);
+    const saveDtaRightChanges = useCallback(async () => {
+        await SaveDataRightChanges(rights.changedRights);
+    }, [SaveDataRightChanges, rights.changedRights]);
 
-  return [drWorkingOnSave, saveDtaRightChanges];
+    return [drWorkingOnSave, saveDtaRightChanges];
 }

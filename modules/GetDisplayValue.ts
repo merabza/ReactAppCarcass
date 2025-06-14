@@ -1,15 +1,15 @@
 //GetDisplayValue.ts
 
 import moment from "moment";
-import { IMasterDataState } from "../redux/slices/masterdataSlice";
-import {
+import type { IMasterDataState } from "../redux/slices/masterdataSlice";
+import type {
     Cell,
     DateCell,
     LookupCell,
     MdLookupCell,
     RsLookupCell,
 } from "../redux/types/gridTypes";
-import { ILookup } from "../redux/types/masterdataTypes";
+import type { ILookup } from "../redux/types/masterdataTypes";
 
 export function GetDisplayValue(
     masterData: IMasterDataState,

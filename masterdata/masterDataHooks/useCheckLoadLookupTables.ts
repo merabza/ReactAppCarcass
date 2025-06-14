@@ -8,29 +8,29 @@ import { setWorkingOnLoad } from "../../redux/slices/masterdataSlice";
 export type fnCheckLoadLookupTables = (tableNames: null | string[]) => void;
 
 export function useCheckLoadLookupTables(): [fnCheckLoadLookupTables, boolean] {
-  const dispatch = useAppDispatch();
-  const masterDataState = useAppSelector((state) => state.masterDataState);
-  const [getLookupTables, { isLoading: loadingLookupTables }] =
-    useLazyGetLookupTablesQuery();
+    const dispatch = useAppDispatch();
+    const masterDataState = useAppSelector((state) => state.masterDataState);
+    const [getLookupTables, { isLoading: loadingLookupTables }] =
+        useLazyGetLookupTablesQuery();
 
-  const checkLoadLookupTables = useCallback(
-    async (tableNames: null | string[]) => {
-      if (!tableNames || tableNames.length === 0) return;
+    const checkLoadLookupTables = useCallback(
+        async (tableNames: null | string[]) => {
+            if (!tableNames || tableNames.length === 0) return;
 
-      const realyNeedTables = tableNames.filter(
-        (tableName) =>
-          !(tableName in masterDataState.mdLookupRepo) &&
-          !masterDataState.mdWorkingOnLoadingLookupTables[tableName]
-      );
+            const realyNeedTables = tableNames.filter(
+                (tableName) =>
+                    !(tableName in masterDataState.mdLookupRepo) &&
+                    !masterDataState.mdWorkingOnLoadingLookupTables[tableName]
+            );
 
-      if (realyNeedTables.length === 0) return;
+            if (realyNeedTables.length === 0) return;
 
-      await getLookupTables(realyNeedTables);
+            await getLookupTables(realyNeedTables);
 
-      dispatch(setWorkingOnLoad(false));
-    },
-    [masterDataState.mdWorkingOnLoadingLookupTables]
-  );
+            dispatch(setWorkingOnLoad(false));
+        },
+        [masterDataState.mdWorkingOnLoadingLookupTables]
+    );
 
-  return [checkLoadLookupTables, loadingLookupTables];
+    return [checkLoadLookupTables, loadingLookupTables];
 }

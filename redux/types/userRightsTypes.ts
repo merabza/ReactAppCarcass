@@ -1,37 +1,37 @@
 //userRightsTypes.ts
-import { NavigateFunction } from "react-router-dom";
+import type { NavigateFunction } from "react-router-dom";
 
 export interface IMenuItmModel {
-  menId: number;
-  menKey: string;
-  menName: string;
-  menValue: string | null;
-  menGroupId: number;
-  sortId: number;
-  menLinkKey: string;
-  menIconName: string | null;
-  create: boolean;
-  update: boolean;
-  delete: boolean;
-  confirm: boolean;
+    menId: number;
+    menKey: string;
+    menName: string;
+    menValue: string | null;
+    menGroupId: number;
+    sortId: number;
+    menLinkKey: string;
+    menIconName: string | null;
+    create: boolean;
+    update: boolean;
+    delete: boolean;
+    confirm: boolean;
 }
 
 export interface IMenuGroupModel {
-  mengId: number;
-  mengKey: string;
-  mengName: string;
-  sortId: number;
-  mengIconName: string | null;
-  hidden: boolean;
-  expanded: boolean;
-  menu: IMenuItmModel[];
+    mengId: number;
+    mengKey: string;
+    mengName: string;
+    sortId: number;
+    mengIconName: string | null;
+    hidden: boolean;
+    expanded: boolean;
+    menu: IMenuItmModel[];
 }
 
 export interface IMainMenuModel {
-  menuGroups: IMenuGroupModel[];
+    menuGroups: IMenuGroupModel[];
 }
 
 export interface IdeleteCurrentUserParameters {
-  userName: string;
-  navigate: NavigateFunction;
+    userName: string;
+    navigate: NavigateFunction;
 }

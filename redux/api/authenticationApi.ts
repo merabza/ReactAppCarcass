@@ -7,9 +7,9 @@ import type {
 } from "@reduxjs/toolkit/query/react";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-import { RootState } from "../../../redux/store";
+import type { RootState } from "../../../redux/store";
 import { setUser, setloggingIn } from "../slices/userSlice";
-import { IAppUser } from "../types/authenticationTypes";
+import type { IAppUser } from "../types/authenticationTypes";
 
 export interface ILoginRequest {
     username: string;

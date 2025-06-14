@@ -3,8 +3,8 @@
 import { Form, Row, Col, Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import BsComboBox from "../masterdata/BsComboBox";
-import { FC } from "react";
-import { fnChangeField, fnGetError } from "../hooks/useForman";
+import type { FC } from "react";
+import type { fnChangeField, fnGetError } from "../hooks/useForman";
 
 type OneComboBoxControlProps = {
     controlId: string;

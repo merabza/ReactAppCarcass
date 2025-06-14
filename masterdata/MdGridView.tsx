@@ -1,6 +1,6 @@
 //MdGridView.tsx
 
-import { FC, useEffect } from "react";
+import { type FC, useEffect } from "react";
 import { useAppSelector } from "../redux/hooks";
 import { useScroller } from "../hooks/useScroller";
 import { useAlert } from "../hooks/useAlert";
@@ -13,7 +13,7 @@ import {
 } from "./mdFunctions";
 import { useMasterDataLookupLists } from "./masterDataHooks/useMasterDataLookupLists";
 import GridView from "../grid/GridView";
-import { IRowsData } from "../grid/GridViewTypes";
+import type { IRowsData } from "../grid/GridViewTypes";
 import { useLazyGetTableRowsDataQuery } from "../redux/api/masterdataApi";
 
 type MdGridViewProps = {

@@ -1,10 +1,10 @@
 //dataTypesSlice.ts
 
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { IDictionary } from "../../common/types";
-import { DataTypeFfModel } from "../types/dataTypesTypes";
-import { ISetGridAction, ISetMultipleGrids } from "../types/rightsTypes";
-import { DeserializeGridModel, GridModel } from "../types/gridTypes";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import type { IDictionary } from "../../common/types";
+import type { DataTypeFfModel } from "../types/dataTypesTypes";
+import type { ISetGridAction, ISetMultipleGrids } from "../types/rightsTypes";
+import { DeserializeGridModel, type GridModel } from "../types/gridTypes";
 
 export interface IDataTypesState {
     dataTypes: Array<DataTypeFfModel>;

@@ -1,6 +1,6 @@
 //LoginPage.tsx
 
-import React, { useState, useEffect, FC } from "react";
+import React, { useState, useEffect, type FC } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button, Spinner, Form } from "react-bootstrap";

@@ -1,26 +1,26 @@
 //OnePlaintextRow.tsx
 
-import { FC } from "react";
+import type { FC } from "react";
 import { Form, Row, Col } from "react-bootstrap";
 
 interface OnePlaintextRowProps {
-  controlId: string;
-  label: string;
-  text: string;
-  color?: string | undefined;
+    controlId: string;
+    label: string;
+    text: string;
+    color?: string | undefined;
 }
 
 const OnePlaintextRow: FC<OnePlaintextRowProps> = (props) => {
-  const { controlId, label, text, color } = props;
+    const { controlId, label, text, color } = props;
 
-  // console.log("OnePlaintextRow props=", props);
+    // console.log("OnePlaintextRow props=", props);
 
-  return (
-    <Form.Group className="mb-1" as={Row} controlId={controlId}>
-      <Form.Label column md="2">
-        {label}
-      </Form.Label>
-      {/* {!!color && (
+    return (
+        <Form.Group className="mb-1" as={Row} controlId={controlId}>
+            <Form.Label column md="2">
+                {label}
+            </Form.Label>
+            {/* {!!color && (
         <Form.Label column md="8" style={{ color: `${color}` }}>
           {text}
         </Form.Label>
@@ -31,19 +31,19 @@ const OnePlaintextRow: FC<OnePlaintextRowProps> = (props) => {
         </Form.Label>
       )} */}
 
-      <Col md="8">
-        {!!color && (
-          <Form.Control
-            plaintext
-            readOnly
-            value={text}
-            style={{ color: `${color}` }}
-          />
-        )}
-        {!color && <Form.Control plaintext readOnly value={text} />}
-      </Col>
+            <Col md="8">
+                {!!color && (
+                    <Form.Control
+                        plaintext
+                        readOnly
+                        value={text}
+                        style={{ color: `${color}` }}
+                    />
+                )}
+                {!color && <Form.Control plaintext readOnly value={text} />}
+            </Col>
 
-      {/* <Col md="8">
+            {/* <Col md="8">
         {!!color && (
           <Form.Control
             plaintext
@@ -54,8 +54,8 @@ const OnePlaintextRow: FC<OnePlaintextRowProps> = (props) => {
         )}
         {!color && <Form.Control plaintext readOnly defaultValue={text} />}
       </Col> */}
-    </Form.Group>
-  );
+        </Form.Group>
+    );
 };
 
 export default OnePlaintextRow;

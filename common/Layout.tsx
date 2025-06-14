@@ -9,22 +9,22 @@ import { useAppSelector } from "../redux/hooks";
 import "bootstrap/dist/css/bootstrap.css";
 import "./Layout.css";
 import { Outlet } from "react-router-dom";
-import { FC } from "react";
+import type { FC } from "react";
 
 const Layout: FC = () => {
-  const active = useAppSelector((state) => state.navMenuState.active);
+    const active = useAppSelector((state) => state.navMenuState.active);
 
-  return (
-    <div className="wrapper">
-      <NavMenu />
-      <div id="content" className={active ? "active" : undefined}>
-        <TopNavMenu />
-        <div className="content-wrapper">
-          <Outlet />
+    return (
+        <div className="wrapper">
+            <NavMenu />
+            <div id="content" className={active ? "active" : undefined}>
+                <TopNavMenu />
+                <div className="content-wrapper">
+                    <Outlet />
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 };
 
 export default Layout;

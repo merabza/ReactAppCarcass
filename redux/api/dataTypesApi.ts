@@ -8,8 +8,8 @@ import {
     setGrid,
     setMultipleGrids,
 } from "../slices/dataTypesSlice";
-import { DataTypeFfModel } from "../types/dataTypesTypes";
-import { ISetGridAction, ISetMultipleGrids } from "../types/rightsTypes";
+import type { DataTypeFfModel } from "../types/dataTypesTypes";
+import type { ISetGridAction, ISetMultipleGrids } from "../types/rightsTypes";
 import { setWorkingOnLoad } from "../slices/masterdataSlice";
 import { buildErrorMessage } from "../types/errorTypes";
 

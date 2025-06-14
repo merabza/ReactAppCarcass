@@ -14,9 +14,9 @@
 // import { useCheckLoadMdTables } from "./useCheckLoadMdTables";
 
 export type fnLoadMultipleListData = (
-  gridNames: string[],
-  listTableNames: null | string[],
-  additionalTableNames: null | string[]
+    gridNames: string[],
+    listTableNames: null | string[],
+    additionalTableNames: null | string[]
 ) => void;
 
 // export function useCheckLoadMultipleListData(): [fnLoadMultipleListData] {

@@ -1,32 +1,33 @@
 //GridViewTypes.ts
 
-import { ILookup } from "../redux/types/masterdataTypes";
+//GridViewTypes.ts
+import type { ILookup } from "../redux/types/masterdataTypes";
 
 export interface IFilterSortObject {
-  //tabWindowId: number;
-  filterByFields: IFilterField[];
-  sortByFields: ISortField[];
-  tableName: string;
+    //tabWindowId: number;
+    filterByFields: IFilterField[];
+    sortByFields: ISortField[];
+    tableName: string;
 }
 
 export interface IFilterSortRequest {
-  offset: number;
-  rowsCount: number;
-  filterFields: IFilterField[];
-  sortByFields: ISortField[];
+    offset: number;
+    rowsCount: number;
+    filterFields: IFilterField[];
+    sortByFields: ISortField[];
 }
 
 export interface IGridColumn {
-  caption: string;
-  visible: boolean;
-  sortable: boolean;
-  nullable: boolean;
-  fieldName: string;
-  isKey: boolean;
-  control: React.ReactNode | null;
-  changingFieldName: string;
-  typeName: string;
-  lookupColumnPart: ILookup[] | null;
+    caption: string;
+    visible: boolean;
+    sortable: boolean;
+    nullable: boolean;
+    fieldName: string;
+    isKey: boolean;
+    control: React.ReactNode | null;
+    changingFieldName: string;
+    typeName: string;
+    lookupColumnPart: ILookup[] | null;
 }
 
 // export interface IMdLookupColumnPart {
@@ -36,21 +37,21 @@ export interface IGridColumn {
 // }
 
 export interface IGridScrollTo {
-  index: number;
+    index: number;
 }
 
 export interface ISortField {
-  fieldName: string;
-  ascending: boolean;
+    fieldName: string;
+    ascending: boolean;
 }
 
 export interface IFilterField {
-  fieldName: string;
-  value: string;
+    fieldName: string;
+    value: string;
 }
 
 export interface IRowsData {
-  allRowsCount: number;
-  offset: number;
-  rows: any[];
+    allRowsCount: number;
+    offset: number;
+    rows: any[];
 }
