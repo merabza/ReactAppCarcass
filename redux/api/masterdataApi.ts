@@ -124,10 +124,10 @@ export const masterdataApi = createApi({
                     //   "masterdataApi getTables realyNeedTables=",
                     //   realyNeedTables
                     // );
-                    console.log(
-                        "masterdataApi getTables queryResult=",
-                        queryResult
-                    );
+                    // console.log(
+                    //     "masterdataApi getTables queryResult=",
+                    //     queryResult
+                    // );
                     dispatch(
                         setMultipleTableData({
                             realyNeedTables,
