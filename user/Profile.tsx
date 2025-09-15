@@ -5,98 +5,101 @@ import OneSaveCancelButtons from "../editorParts/OneSaveCancelButtons";
 import OneTextControl from "../editorParts/OneTextControl";
 import OneErrorRow from "../editorParts/OneErrorRow";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import { useChangeProfileMutation } from "../redux/api/userRightsApi";
+import {
+  useChangeProfileMutation,
+  type IChangeProfileModel,
+} from "../redux/api/userRightsApi";
 import { type FC, useEffect } from "react";
 import { clearAllAlerts } from "../redux/slices/alertSlice";
 import { useForman } from "../hooks/useForman";
 
 const Profile: FC = () => {
-    const { user } = useAppSelector((state) => state.userState);
-    const dispatch = useAppDispatch();
+  const { user } = useAppSelector((state) => state.userState);
+  const dispatch = useAppDispatch();
 
-    type ProfileModel = yup.InferType<typeof profileModelSchema>;
+  type ProfileModel = yup.InferType<typeof profileModelSchema>;
 
-    const profileModelSchema = yup.object().shape({
-        firstName: yup
-            .string()
-            .required("სახელი შევსებული უნდა იყოს")
-            .max(50, "სახელის სიგრძე არ შეიძლება იყოს 50 სიმბოლოზე მეტი"),
-        lastName: yup
-            .string()
-            .required("გვარი შევსებული უნდა იყოს")
-            .max(100, "გვარის სიგრძე არ შეიძლება იყოს 100 სიმბოლოზე მეტი"),
-    });
+  const profileModelSchema = yup.object().shape({
+    firstName: yup
+      .string()
+      .required("სახელი შევსებული უნდა იყოს")
+      .max(50, "სახელის სიგრძე არ შეიძლება იყოს 50 სიმბოლოზე მეტი"),
+    lastName: yup
+      .string()
+      .required("გვარი შევსებული უნდა იყოს")
+      .max(100, "გვარის სიგრძე არ შეიძლება იყოს 100 სიმბოლოზე მეტი"),
+  });
 
-    const [frm, changeField, getError, getAllErrors, , setFormData] = useForman<
-        typeof profileModelSchema,
-        ProfileModel
-    >(profileModelSchema);
+  const [frm, changeField, getError, getAllErrors, , setFormData] = useForman<
+    typeof profileModelSchema,
+    ProfileModel
+  >(profileModelSchema);
 
-    const [changeProfile, { isLoading: changingProfile }] =
-        useChangeProfileMutation();
+  const [changeProfile, { isLoading: changingProfile }] =
+    useChangeProfileMutation();
 
-    useEffect(() => {
-        if (user)
-            setFormData({
-                firstName: user.firstName,
-                lastName: user.lastName,
-            } as ProfileModel);
-    }, [user]);
+  useEffect(() => {
+    if (user)
+      setFormData({
+        firstName: user.firstName,
+        lastName: user.lastName,
+      } as ProfileModel);
+  }, [user]);
 
-    //9. შეცდომების შესახებ ინფორმაცია გამოიყენება საბმიტის ფუნქციაში
-    const allErrors = getAllErrors();
-    const haveErrors = allErrors !== "";
+  //9. შეცდომების შესახებ ინფორმაცია გამოიყენება საბმიტის ფუნქციაში
+  const allErrors = getAllErrors();
+  const haveErrors = allErrors !== "";
 
-    function handleSubmit(e: React.SyntheticEvent) {
-        e.preventDefault();
-        dispatch(clearAllAlerts());
-        if (haveErrors) return;
-        //console.log("Profile handleSubmit user=", user);
-        if (user?.userId)
-            changeProfile({
-                ...frm,
-                email: user.email,
-                userName: user.userName,
-                userid: user.userId,
-            });
-    }
+  function handleSubmit(e: React.SyntheticEvent) {
+    e.preventDefault();
+    dispatch(clearAllAlerts());
+    if (haveErrors) return;
+    //console.log("Profile handleSubmit user=", user);
+    if (user?.userId)
+      changeProfile({
+        ...frm,
+        email: user.email,
+        userName: user.userName,
+        userid: user.userId,
+      } as IChangeProfileModel);
+  }
 
-    if (!user?.userId)
-        return (
-            <Alert variant="danger">
-                შეცდომა! პროფაილის რედაქტირება შეუძლებელია
-            </Alert>
-        );
-
+  if (!user?.userId)
     return (
-        <Row id="MdItemEdit">
-            <Col md="6">
-                <Form onSubmit={handleSubmit}>
-                    <OneTextControl
-                        controlId="firstName"
-                        label="სახელი"
-                        value={frm.firstName}
-                        getError={getError}
-                        onChangeValue={changeField}
-                    />
-                    <OneTextControl
-                        controlId="lastName"
-                        label="გვარი"
-                        value={frm.lastName}
-                        getError={getError}
-                        onChangeValue={changeField}
-                    />
-                    <OneSaveCancelButtons
-                        curIdVal={user.userId}
-                        haveErrors={haveErrors}
-                        savingNow={changingProfile}
-                        allowEdit
-                    />
-                    <OneErrorRow allErrors={allErrors} />
-                </Form>
-            </Col>
-        </Row>
+      <Alert variant="danger">შეცდომა! პროფაილის რედაქტირება შეუძლებელია</Alert>
     );
+
+  if (!frm) return <div></div>;
+
+  return (
+    <Row id="MdItemEdit">
+      <Col md="6">
+        <Form onSubmit={handleSubmit}>
+          <OneTextControl
+            controlId="firstName"
+            label="სახელი"
+            value={frm.firstName}
+            getError={getError}
+            onChangeValue={changeField}
+          />
+          <OneTextControl
+            controlId="lastName"
+            label="გვარი"
+            value={frm.lastName}
+            getError={getError}
+            onChangeValue={changeField}
+          />
+          <OneSaveCancelButtons
+            curIdVal={user.userId}
+            haveErrors={haveErrors}
+            savingNow={changingProfile}
+            allowEdit
+          />
+          <OneErrorRow allErrors={allErrors} />
+        </Form>
+      </Col>
+    </Row>
+  );
 };
 
 export default Profile;
