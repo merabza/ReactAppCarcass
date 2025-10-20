@@ -14,7 +14,7 @@ body {
 @import "../../Layout_Parameters.css";
 
 .backLigth {
-    background-color: PaleTurquoise;
+    background-color: PaleTurquoise !important;
 }
 
 #sidebar p {

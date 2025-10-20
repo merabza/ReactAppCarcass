@@ -277,11 +277,13 @@ const GridView: FC<GridViewProps> = (props) => {
         return (
             <tbody>
                 {rowsData.rows.map((row, i) => {
-                    // console.log("GridView row=", row);
-                    // console.log("GridView keyCol=", keyCol);
-                    // console.log("GridView row[keyCol.fieldName]=", row[keyCol.fieldName]);
+                    console.log("GridView row=", row);
+                    console.log("GridView keyCol=", keyCol);
+                    console.log("GridView row[keyCol.fieldName]=", row[keyCol.fieldName]);
                     const index = rowsData.offset + i + 1;
                     const bl = curscrollTo?.index === index;
+                    console.log("GridView curscrollTo=", curscrollTo);
+                    console.log("GridView bl=", bl);
                     return (
                         <tr
                             key={row[keyCol.fieldName]}

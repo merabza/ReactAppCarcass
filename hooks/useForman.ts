@@ -129,6 +129,7 @@ export function useForman<
             }
             case "setForm":
                 setFormSet(true);
+                // console.log("useForman setForm action.payload=", action.payload);
                 return {
                     ...prevState,
                     frm: { ...action.payload },
@@ -193,6 +194,7 @@ export function useForman<
     }, []); //dispatchForm
 
     const setFormData = useCallback((frm: TFormData) => {
+        // console.log("useForman setFormData frm=", frm);
         dispatchForm({ type: "setForm", payload: frm });
     }, []); //dispatchForm
 
