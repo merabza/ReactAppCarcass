@@ -35,6 +35,7 @@ type GridViewProps = {
         sortByFields: ISortField[],
         filterByFields: IFilterField[]
     ) => void;
+    onRowClick?: (row: any, index: number) => void;
     readOnly?: boolean;
     allowCreate?: boolean;
     allowUpdate?: boolean;
@@ -52,6 +53,7 @@ const GridView: FC<GridViewProps> = (props) => {
         curscrollTo,
         backLigth,
         onLoadRows,
+        onRowClick,
         readOnly,
         allowCreate,
         allowUpdate,
@@ -277,17 +279,19 @@ const GridView: FC<GridViewProps> = (props) => {
         return (
             <tbody>
                 {rowsData.rows.map((row, i) => {
-                    console.log("GridView row=", row);
-                    console.log("GridView keyCol=", keyCol);
-                    console.log("GridView row[keyCol.fieldName]=", row[keyCol.fieldName]);
+                    // console.log("GridView row=", row);
+                    // console.log("GridView keyCol=", keyCol);
+                    // console.log("GridView row[keyCol.fieldName]=", row[keyCol.fieldName]);
                     const index = rowsData.offset + i + 1;
-                    const bl = curscrollTo?.index === index;
-                    console.log("GridView curscrollTo=", curscrollTo);
-                    console.log("GridView bl=", bl);
+                    const bl = curscrollTo ? curscrollTo.value === row[curscrollTo.idFieldName] : false;
+                    // console.log("GridView curscrollTo=", curscrollTo);
+                    // console.log("GridView bl=", bl);
                     return (
                         <tr
                             key={row[keyCol.fieldName]}
                             ref={bl ? backLigth : null}
+                            onClick={() => onRowClick?.(row, index)}
+                            style={{ cursor: onRowClick ? 'pointer' : 'default' }}
                         >
                             {!!showCountColumn && (
                                 <td className={bl ? "backLigth" : undefined}>
@@ -357,6 +361,7 @@ const GridView: FC<GridViewProps> = (props) => {
                                                     row[keyCol.fieldName]
                                                 }`}
                                                 className="btn btn-primary"
+                                                onClick={(e) => e.stopPropagation()}
                                             >
                                                 <FontAwesomeIcon icon="edit" />
                                             </Link>

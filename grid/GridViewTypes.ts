@@ -37,7 +37,8 @@ export interface IGridColumn {
 // }
 
 export interface IGridScrollTo {
-    index: number;
+    idFieldName: string;
+    value: number | null;
 }
 
 export interface ISortField {
