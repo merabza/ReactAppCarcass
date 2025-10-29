@@ -2,15 +2,16 @@
 
 import { type FC, useState } from "react";
 import { Col, Form, Row } from "react-bootstrap";
-import type { ILookup } from "../redux/types/masterdataTypes";
+// import type { ILookup } from "../redux/types/masterdataTypes";
 import FilterButton from "./FilterButton";
+import { IDropdownOption } from "./InlineDropdownListEditor";
 
 interface IMasterDataFilterType {
     type: number;
     display: string | null;
 }
 
-interface IMasterDataOptionValue {
+interface IFilterOptionValue {
     type: number;
     id: number | null;
     display: string;
@@ -24,32 +25,32 @@ export const MasterDataFilterOptionType = {
 
 type MasterDataFilterComboBoxProps = {
     controlId?: string;
-    lookupTable: ILookup[];
+    dropdownOptions: IDropdownOption[];
     isNullable?: boolean | undefined;
     onChangeValue: (newValue: number | null | undefined) => void;
 };
 
 const MasterDataFilterComboBox: FC<MasterDataFilterComboBoxProps> = (props) => {
-    const { controlId, lookupTable, isNullable, onChangeValue } = props;
+    const { controlId, dropdownOptions, isNullable, onChangeValue } = props;
     // console.log("MasterDataFilterComboBox props=", props);
 
     const defaultValue = JSON.stringify({
         type: MasterDataFilterOptionType.All.type,
         id: null,
         display: MasterDataFilterOptionType.All.display,
-    } as IMasterDataOptionValue);
+    } as IFilterOptionValue);
 
     const emptyValue = JSON.stringify({
         type: MasterDataFilterOptionType.Empty.type,
         id: null,
         display: MasterDataFilterOptionType.Empty.display,
-    } as IMasterDataOptionValue);
+    } as IFilterOptionValue);
 
     const [curValue, setCurValue] = useState<string>(defaultValue);
 
-    const masterDataTableSorted = lookupTable
+    const dropdownOptionsSorted = dropdownOptions
         .slice()
-        .sort((a, b) => a.name.localeCompare(b.name));
+        .sort((a, b) => a.label.localeCompare(b.label));
 
     function handleChange(e: React.ChangeEvent<HTMLSelectElement>) {
         e.preventDefault();
@@ -57,7 +58,7 @@ const MasterDataFilterComboBox: FC<MasterDataFilterComboBoxProps> = (props) => {
         setCurValue(newValue);
 
         const newOptionValue = newValue
-            ? (JSON.parse(newValue) as IMasterDataOptionValue)
+            ? (JSON.parse(newValue) as IFilterOptionValue)
             : null;
 
         let returnValue: any = undefined;
@@ -101,23 +102,23 @@ const MasterDataFilterComboBox: FC<MasterDataFilterComboBoxProps> = (props) => {
                                 id: null,
                                 display:
                                     MasterDataFilterOptionType.Empty.display,
-                            } as IMasterDataOptionValue)}
+                            } as IFilterOptionValue)}
                         >
                             {MasterDataFilterOptionType.Empty.display}
                         </option>
                     )}
-                    {masterDataTableSorted &&
-                        masterDataTableSorted.map((mdItm) => (
+                    {dropdownOptionsSorted &&
+                        dropdownOptionsSorted.map((mdItm) => (
                             <option
-                                key={mdItm.id}
+                                key={mdItm.value}
                                 value={JSON.stringify({
                                     type: MasterDataFilterOptionType.SomeValue
                                         .type,
-                                    id: mdItm.id,
-                                    display: mdItm.name,
-                                } as IMasterDataOptionValue)}
+                                    id: mdItm.value,
+                                    display: mdItm.label,
+                                } as IFilterOptionValue)}
                             >
-                                {mdItm.name}
+                                {mdItm.label}
                             </option>
                         ))}
                 </Form.Select>

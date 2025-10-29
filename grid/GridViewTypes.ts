@@ -1,13 +1,22 @@
 //GridViewTypes.ts
 
-//GridViewTypes.ts
-import type { ILookup } from "../redux/types/masterdataTypes";
+// import type { ILookup } from "../redux/types/masterdataTypes";
 
 export interface IFilterSortObject {
     //tabWindowId: number;
     filterByFields: IFilterField[];
     sortByFields: ISortField[];
     tableName: string;
+}
+
+export interface IInlineEditData {
+    [key: string]: any;
+}
+
+export interface IDropdownOption {
+    value: any;
+    label: string;
+    disabled?: boolean;
 }
 
 export interface IFilterSortRequest {
@@ -27,7 +36,9 @@ export interface IGridColumn {
     control: React.ReactNode | null;
     changingFieldName: string;
     typeName: string;
-    lookupColumnPart: ILookup[] | null;
+    // lookupColumnPart: ILookup[] | null;
+    editable?: boolean;
+    dropdownOptions?: IDropdownOption[];
 }
 
 // export interface IMdLookupColumnPart {

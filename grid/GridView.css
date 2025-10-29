@@ -11,3 +11,44 @@
     font-size: 1.1em;
     display: block;
 }
+
+/* Inline editing styles */
+.grid-cell-editable {
+    position: relative;
+}
+
+.grid-cell-editable:hover {
+    background-color: rgba(0, 123, 255, 0.1);
+    border: 1px solid rgba(0, 123, 255, 0.3);
+}
+
+.grid-cell-editing {
+    padding: 0 !important;
+    background-color: #fff;
+    border: 2px solid #007bff !important;
+}
+
+.grid-cell-editing .form-control,
+.grid-cell-editing .form-select {
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 4px 8px;
+    height: auto;
+    min-height: 28px;
+}
+
+.grid-cell-editing .form-control:focus,
+.grid-cell-editing .form-select:focus {
+    border: none;
+    box-shadow: none;
+}
+
+.grid-cell-editable-hint {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    font-size: 10px;
+    opacity: 0.6;
+    pointer-events: none;
+}

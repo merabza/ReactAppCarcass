@@ -128,8 +128,7 @@ const MdGridView: FC<MdGridViewProps> = (props) => {
     if (
         !curGridColumns ||
         curscrollTo === null ||
-        !dataType ||
-        !curGridColumns
+        !dataType
     ) {
         return (
             <div>

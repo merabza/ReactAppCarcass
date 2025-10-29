@@ -1,6 +1,6 @@
 //GridView.tsx
 
-import React, { useState, useEffect, type FC } from "react";
+import { useState, useEffect, type FC } from "react";
 import { Table, Row, Col } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
@@ -14,12 +14,13 @@ import type {
     IRowsData,
     ISortField,
 } from "./GridViewTypes";
-import { NzInt } from "../common/myFunctions";
 import Loading from "../common/Loading";
 import MasterDataFilterComboBox from "./MasterDataFilterComboBox";
 import FilterTextBox from "./FilterTextBox";
 import FilterNumberControl from "./FilterNumberControl";
 import FilterYesNoComboBox from "./FilterYesNoComboBox";
+import GridPagenation from "./GridPagenation";
+import GridTableBody from "./GridTableBody";
 
 type GridViewProps = {
     gridHeader?: string;
@@ -41,6 +42,14 @@ type GridViewProps = {
     allowUpdate?: boolean;
     allowDelete?: boolean;
     editorLink?: string;
+    allowInlineEdit?: boolean;
+    onInlineEdit?: (
+        row: any,
+        fieldName: string,
+        newValue: any
+    ) => Promise<boolean>;
+    onInlineEditStart?: (row: any) => void;
+    onInlineEditCancel?: (row: any) => void;
 };
 
 const GridView: FC<GridViewProps> = (props) => {
@@ -59,9 +68,13 @@ const GridView: FC<GridViewProps> = (props) => {
         allowUpdate,
         allowDelete,
         editorLink,
+        allowInlineEdit,
+        onInlineEdit,
+        onInlineEditStart,
+        onInlineEditCancel,
     } = props;
 
-    // console.log("GridView props=", props);
+    console.log("GridView props=", props);
 
     const [curShowRowsCount, setCurShowRowsCount] = useState<number>(10); //ცხრილში საჩვენებელი სტრიქონების რაოდენობა
 
@@ -139,6 +152,13 @@ const GridView: FC<GridViewProps> = (props) => {
         }
     }
 
+    function handlePageChange(offset: number, rowsCount: number) {
+        setCurShowRowsCount(rowsCount);
+        if (onLoadRows) {
+            onLoadRows(offset, rowsCount, curSortFieldNames, curFilterFields);
+        }
+    }
+
     function getTableHeader() {
         return (
             <thead>
@@ -186,11 +206,14 @@ const GridView: FC<GridViewProps> = (props) => {
                                                 icon={sortIconName as IconName}
                                             />
                                         </Link>
-                                        {!!col.lookupColumnPart && (
+                                        {!!(
+                                            col.dropdownOptions &&
+                                            col.dropdownOptions.length > 0
+                                        ) && (
                                             <MasterDataFilterComboBox
                                                 controlId={col.fieldName}
-                                                lookupTable={
-                                                    col.lookupColumnPart
+                                                dropdownOptions={
+                                                    col.dropdownOptions
                                                 }
                                                 isNullable={col.nullable}
                                                 onChangeValue={(
@@ -272,259 +295,186 @@ const GridView: FC<GridViewProps> = (props) => {
         );
     }
 
-    function getTableBody(keyCol: IGridColumn) {
-        if (!rowsData || !rowsData.rows || rowsData.rows.length === 0)
-            return null;
+    // function getTableBody(keyCol: IGridColumn) {
+    //     if (!rowsData || !rowsData.rows || rowsData.rows.length === 0)
+    //         return null;
 
-        return (
-            <tbody>
-                {rowsData.rows.map((row, i) => {
-                    // console.log("GridView row=", row);
-                    // console.log("GridView keyCol=", keyCol);
-                    // console.log("GridView row[keyCol.fieldName]=", row[keyCol.fieldName]);
-                    const index = rowsData.offset + i + 1;
-                    const bl = curscrollTo ? curscrollTo.value === row[curscrollTo.idFieldName] : false;
-                    // console.log("GridView curscrollTo=", curscrollTo);
-                    // console.log("GridView bl=", bl);
-                    return (
-                        <tr
-                            key={row[keyCol.fieldName]}
-                            ref={bl ? backLigth : null}
-                            onClick={() => onRowClick?.(row, index)}
-                            style={{ cursor: onRowClick ? 'pointer' : 'default' }}
-                        >
-                            {!!showCountColumn && (
-                                <td className={bl ? "backLigth" : undefined}>
-                                    {index}
-                                </td>
-                            )}
-                            {columns
-                                .filter((col) => col.visible)
-                                .map((col) => {
-                                    const fieldName = col.fieldName
-                                        ? col.fieldName
-                                        : "";
-                                    const value = fieldName
-                                        ? row[fieldName]
-                                        : "";
-                                    const changingFieldName =
-                                        col.changingFieldName
-                                            ? col.changingFieldName
-                                            : "";
-                                    const changing = changingFieldName
-                                        ? row[changingFieldName]
-                                        : false;
-                                    // if (col.caption === "თოლია") {
-                                    // console.log("GridView col=", col);
-                                    //   //console.log("GridView changingFieldName=", changingFieldName);
-                                    //   //console.log("GridView changing=", changing);
-                                    // }
-                                    return (
-                                        <td
-                                            key={col.fieldName}
-                                            className={
-                                                bl ? "backLigth" : undefined
-                                            }
-                                        >
-                                            {col.control &&
-                                            React.isValidElement(col.control)
-                                                ? React.cloneElement(
-                                                      col.control as React.ReactElement<any>,
-                                                      {
-                                                          value,
-                                                          index,
-                                                          offset: rowsData.offset,
-                                                          showRows:
-                                                              curShowRowsCount,
-                                                          changing,
-                                                          record: row,
-                                                      },
-                                                      null
-                                                  )
-                                                : // ) : col.lookupColumnPart ? (
-                                                  //   <LookupColumn
-                                                  //     lookupTable={col.lookupColumnPart}
-                                                  //     value={value}
-                                                  //   ></LookupColumn>
-                                                  value}
-                                        </td>
-                                    );
-                                })}
+    //     return (
+    //         <tbody>
+    //             {rowsData.rows.map((row, i) => {
+    //                 // console.log("GridView row=", row);
+    //                 // console.log("GridView keyCol=", keyCol);
+    //                 // console.log(
+    //                 //     "GridView row[keyCol.fieldName]=",
+    //                 //     row[keyCol.fieldName]
+    //                 // );
+    //                 const index = rowsData.offset + i + 1;
+    //                 const bl = curscrollTo
+    //                     ? curscrollTo.value === row[curscrollTo.idFieldName]
+    //                     : false;
+    //                 // console.log("GridView curscrollTo=", curscrollTo);
+    //                 // console.log("GridView bl=", bl);
+    //                 return (
+    //                     <tr
+    //                         key={row[keyCol.fieldName]}
+    //                         ref={bl ? backLigth : null}
+    //                         onClick={() => {
+    //                             // Don't trigger row click if inline editing is active
+    //                             if (
+    //                                 !editingRow ||
+    //                                 editingRow[keyCol.fieldName] !==
+    //                                     row[keyCol.fieldName]
+    //                             ) {
+    //                                 onRowClick?.(row, index);
+    //                             }
+    //                         }}
+    //                         style={{
+    //                             cursor:
+    //                                 onRowClick &&
+    //                                 (!editingRow ||
+    //                                     editingRow[keyCol.fieldName] !==
+    //                                         row[keyCol.fieldName])
+    //                                     ? "pointer"
+    //                                     : "default",
+    //                         }}
+    //                     >
+    //                         {!!showCountColumn && (
+    //                             <td className={bl ? "backLigth" : undefined}>
+    //                                 {index}
+    //                             </td>
+    //                         )}
+    //                         {columns
+    //                             .filter((col) => col.visible)
+    //                             .map((col) => {
+    //                                 const fieldName = col.fieldName
+    //                                     ? col.fieldName
+    //                                     : "";
+    //                                 const value = fieldName
+    //                                     ? row[fieldName]
+    //                                     : "";
 
-                            {!readOnly &&
-                                (allowUpdate || allowDelete) &&
-                                !!editorLink && (
-                                    <td width="50px">
-                                        <div className="btn-toolbar pull-right">
-                                            <Link
-                                                to={`${editorLink}/${
-                                                    row[keyCol.fieldName]
-                                                }`}
-                                                className="btn btn-primary"
-                                                onClick={(e) => e.stopPropagation()}
-                                            >
-                                                <FontAwesomeIcon icon="edit" />
-                                            </Link>
-                                        </div>
-                                    </td>
-                                )}
-                        </tr>
-                    );
-                })}
-            </tbody>
-        );
-    }
+    //                                 const displayValue =
+    //                                     col.dropdownOptions &&
+    //                                     col.dropdownOptions.length > 0
+    //                                         ? col.dropdownOptions.find(
+    //                                               (opt) => opt.value === value
+    //                                           )?.label ?? value
+    //                                         : value;
 
-    function pagenation() {
-        if (!rowsData || !rowsData.rows || rowsData.rows.length === 0)
-            return null;
-        return (
-            <>
-                <div className="d-flex align-items-center justify-content-center">
-                    <div className="form-inline">
-                        {" "}
-                        გვერდზე ჩანაწერების რაოდენობა:{" "}
-                        <select
-                            className="ml-1 mr-1"
-                            onChange={(e) => {
-                                e.preventDefault();
-                                const newValue = NzInt(
-                                    e.target.value,
-                                    curShowRowsCount
-                                );
-                                setCurShowRowsCount(newValue);
-                                if (onLoadRows) {
-                                    onLoadRows(
-                                        rowsData?.offset ?? 0,
-                                        newValue,
-                                        curSortFieldNames,
-                                        curFilterFields
-                                    );
-                                }
-                            }}
-                        >
-                            <option value="10">10</option>
-                            <option value="25">25</option>
-                            <option value="50">50</option>
-                            <option value="100">100</option>
-                        </select>
-                        წანაცვლება:
-                        <input
-                            className="ml-1 mr-1"
-                            autoComplete="off"
-                            type="number"
-                            style={{
-                                width: `${
-                                    (Math.floor(
-                                        Math.log10(rowsData.offset + 1)
-                                    ) +
-                                        1) *
-                                        9 +
-                                    31
-                                }px`,
-                            }}
-                            value={rowsData.offset}
-                            min="0"
-                            onChange={(e) => {
-                                e.preventDefault();
-                                const newValue = NzInt(
-                                    e.target.value,
-                                    rowsData.offset
-                                );
-                                if (onLoadRows) {
-                                    onLoadRows(
-                                        newValue,
-                                        curShowRowsCount,
-                                        curSortFieldNames,
-                                        curFilterFields
-                                    );
-                                }
-                            }}
-                        />
-                    </div>
-                </div>
+    //                                 const changingFieldName =
+    //                                     col.changingFieldName
+    //                                         ? col.changingFieldName
+    //                                         : "";
+    //                                 const changing = changingFieldName
+    //                                     ? row[changingFieldName]
+    //                                     : false;
 
-                <div className="d-flex align-items-center justify-content-center mt-3">
-                    <button
-                        className="btn-space btn btn-primary"
-                        onClick={(e) => {
-                            e.preventDefault();
-                            if (onLoadRows) {
-                                onLoadRows(
-                                    0,
-                                    curShowRowsCount,
-                                    curSortFieldNames,
-                                    curFilterFields
-                                );
-                            }
-                        }}
-                    >
-                        <FontAwesomeIcon icon="angle-double-left" />
-                    </button>
-                    <button
-                        className="btn-space btn btn-primary"
-                        onClick={(e) => {
-                            e.preventDefault();
-                            if (onLoadRows) {
-                                onLoadRows(
-                                    rowsData.offset - curShowRowsCount,
-                                    curShowRowsCount,
-                                    curSortFieldNames,
-                                    curFilterFields
-                                );
-                            }
-                        }}
-                    >
-                        <FontAwesomeIcon icon="angle-left" />
-                    </button>
-                    <span className="mr-1">
-                        ჩანაწერები: {rowsData.offset + 1}-
-                        {rowsData.offset + curShowRowsCount >
-                        rowsData.allRowsCount
-                            ? rowsData.allRowsCount
-                            : rowsData.offset + curShowRowsCount}{" "}
-                        სულ: {rowsData.allRowsCount}{" "}
-                    </span>
-                    <button
-                        className="btn-space btn btn-primary"
-                        onClick={(e) => {
-                            e.preventDefault();
-                            if (onLoadRows) {
-                                onLoadRows(
-                                    rowsData.offset + curShowRowsCount,
-                                    curShowRowsCount,
-                                    curSortFieldNames,
-                                    curFilterFields
-                                );
-                            }
-                        }}
-                    >
-                        <FontAwesomeIcon icon="angle-right" />
-                    </button>
-                    <button
-                        className="btn-space btn btn-primary"
-                        onClick={(e) => {
-                            e.preventDefault();
-                            if (onLoadRows) {
-                                onLoadRows(
-                                    Math.floor(
-                                        (rowsData.allRowsCount -
-                                            curShowRowsCount) /
-                                            curShowRowsCount
-                                    ) * curShowRowsCount,
-                                    curShowRowsCount,
-                                    curSortFieldNames,
-                                    curFilterFields
-                                );
-                            }
-                        }}
-                    >
-                        <FontAwesomeIcon icon="angle-double-right" />
-                    </button>
-                </div>
-            </>
-        );
-    }
+    //                                 // Check if this cell is being edited
+    //                                 const isEditingThisCell = isEditing(
+    //                                     row,
+    //                                     fieldName
+    //                                 );
+    //                                 const canEditThisColumn =
+    //                                     allowInlineEdit &&
+    //                                     !readOnly &&
+    //                                     col.editable !== false &&
+    //                                     !col.isKey;
+
+    //                                 return (
+    //                                     <td
+    //                                         key={col.fieldName}
+    //                                         className={`${
+    //                                             bl ? "backLigth" : ""
+    //                                         } ${
+    //                                             canEditThisColumn &&
+    //                                             !isEditingThisCell
+    //                                                 ? "grid-cell-editable"
+    //                                                 : ""
+    //                                         } ${
+    //                                             isEditingThisCell
+    //                                                 ? "grid-cell-editing"
+    //                                                 : ""
+    //                                         }`.trim()}
+    //                                         onClick={(e) => {
+    //                                             if (
+    //                                                 canEditThisColumn &&
+    //                                                 !isEditingThisCell
+    //                                             ) {
+    //                                                 e.stopPropagation();
+    //                                                 startCellEdit(
+    //                                                     row,
+    //                                                     fieldName
+    //                                                 );
+    //                                             }
+    //                                         }}
+    //                                     >
+    //                                         {isEditingThisCell ? (
+    //                                             renderInlineEditor(col, value)
+    //                                         ) : col.control &&
+    //                                           React.isValidElement(
+    //                                               col.control
+    //                                           ) ? (
+    //                                             React.cloneElement(
+    //                                                 col.control as React.ReactElement<any>,
+    //                                                 {
+    //                                                     value,
+    //                                                     index,
+    //                                                     offset: rowsData.offset,
+    //                                                     showRows:
+    //                                                         curShowRowsCount,
+    //                                                     changing,
+    //                                                     record: row,
+    //                                                 },
+    //                                                 null
+    //                                             )
+    //                                         ) : (
+    //                                             // ) : col.lookupColumnPart ? (
+    //                                             //   <LookupColumn
+    //                                             //     lookupTable={col.lookupColumnPart}
+    //                                             //     value={value}
+    //                                             //   ></LookupColumn>
+    //                                             <span
+    //                                                 style={{
+    //                                                     display: "block",
+    //                                                     minHeight: "20px",
+    //                                                     padding:
+    //                                                         canEditThisColumn
+    //                                                             ? "2px 4px"
+    //                                                             : "0",
+    //                                                 }}
+    //                                             >
+    //                                                 {displayValue}
+    //                                             </span>
+    //                                         )}
+    //                                     </td>
+    //                                 );
+    //                             })}
+
+    //                         {!readOnly &&
+    //                             (allowUpdate || allowDelete) &&
+    //                             !!editorLink && (
+    //                                 <td width="50px">
+    //                                     <div className="btn-toolbar pull-right">
+    //                                         <Link
+    //                                             to={`${editorLink}/${
+    //                                                 row[keyCol.fieldName]
+    //                                             }`}
+    //                                             className="btn btn-primary"
+    //                                             onClick={(e) =>
+    //                                                 e.stopPropagation()
+    //                                             }
+    //                                         >
+    //                                             <FontAwesomeIcon icon="edit" />
+    //                                         </Link>
+    //                                     </div>
+    //                                 </td>
+    //                             )}
+    //                     </tr>
+    //                 );
+    //             })}
+    //         </tbody>
+    //     );
+    // }
 
     //ყველა ველისათვის აუცილებლად უნდა იყოს განსაზღვრული შემდეგი თვისებები
     //visible - თუ საჭიროა, რომ სევტი გამოჩნდეს
@@ -564,9 +514,33 @@ const GridView: FC<GridViewProps> = (props) => {
                     className="table table-sm table-bordered"
                 >
                     {getTableHeader()}
-                    {getTableBody(keyCol)}
+                    {/* {getTableBody(keyCol)} */}
+                    <GridTableBody
+                        rows={rowsData?.rows ?? []}
+                        columns={columns}
+                        offset={rowsData?.offset ?? 0}
+                        rowsCountPerPage={curShowRowsCount}
+                        curscrollTo={curscrollTo}
+                        keyCol={keyCol}
+                        editorLink={editorLink}
+                        allowInlineEdit={allowInlineEdit}
+                        readOnly={readOnly}
+                        showCountColumn={showCountColumn}
+                        allowUpdate={allowUpdate}
+                        allowDelete={allowDelete}
+                        backLigth={backLigth}
+                        onInlineEditStart={onInlineEditStart}
+                        onInlineEditCancel={onInlineEditCancel}
+                        onRowClick={onRowClick}
+                        onInlineEdit={onInlineEdit}
+                    />
                 </Table>
-                {pagenation()}
+                <GridPagenation
+                    offset={rowsData?.offset ?? 0}
+                    rowsCountPerPage={curShowRowsCount}
+                    allRowsCount={rowsData?.allRowsCount ?? 0}
+                    onChange={handlePageChange}
+                />
                 {(!rowsData ||
                     !rowsData.rows ||
                     rowsData.rows.length === 0) && (
