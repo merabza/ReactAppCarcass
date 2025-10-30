@@ -24,10 +24,7 @@ const GridPagenation: FC<GridPagenationProps> = (props) => {
                         className="ml-1 mr-1"
                         onChange={(e) => {
                             e.preventDefault();
-                            const newValue = NzInt(
-                                e.target.value,
-                                rowsCountPerPage
-                            );
+                            const newValue = NzInt(e.target.value, rowsCountPerPage);
                             if (onChange) {
                                 onChange(offset, newValue);
                             }
@@ -44,11 +41,7 @@ const GridPagenation: FC<GridPagenationProps> = (props) => {
                         autoComplete="off"
                         type="number"
                         style={{
-                            width: `${
-                                (Math.floor(Math.log10(offset + 1)) + 1) *
-                                    9 +
-                                31
-                            }px`,
+                            width: `${(Math.floor(Math.log10(offset + 1)) + 1) * 9 + 31}px`,
                         }}
                         value={offset}
                         min="0"
@@ -80,10 +73,7 @@ const GridPagenation: FC<GridPagenationProps> = (props) => {
                     onClick={(e) => {
                         e.preventDefault();
                         if (onChange) {
-                            onChange(
-                                offset - rowsCountPerPage,
-                                rowsCountPerPage
-                            );
+                            onChange(offset - rowsCountPerPage, rowsCountPerPage);
                         }
                     }}
                 >
@@ -101,10 +91,7 @@ const GridPagenation: FC<GridPagenationProps> = (props) => {
                     onClick={(e) => {
                         e.preventDefault();
                         if (onChange) {
-                            onChange(
-                                offset + rowsCountPerPage,
-                                rowsCountPerPage
-                            );
+                            onChange(offset + rowsCountPerPage, rowsCountPerPage);
                         }
                     }}
                 >
@@ -116,10 +103,8 @@ const GridPagenation: FC<GridPagenationProps> = (props) => {
                         e.preventDefault();
                         if (onChange) {
                             onChange(
-                                Math.floor(
-                                    (allRowsCount - rowsCountPerPage) /
-                                        rowsCountPerPage
-                                ) * rowsCountPerPage,
+                                Math.floor((allRowsCount - rowsCountPerPage) / rowsCountPerPage) *
+                                    rowsCountPerPage,
                                 rowsCountPerPage
                             );
                         }

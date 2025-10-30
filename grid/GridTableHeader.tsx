@@ -3,15 +3,24 @@
 import { FC } from "react";
 import { IGridColumn, ISortField } from "./GridViewTypes";
 import { Link } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { IconName } from "@fortawesome/fontawesome-svg-core";
+import MasterDataFilterComboBox from "./MasterDataFilterComboBox";
+import FilterTextBox from "./FilterTextBox";
+import FilterNumberControl from "./FilterNumberControl";
+import FilterYesNoComboBox from "./FilterYesNoComboBox";
 
 type GridTableHeaderProps = {
     showCountColumn: boolean;
     columns: IGridColumn[];
     sortFieldNames: ISortField[];
+    toggleSortForColumn: (fieldName: string, shiftKeyIsUsed: boolean) => void;
+    changeFilterField: (fieldName: string, value: any) => void;
 };
 
 const GridTableHeader: FC<GridTableHeaderProps> = (props) => {
-    const { showCountColumn, columns, sortFieldNames } = props;
+    const { showCountColumn, columns, sortFieldNames, toggleSortForColumn, changeFilterField } =
+        props;
 
     // const [curSortFieldNames, setCurSortFieldNames] = useState<ISortField[]>(
 
@@ -37,8 +46,7 @@ const GridTableHeader: FC<GridTableHeaderProps> = (props) => {
                             const sortField = sortFieldNames.find(
                                 (f) => f.fieldName === col.fieldName
                             );
-                            if (sortField)
-                                ascDescVal = sortField.ascending ? 1 : -1;
+                            if (sortField) ascDescVal = sortField.ascending ? 1 : -1;
 
                             let sortIconName = "sort";
                             if (ascDescVal > 0) sortIconName = "sort-up";
@@ -49,37 +57,21 @@ const GridTableHeader: FC<GridTableHeaderProps> = (props) => {
                                         to="#"
                                         onClick={(e) => {
                                             e.preventDefault();
-                                            toggleSortForColumn(
-                                                col.fieldName,
-                                                e.shiftKey
-                                            );
+                                            toggleSortForColumn(col.fieldName, e.shiftKey);
                                         }}
                                     >
                                         {caption}{" "}
-                                        <FontAwesomeIcon
-                                            icon={sortIconName as IconName}
-                                        />
+                                        <FontAwesomeIcon icon={sortIconName as IconName} />
                                     </Link>
-                                    {!!(
-                                        col.dropdownOptions &&
-                                        col.dropdownOptions.length > 0
-                                    ) && (
+                                    {!!(col.dropdownOptions && col.dropdownOptions.length > 0) && (
                                         <MasterDataFilterComboBox
                                             controlId={col.fieldName}
-                                            dropdownOptions={
-                                                col.dropdownOptions
-                                            }
+                                            dropdownOptions={col.dropdownOptions}
                                             isNullable={col.nullable}
                                             onChangeValue={(
-                                                newValue:
-                                                    | number
-                                                    | null
-                                                    | undefined
+                                                newValue: number | null | undefined
                                             ) => {
-                                                changeFilterField(
-                                                    col.fieldName,
-                                                    newValue
-                                                );
+                                                changeFilterField(col.fieldName, newValue);
                                             }}
                                         ></MasterDataFilterComboBox>
                                     )}
@@ -88,15 +80,9 @@ const GridTableHeader: FC<GridTableHeaderProps> = (props) => {
                                             controlId={col.fieldName}
                                             isNullable={col.nullable}
                                             onChangeValue={(
-                                                newValue:
-                                                    | string
-                                                    | null
-                                                    | undefined
+                                                newValue: string | null | undefined
                                             ) => {
-                                                changeFilterField(
-                                                    col.fieldName,
-                                                    newValue
-                                                );
+                                                changeFilterField(col.fieldName, newValue);
                                             }}
                                         ></FilterTextBox>
                                     )}
@@ -105,15 +91,9 @@ const GridTableHeader: FC<GridTableHeaderProps> = (props) => {
                                             controlId={col.fieldName}
                                             isNullable={col.nullable}
                                             onChangeValue={(
-                                                newValue:
-                                                    | number
-                                                    | null
-                                                    | undefined
+                                                newValue: number | null | undefined
                                             ) => {
-                                                changeFilterField(
-                                                    col.fieldName,
-                                                    newValue
-                                                );
+                                                changeFilterField(col.fieldName, newValue);
                                             }}
                                         ></FilterNumberControl>
                                     )}
@@ -122,15 +102,9 @@ const GridTableHeader: FC<GridTableHeaderProps> = (props) => {
                                             controlId={col.fieldName}
                                             isNullable={col.nullable}
                                             onChangeValue={(
-                                                newValue:
-                                                    | boolean
-                                                    | null
-                                                    | undefined
+                                                newValue: boolean | null | undefined
                                             ) => {
-                                                changeFilterField(
-                                                    col.fieldName,
-                                                    newValue
-                                                );
+                                                changeFilterField(col.fieldName, newValue);
                                             }}
                                         ></FilterYesNoComboBox>
                                     )}

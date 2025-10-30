@@ -28,11 +28,7 @@ type GridTableBodyProps = {
     onInlineEditStart?: (row: any) => void;
     onInlineEditCancel?: (row: any) => void;
     onRowClick?: (row: any, index: number) => void;
-    onInlineEdit?: (
-        row: any,
-        fieldName: string,
-        newValue: any
-    ) => Promise<boolean>;
+    onInlineEdit?: (row: any, fieldName: string, newValue: any) => Promise<boolean>;
 };
 
 const GridTableBody: FC<GridTableBodyProps> = (props) => {
@@ -97,10 +93,7 @@ const GridTableBody: FC<GridTableBodyProps> = (props) => {
         const keyCol = columns.find((f) => f.isKey);
         if (!keyCol) return false;
 
-        return (
-            editingRow[keyCol.fieldName] === row[keyCol.fieldName] &&
-            editingCell === fieldName
-        );
+        return editingRow[keyCol.fieldName] === row[keyCol.fieldName] && editingCell === fieldName;
     }
 
     function renderInlineEditor(col: IGridColumn, value: any) {
@@ -136,11 +129,7 @@ const GridTableBody: FC<GridTableBodyProps> = (props) => {
             case "Double":
             case "Float":
                 return (
-                    <InlineNumberEditor
-                        value={value}
-                        onSave={handleSave}
-                        onCancel={handleCancel}
-                    />
+                    <InlineNumberEditor value={value} onSave={handleSave} onCancel={handleCancel} />
                 );
             case "Boolean":
                 return (
@@ -153,11 +142,7 @@ const GridTableBody: FC<GridTableBodyProps> = (props) => {
             case "DateTime":
             case "Date":
                 return (
-                    <InlineDateEditor
-                        value={value}
-                        onSave={handleSave}
-                        onCancel={handleCancel}
-                    />
+                    <InlineDateEditor value={value} onSave={handleSave} onCancel={handleCancel} />
                 );
             default:
                 return (
@@ -178,11 +163,7 @@ const GridTableBody: FC<GridTableBodyProps> = (props) => {
         }
 
         try {
-            const success = await onInlineEdit(
-                editingRow,
-                editingCell,
-                newValue
-            );
+            const success = await onInlineEdit(editingRow, editingCell, newValue);
             if (success) {
                 // Update local data if needed
                 editingRow[editingCell] = newValue;
@@ -205,9 +186,7 @@ const GridTableBody: FC<GridTableBodyProps> = (props) => {
                 //     row[keyCol.fieldName]
                 // );
                 const index = offset + i + 1;
-                const bl = curscrollTo
-                    ? curscrollTo.value === row[curscrollTo.idFieldName]
-                    : false;
+                const bl = curscrollTo ? curscrollTo.value === row[curscrollTo.idFieldName] : false;
                 // console.log("GridView curscrollTo=", curscrollTo);
                 // console.log("GridView bl=", bl);
                 return (
@@ -218,8 +197,7 @@ const GridTableBody: FC<GridTableBodyProps> = (props) => {
                             // Don't trigger row click if inline editing is active
                             if (
                                 !editingRow ||
-                                editingRow[keyCol.fieldName] !==
-                                    row[keyCol.fieldName]
+                                editingRow[keyCol.fieldName] !== row[keyCol.fieldName]
                             ) {
                                 onRowClick?.(row, index);
                             }
@@ -228,45 +206,33 @@ const GridTableBody: FC<GridTableBodyProps> = (props) => {
                             cursor:
                                 onRowClick &&
                                 (!editingRow ||
-                                    editingRow[keyCol.fieldName] !==
-                                        row[keyCol.fieldName])
+                                    editingRow[keyCol.fieldName] !== row[keyCol.fieldName])
                                     ? "pointer"
                                     : "default",
                         }}
                     >
                         {!!showCountColumn && (
-                            <td className={bl ? "backLigth" : undefined}>
-                                {index}
-                            </td>
+                            <td className={bl ? "backLigth" : undefined}>{index}</td>
                         )}
                         {columns
                             .filter((col) => col.visible)
                             .map((col) => {
-                                const fieldName = col.fieldName
-                                    ? col.fieldName
-                                    : "";
+                                const fieldName = col.fieldName ? col.fieldName : "";
                                 const value = fieldName ? row[fieldName] : "";
 
                                 const displayValue =
-                                    col.dropdownOptions &&
-                                    col.dropdownOptions.length > 0
-                                        ? col.dropdownOptions.find(
-                                              (opt) => opt.value === value
-                                          )?.label ?? value
+                                    col.dropdownOptions && col.dropdownOptions.length > 0
+                                        ? col.dropdownOptions.find((opt) => opt.value === value)
+                                              ?.label ?? value
                                         : value;
 
                                 const changingFieldName = col.changingFieldName
                                     ? col.changingFieldName
                                     : "";
-                                const changing = changingFieldName
-                                    ? row[changingFieldName]
-                                    : false;
+                                const changing = changingFieldName ? row[changingFieldName] : false;
 
                                 // Check if this cell is being edited
-                                const isEditingThisCell = isEditing(
-                                    row,
-                                    fieldName
-                                );
+                                const isEditingThisCell = isEditing(row, fieldName);
                                 const canEditThisColumn =
                                     allowInlineEdit &&
                                     !readOnly &&
@@ -277,20 +243,12 @@ const GridTableBody: FC<GridTableBodyProps> = (props) => {
                                     <td
                                         key={col.fieldName}
                                         className={`${bl ? "backLigth" : ""} ${
-                                            canEditThisColumn &&
-                                            !isEditingThisCell
+                                            canEditThisColumn && !isEditingThisCell
                                                 ? "grid-cell-editable"
                                                 : ""
-                                        } ${
-                                            isEditingThisCell
-                                                ? "grid-cell-editing"
-                                                : ""
-                                        }`.trim()}
+                                        } ${isEditingThisCell ? "grid-cell-editing" : ""}`.trim()}
                                         onClick={(e) => {
-                                            if (
-                                                canEditThisColumn &&
-                                                !isEditingThisCell
-                                            ) {
+                                            if (canEditThisColumn && !isEditingThisCell) {
                                                 e.stopPropagation();
                                                 startCellEdit(row, fieldName);
                                             }
@@ -298,8 +256,7 @@ const GridTableBody: FC<GridTableBodyProps> = (props) => {
                                     >
                                         {isEditingThisCell ? (
                                             renderInlineEditor(col, value)
-                                        ) : col.control &&
-                                          React.isValidElement(col.control) ? (
+                                        ) : col.control && React.isValidElement(col.control) ? (
                                             React.cloneElement(
                                                 col.control as React.ReactElement<any>,
                                                 {
@@ -322,9 +279,7 @@ const GridTableBody: FC<GridTableBodyProps> = (props) => {
                                                 style={{
                                                     display: "block",
                                                     minHeight: "20px",
-                                                    padding: canEditThisColumn
-                                                        ? "2px 4px"
-                                                        : "0",
+                                                    padding: canEditThisColumn ? "2px 4px" : "0",
                                                 }}
                                             >
                                                 {displayValue}
@@ -334,23 +289,19 @@ const GridTableBody: FC<GridTableBodyProps> = (props) => {
                                 );
                             })}
 
-                        {!readOnly &&
-                            (allowUpdate || allowDelete) &&
-                            !!editorLink && (
-                                <td width="50px">
-                                    <div className="btn-toolbar pull-right">
-                                        <Link
-                                            to={`${editorLink}/${
-                                                row[keyCol.fieldName]
-                                            }`}
-                                            className="btn btn-primary"
-                                            onClick={(e) => e.stopPropagation()}
-                                        >
-                                            <FontAwesomeIcon icon="edit" />
-                                        </Link>
-                                    </div>
-                                </td>
-                            )}
+                        {!readOnly && (allowUpdate || allowDelete) && !!editorLink && (
+                            <td width="50px">
+                                <div className="btn-toolbar pull-right">
+                                    <Link
+                                        to={`${editorLink}/${row[keyCol.fieldName]}`}
+                                        className="btn btn-primary"
+                                        onClick={(e) => e.stopPropagation()}
+                                    >
+                                        <FontAwesomeIcon icon="edit" />
+                                    </Link>
+                                </div>
+                            </td>
+                        )}
                     </tr>
                 );
             })}
