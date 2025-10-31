@@ -1,10 +1,11 @@
 //MultiCombEditor.tsx
 
-import type { FC } from "react";
+import { useState, type FC } from "react";
 import type { fnChangeField, fnGetError } from "../hooks/useForman";
 import OneComboBoxControl from "./OneComboBoxControl";
 import OneStrongLabel from "./OneStrongLabel";
 import OnePlusButton from "./OnePlusButton";
+import OneSwitchWithStrongLabel from "./OneSwitchWithStrongLabel";
 
 export type fnTrashButtonClick = (index: number) => void;
 export type fnPlusButtonClick = () => void;
@@ -17,6 +18,7 @@ type MultiCombEditorProps = {
     firstItem?: { id: number; name: string } | undefined;
     valueMember: string;
     displayMember: string;
+    withShowHideSwitch?: boolean;
     getError: fnGetError;
     onChangeValue: fnChangeField;
     onTrashButtonClick: fnTrashButtonClick;
@@ -32,6 +34,7 @@ const MultiCombEditor: FC<MultiCombEditorProps> = (props) => {
         firstItem,
         valueMember,
         displayMember,
+        withShowHideSwitch,
         getError,
         onChangeValue,
         onTrashButtonClick,
@@ -39,11 +42,25 @@ const MultiCombEditor: FC<MultiCombEditorProps> = (props) => {
     } = props;
     //console.log("MultiCombEditor props=", props);
 
+    const [showHide, setShowHide] = useState(false);
+
     return (
         <div>
-            <OneStrongLabel controlId="MultiCombEditorLabel" label={label} />
+            {!!withShowHideSwitch && (
+                <OneSwitchWithStrongLabel
+                    controlId="custom-switch"
+                    label1={label}
+                    label2="ჩვენება/დამალვა"
+                    value={showHide}
+                    onChangeValue={setShowHide}
+                />
+            )}
 
-            {IntValueList &&
+            {!withShowHideSwitch && (
+                <OneStrongLabel controlId="MultiCombEditorLabel" label={label} />
+            )}
+
+            {showHide && IntValueList &&
                 IntValueList.map((item, index) => {
                     return (
                         <OneComboBoxControl

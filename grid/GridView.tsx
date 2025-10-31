@@ -170,6 +170,7 @@ const GridView: FC<GridViewProps> = (props) => {
                     bordered
                     hover
                     responsive="sm"
+                    size="sm"
                     className="table table-sm table-bordered"
                 >
                     {/* {getTableHeader()} */}
