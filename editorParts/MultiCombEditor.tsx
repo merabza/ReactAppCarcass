@@ -1,7 +1,7 @@
 //MultiCombEditor.tsx
 
 import { useState, type FC } from "react";
-import type { fnChangeField, fnGetError } from "../hooks/useForman";
+import type { fnGetError } from "../hooks/useForman";
 import OneComboBoxControl from "./OneComboBoxControl";
 import OneStrongLabel from "./OneStrongLabel";
 import OnePlusButton from "./OnePlusButton";
@@ -9,6 +9,7 @@ import OneSwitchWithStrongLabel from "./OneSwitchWithStrongLabel";
 
 export type fnTrashButtonClick = (index: number) => void;
 export type fnPlusButtonClick = () => void;
+export type fnChangeComboValue = (fieldPath: string, index: number, value: any) => void;
 
 type MultiCombEditorProps = {
     controlGroupId: string;
@@ -20,7 +21,7 @@ type MultiCombEditorProps = {
     displayMember: string;
     withShowHideSwitch?: boolean;
     getError: fnGetError;
-    onChangeValue: fnChangeField;
+    onChangeComboValue: fnChangeComboValue;
     onTrashButtonClick: fnTrashButtonClick;
     onPlusButtonClick: fnPlusButtonClick;
 };
@@ -36,13 +37,15 @@ const MultiCombEditor: FC<MultiCombEditorProps> = (props) => {
         displayMember,
         withShowHideSwitch,
         getError,
-        onChangeValue,
+        onChangeComboValue,
         onTrashButtonClick,
         onPlusButtonClick,
     } = props;
     //console.log("MultiCombEditor props=", props);
 
     const [showHide, setShowHide] = useState(false);
+
+
 
     return (
         <div>
@@ -74,7 +77,7 @@ const MultiCombEditor: FC<MultiCombEditorProps> = (props) => {
                             displayMember={displayMember}
                             sortByDisplayMember={true}
                             getError={getError}
-                            onChangeValue={onChangeValue}
+                            onChangeValue={(fieldPath, value) => {onChangeComboValue(fieldPath, index, value);}}
                             onTrashButtonClick={() => {
                                 onTrashButtonClick(index);
                             }}
@@ -82,7 +85,7 @@ const MultiCombEditor: FC<MultiCombEditorProps> = (props) => {
                     );
                 })}
 
-            <OnePlusButton onClick={onPlusButtonClick} />
+            {showHide && <OnePlusButton onClick={onPlusButtonClick} />}
         </div>
     );
 };
