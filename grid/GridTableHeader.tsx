@@ -1,10 +1,10 @@
 //GridTableHeader.tsx
 
-import { FC } from "react";
-import { IGridColumn, ISortField } from "./GridViewTypes";
+import type { FC } from "react";
+import type { IGridColumn, ISortField } from "./GridViewTypes";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { IconName } from "@fortawesome/fontawesome-svg-core";
+import type { IconName } from "@fortawesome/fontawesome-svg-core";
 import MasterDataFilterComboBox from "./MasterDataFilterComboBox";
 import FilterTextBox from "./FilterTextBox";
 import FilterNumberControl from "./FilterNumberControl";

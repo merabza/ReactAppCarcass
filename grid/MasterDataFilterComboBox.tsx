@@ -4,7 +4,7 @@ import { type FC, useState } from "react";
 import { Col, Form, Row } from "react-bootstrap";
 // import type { ILookup } from "../redux/types/masterdataTypes";
 import FilterButton from "./FilterButton";
-import { IDropdownOption } from "./InlineDropdownListEditor";
+import type { IDropdownOption } from "./InlineDropdownListEditor";
 
 interface IMasterDataFilterType {
     type: number;

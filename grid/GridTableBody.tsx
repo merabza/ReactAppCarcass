@@ -1,8 +1,9 @@
 //GridTableBody.tsx
 
-import { FC, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import type { FC } from "react";
 import { Link } from "react-router-dom";
-import { IGridColumn, IGridScrollTo } from "./GridViewTypes";
+import type { IGridColumn, IGridScrollTo } from "./GridViewTypes";
 import React from "react";
 import InlineDropdownListEditor from "./InlineDropdownListEditor";
 import InlineTextEditor from "./InlineTextEditor";
