@@ -82,10 +82,11 @@ export const rightsSlice = createSlice({
     reducers: {
         setParents: (state, action: PayloadAction<ISetParentsTreeAction>) => {
             state.drParentsRepo[action.payload.rViewId] = action.payload.data;
+            console.log("rightsSlice setParents action.payload=", action.payload);
         },
 
         setChildren: (state, action: PayloadAction<ISetChildrenTreeAction>) => {
-            // console.log("rightsSlice setChildren action.payload=", action.payload);
+            console.log("rightsSlice setChildren action.payload=", action.payload);
             try {
                 state.drChildrenRepo[action.payload.rViewId] = {} as {
                     [key: string]: DataTypeModel[];

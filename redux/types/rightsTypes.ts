@@ -8,6 +8,11 @@ export const RightsViewKind = {
 export type RightsViewKind =
     (typeof RightsViewKind)[keyof typeof RightsViewKind];
 
+export const RightsViewKindName = Object.fromEntries(
+    Object.entries(RightsViewKind).map(([k, v]) => [v, k])
+) as Record<RightsViewKind, keyof typeof RightsViewKind>;
+
+
 export interface DataTypeModel {
     dtId: number;
     dtKey: string;

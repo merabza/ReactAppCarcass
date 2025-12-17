@@ -20,6 +20,7 @@ import {
     type DataTypeModel,
     type RightsChangeModel,
     RightsViewKind,
+    RightsViewKindName,
 } from "../redux/types/rightsTypes";
 import { useAlert } from "../hooks/useAlert";
 import { EAlertKind } from "../redux/slices/alertSlice";
@@ -82,7 +83,7 @@ const FrmRights: FC = () => {
             return;
         }
 
-        const rViewKey = rView ? rView : RightsViewKind.normalView.toString();
+        const rViewKey = rView ? rView : RightsViewKindName[RightsViewKind.normalView];
 
         let rViewId = RightsViewKind.normalView;
 
@@ -717,7 +718,7 @@ const FrmRights: FC = () => {
                                                                         ? "backLigth"
                                                                         : ""
                                                                 }
-                                                                to={`/Rights/${curRView}/${item.dtKey}/${itm.key}`}
+                                                                to={`/Rights/${curRView}/${item.dtTable}/${itm.key}`}
                                                             >
                                                                 <WrapText
                                                                     text={`${
