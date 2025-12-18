@@ -87,7 +87,7 @@ const FrmRights: FC = () => {
 
         let rViewId = RightsViewKind.normalView;
 
-        if (RightsViewKind.reverseView.toString() === rViewKey)
+        if (RightsViewKindName[RightsViewKind.reverseView] === rViewKey)
             rViewId = RightsViewKind.reverseView;
 
         // console.log("FrmRights useEffect rViewKey=", rViewKey);
@@ -538,7 +538,7 @@ const FrmRights: FC = () => {
         ].filter(
             (w) =>
                 drLinear ||
-                curRView === "reverseView" ||
+                curRView === RightsViewKindName[RightsViewKind.reverseView] ||
                 w.dtParentDataTypeId === null ||
                 w.dtId === w.dtParentDataTypeId
         );
@@ -547,9 +547,9 @@ const FrmRights: FC = () => {
             <Form>
                 <div id="data-rights-tree" className="editor-scroll">
                     <ul className="list-unstyled">
-                        {zeroLevelDataTypes.map((item) => {
-                            // console.log("FrmRights zeroLevelDataTypes.map, item=", item);
-                            // console.log("FrmRights zeroLevelDataTypes.map, index=", index);
+                        {zeroLevelDataTypes.map((item, index) => {
+                            console.log("FrmRights zeroLevelDataTypes.map, item=", item);
+                            console.log("FrmRights zeroLevelDataTypes.map, index=", index);
                             return (
                                 <li key={item.dtId}>
                                     <span

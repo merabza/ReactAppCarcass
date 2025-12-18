@@ -7,6 +7,7 @@ import {
     type IParentsRightsDictionary,
     type RightsChangeModel,
     RightsViewKind,
+    RightsViewKindName,
     type TypeDataModel,
 } from "../redux/types/rightsTypes";
 
@@ -14,7 +15,7 @@ export function RightsViewKindFromString(
     rViewKey: string | undefined
 ): RightsViewKind {
     let rViewId = RightsViewKind.normalView;
-    if (RightsViewKind.reverseView.toString() === rViewKey)
+    if (RightsViewKindName[RightsViewKind.reverseView] === rViewKey)
         rViewId = RightsViewKind.reverseView;
     return rViewId;
 }

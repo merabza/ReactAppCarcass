@@ -24,7 +24,7 @@ import {
     turnAll,
 } from "../redux/slices/rightsSlice";
 import { useRightsForman, useSaveDataRightChanges } from "./RightsFormHooks";
-import { RightsViewKind } from "../redux/types/rightsTypes";
+import { RightsViewKind, RightsViewKindName } from "../redux/types/rightsTypes";
 
 const RightsTopNavMenu: FC = () => {
     //console.log("RightsTopNavMenu props=", props);
@@ -86,7 +86,7 @@ const RightsTopNavMenu: FC = () => {
         rViewKey: string | undefined
     ): RightsViewKind {
         let rViewId = RightsViewKind.normalView;
-        if (RightsViewKind.reverseView.toString() === rViewKey)
+        if (RightsViewKindName[RightsViewKind.reverseView] === rViewKey)
             rViewId = RightsViewKind.reverseView;
         return rViewId;
     }
@@ -199,15 +199,15 @@ const RightsTopNavMenu: FC = () => {
                 <ToggleButton
                     id="viewToggleButton"
                     type="checkbox"
-                    checked={rView === "reverseView" ? true : false}
+                    checked={rView === RightsViewKindName[RightsViewKind.reverseView] ? true : false}
                     className="btn-space"
                     value="რევერსი"
                     onChange={(val) => {
                         navigate(
                             `/Rights/${
                                 val.target.checked
-                                    ? "reverseView"
-                                    : "normalView"
+                                    ? RightsViewKindName[RightsViewKind.reverseView]
+                                    : RightsViewKindName[RightsViewKind.normalView]
                             }`
                         );
                     }}
