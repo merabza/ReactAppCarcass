@@ -28,7 +28,7 @@ import { RightsViewKind, RightsViewKindName } from "../redux/types/rightsTypes";
 
 const RightsTopNavMenu: FC = () => {
     //console.log("RightsTopNavMenu props=", props);
-    const { rView, dtKey, key } = useParams<string>();
+    const { rView, dtTable, key } = useParams<string>();
     const menLinkKey = useLocation().pathname.split("/")[1];
     const flatMenu = useAppSelector((state) => state.navMenuState.flatMenu);
     const {
@@ -100,9 +100,9 @@ const RightsTopNavMenu: FC = () => {
         //ეხლა განახლების ღილაკი არ მუშაობს
         loadChildsTreeDataAndChecks(
             RightsViewKindFromString(
-                rView ? rView : RightsViewKind.normalView.toString()
+                rView ? rView : RightsViewKindName[RightsViewKind.normalView]
             ),
-            dtKey,
+            dtTable,
             key,
             true
         );
@@ -235,7 +235,7 @@ const RightsTopNavMenu: FC = () => {
                     className="btn-space"
                     disabled={!selectedChildDataType}
                     onClick={() => {
-                        //const { rView, dtKey, key } = props.match.params;
+                        //const { rView, dtTable, key } = props.match.params;
                         // console.log("turnAllOnButton onClick");
                         const curRViewId = (
                             rView !== undefined
@@ -246,19 +246,19 @@ const RightsTopNavMenu: FC = () => {
                         // console.log("turnAllOnButton onClick", {
                         //   curRViewId,
                         //   selectedChildDataType,
-                        //   dtKey,
+                        //   dtTable,
                         // });
 
                         if (
                             selectedChildDataType !== null &&
-                            dtKey !== undefined
+                            dtTable !== undefined
                         ) {
                             // console.log("turnAllOnButton onClick turnAll");
                             dispatch(
                                 turnAll({
                                     selectedChildDataType,
                                     curRViewId,
-                                    curParentDtKey: dtKey,
+                                    curParentDtTable: dtTable,
                                     curKey: key,
                                     turnOn: true,
                                 })
@@ -274,7 +274,7 @@ const RightsTopNavMenu: FC = () => {
                     className="btn-space"
                     disabled={!selectedChildDataType}
                     onClick={() => {
-                        // const { rView, dtKey, key } = props.match.params;
+                        // const { rView, dtTable, key } = props.match.params;
 
                         const curRViewId = (
                             rView !== undefined
@@ -284,13 +284,13 @@ const RightsTopNavMenu: FC = () => {
 
                         if (
                             selectedChildDataType !== null &&
-                            dtKey !== undefined
+                            dtTable !== undefined
                         )
                             dispatch(
                                 turnAll({
                                     selectedChildDataType,
                                     curRViewId,
-                                    curParentDtKey: dtKey,
+                                    curParentDtTable: dtTable,
                                     curKey: key,
                                     turnOn: false,
                                 })

@@ -24,12 +24,12 @@ import {
 import { buildErrorMessage } from "../types/errorTypes";
 
 export interface IChildrenTreeDataParameters {
-    dtKey: string;
+    dtTable: string;
     rViewId: RightsViewKind;
 }
 
 export interface IHalfChecksParameters {
-    dtKey: string;
+    dtTable: string;
     parentTypeId: number;
     key: string;
     rViewId: RightsViewKind;
@@ -68,13 +68,13 @@ export const rightsApi = createApi({
             DataTypeModel[],
             IChildrenTreeDataParameters
         >({
-            query({ dtKey, rViewId }) {
+            query({ dtTable, rViewId }) {
                 return {
-                    url: `/rights/getchildrentreedata/${dtKey}/${rViewId}`,
+                    url: `/rights/getchildrentreedata/${dtTable}/${rViewId}`,
                 };
             },
             async onQueryStarted(
-                { dtKey, rViewId },
+                { dtTable, rViewId },
                 { dispatch, queryFulfilled }
             ) {
                 try {
@@ -86,7 +86,7 @@ export const rightsApi = createApi({
                     const { data } = queryResult;
                     dispatch(
                         setChildren({
-                            dtKey,
+                            dtTable,
                             rViewId,
                             data,
                         } as ISetChildrenTreeAction)
@@ -104,7 +104,7 @@ export const rightsApi = createApi({
                 };
             },
             async onQueryStarted(
-                { dtKey, key, rViewId },
+                { dtTable, key, rViewId },
                 { dispatch, queryFulfilled }
             ) {
                 try {
@@ -112,7 +112,7 @@ export const rightsApi = createApi({
                     dispatch(
                         setChecks({
                             rViewId,
-                            dtKey,
+                            dtTable,
                             key,
                             data,
                         } as ISetChecksAction)

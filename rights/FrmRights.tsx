@@ -33,7 +33,7 @@ const FrmRights: FC = () => {
     const [curChildChecksKey, setCurChildChecksKey] = useState<string | null>(
         null
     );
-    const [curParentDtKey, setCurParentDtKey] = useState<
+    const [curParentDtTable, setCurParentDtTable] = useState<
         string | null | undefined
     >(null);
     const [curKey, setCurKey] = useState<string | null | undefined>(null);
@@ -42,7 +42,7 @@ const FrmRights: FC = () => {
         null
     );
 
-    const { rView, dtKey, key } = useParams<string>();
+    const { rView, dtTable, key } = useParams<string>();
     const menLinkKey = useLocation().pathname.split("/")[1];
     const dispatch = useAppDispatch();
 
@@ -93,7 +93,7 @@ const FrmRights: FC = () => {
         // console.log("FrmRights useEffect rViewKey=", rViewKey);
         // console.log("FrmRights useEffect rViewId=", rViewId);
 
-        const childViewKey = rViewKey + (dtKey ? dtKey : "");
+        const childViewKey = rViewKey + (dtTable ? dtTable : "");
         const childChecksKey = childViewKey + (key ? key : "");
 
         let sameKeiesChanged = false;
@@ -121,8 +121,8 @@ const FrmRights: FC = () => {
             sameKeiesChanged = true;
         }
 
-        if (curParentDtKey !== dtKey) {
-            setCurParentDtKey(dtKey);
+        if (curParentDtTable !== dtTable) {
+            setCurParentDtTable(dtTable);
         }
 
         if (curKey !== key) {
@@ -133,7 +133,7 @@ const FrmRights: FC = () => {
 
         // console.log("FrmRights useEffect sameKeiesChanged=", sameKeiesChanged);
         // console.log("FrmRights useEffect curRViewId=", curRViewId);
-        // console.log("FrmRights useEffect curParentDtKey=", curParentDtKey);
+        // console.log("FrmRights useEffect curParentDtTable=", curParentDtTable);
         // console.log("FrmRights useEffect drChildrenRepo=", drChildrenRepo);
         // console.log("FrmRights useEffect drChildrenRepo=", drChecksRepo);
         // console.log("FrmRights useEffect !!drChildrenRepo=", !!drChecksRepo);
@@ -142,34 +142,34 @@ const FrmRights: FC = () => {
             // console.log(
             //   "FrmRights useEffect loadChildsTreeDataAndChecks parames=",
             //   rViewId,
-            //   dtKey,
+            //   dtTable,
             //   key
             // );
-            loadChildsTreeDataAndChecks(rViewId, dtKey, key, false);
+            loadChildsTreeDataAndChecks(rViewId, dtTable, key, false);
         } else if (
             (curRViewId || curRViewId === 0) &&
-            curParentDtKey &&
+            curParentDtTable &&
             (!drChecksRepo[curRViewId] ||
-                !drChecksRepo[curRViewId][curParentDtKey])
+                !drChecksRepo[curRViewId][curParentDtTable])
         ) {
             // console.log(
             //   "FrmRights useEffect loadChildsTreeDataAndChecks 2 parames=",
             //   rViewId,
-            //   dtKey,
+            //   dtTable,
             //   key
             // );
-            loadChildsTreeDataAndChecks(rViewId, dtKey, key, false);
+            loadChildsTreeDataAndChecks(rViewId, dtTable, key, false);
         }
     }, [
         isMenuLoading,
         flatMenu,
         rView,
-        dtKey,
+        dtTable,
         key,
         curChildChecksKey,
         curChildViewKey,
         curKey,
-        curParentDtKey,
+        curParentDtTable,
         curRView,
         drWorkingOnSave,
         wasSaving,
@@ -180,12 +180,12 @@ const FrmRights: FC = () => {
 
     //   console.log("FrmRights expandedState=", expandedState);
     // console.log(
-    //   "FrmRights { drParentsLoading, curRView, curRViewId, curParentDtKey, drParentsRepo, drChildrenRepo, changedRights }=",
+    //   "FrmRights { drParentsLoading, curRView, curRViewId, curParentDtTable, drParentsRepo, drChildrenRepo, changedRights }=",
     //   {
     //     drParentsLoading,
     //     curRView,
     //     curRViewId,
-    //     curParentDtKey,
+    //     curParentDtTable,
     //     drParentsRepo,
     //     drChildrenRepo,
     //     changedRights,
@@ -230,14 +230,14 @@ const FrmRights: FC = () => {
         const retDataType: DataTypeModel = dataType;
         if (
             !drLinear &&
-            curParentDtKey !== null &&
-            curParentDtKey !== undefined &&
+            curParentDtTable !== null &&
+            curParentDtTable !== undefined &&
             curRViewId === RightsViewKind.normalView
         ) {
             while (retDataType.dtParentDataTypeId) {
                 const dtParentDataTypeId = retDataType.dtParentDataTypeId;
                 const nextDataType = drChildrenRepo[curRViewId][
-                    curParentDtKey
+                    curParentDtTable
                 ].find((f) => f.dtId === dtParentDataTypeId);
                 if (nextDataType === undefined) return retDataType;
             }
@@ -251,7 +251,7 @@ const FrmRights: FC = () => {
         );
         if (curIndex < dataType.returnValues.length - 1)
             return (
-                dataType.dtKey +
+                dataType.dtTable +
                 dataType.returnValues[curIndex + 1].id.toString()
             );
         return null;
@@ -265,7 +265,7 @@ const FrmRights: FC = () => {
             addRight({
                 dtId: dataType.dtId,
                 oneRight,
-                curParentDtKey,
+                curParentDtTable,
                 curRViewId,
             })
         );
@@ -276,11 +276,11 @@ const FrmRights: FC = () => {
         parentKey: string,
         parentValue: number | null
     ) {
-        //console.log("FrmRights getDataList {drChildrenRepo, dataType, drLinear, curRView, curParentDtKey}=", { drChildrenRepo, dataType, drLinear, curRView, curParentDtKey });
+        //console.log("FrmRights getDataList {drChildrenRepo, dataType, drLinear, curRView, curParentDtTable}=", { drChildrenRepo, dataType, drLinear, curRView, curParentDtTable });
         const childrenDataTypes = getChildrenDataTypes(
             dataType.dtId,
             drLinear,
-            curParentDtKey,
+            curParentDtTable,
             curRViewId,
             drChildrenRepo
         );
@@ -322,7 +322,7 @@ const FrmRights: FC = () => {
                             //   ind
                             // );
 
-                            const expKey = dataType.dtKey + itm.id.toString();
+                            const expKey = dataType.dtTable + itm.id.toString();
 
                             let childrenCount = 0;
                             childrenDataTypes.forEach((fe) => {
@@ -337,7 +337,7 @@ const FrmRights: FC = () => {
                                 curRViewId,
                                 curKey,
                                 drParentsRepo,
-                                curParentDtKey
+                                curParentDtTable
                             );
 
                             const findedRight = changedRights.find(
@@ -362,30 +362,30 @@ const FrmRights: FC = () => {
 
                             if (
                                 (curRViewId || curRViewId === 0) &&
-                                curParentDtKey !== null &&
-                                curParentDtKey !== undefined &&
+                                curParentDtTable !== null &&
+                                curParentDtTable !== undefined &&
                                 curKey !== null &&
                                 curKey !== undefined
                             ) {
                                 // console.log(
-                                //   "getDataList drChecksRepo[curRViewId][curParentDtKey][curKey]=",
-                                //   drChecksRepo[curRViewId][curParentDtKey][curKey]
+                                //   "getDataList drChecksRepo[curRViewId][curParentDtTable][curKey]=",
+                                //   drChecksRepo[curRViewId][curParentDtTable][curKey]
                                 // );
                                 // console.log(
-                                //   "getDataList Object.keys(drChecksRepo[curRViewId][curParentDtKey][curKey]).length=",
-                                //   Object.keys(drChecksRepo[curRViewId][curParentDtKey][curKey])
+                                //   "getDataList Object.keys(drChecksRepo[curRViewId][curParentDtTable][curKey]).length=",
+                                //   Object.keys(drChecksRepo[curRViewId][curParentDtTable][curKey])
                                 //     .length
                                 // );
                                 checked = !findedRight
-                                    ? drChecksRepo[curRViewId][curParentDtKey][
+                                    ? drChecksRepo[curRViewId][curParentDtTable][
                                           curKey
                                       ] &&
                                       Object.keys(
                                           drChecksRepo[curRViewId][
-                                              curParentDtKey
+                                              curParentDtTable
                                           ][curKey]
                                       ).length !== 0 &&
-                                      drChecksRepo[curRViewId][curParentDtKey][
+                                      drChecksRepo[curRViewId][curParentDtTable][
                                           curKey
                                       ].find(
                                           (drf) =>
@@ -511,20 +511,20 @@ const FrmRights: FC = () => {
             );
         }
 
-        // console.log("FtmRights getChildsRender ", {
-        //   curParentDtKey,
+        // console.log("FrmRights getChildsRender ", {
+        //   curParentDtTable,
         //   curRViewId,
         //   drChildrenRepo,
         //   drChecksRepo,
         // });
 
         if (
-            curParentDtKey === null ||
-            curParentDtKey === undefined ||
+            curParentDtTable === null ||
+            curParentDtTable === undefined ||
             !drChildrenRepo[curRViewId] ||
-            !drChildrenRepo[curRViewId][curParentDtKey] ||
+            !drChildrenRepo[curRViewId][curParentDtTable] ||
             !drChecksRepo[curRViewId] ||
-            !drChecksRepo[curRViewId][curParentDtKey]
+            !drChecksRepo[curRViewId][curParentDtTable]
         ) {
             return (
                 <div>
@@ -534,7 +534,7 @@ const FrmRights: FC = () => {
         }
 
         const zeroLevelDataTypes = drChildrenRepo[curRViewId][
-            curParentDtKey
+            curParentDtTable
         ].filter(
             (w) =>
                 drLinear ||
@@ -548,25 +548,25 @@ const FrmRights: FC = () => {
                 <div id="data-rights-tree" className="editor-scroll">
                     <ul className="list-unstyled">
                         {zeroLevelDataTypes.map((item, index) => {
-                            console.log("FrmRights zeroLevelDataTypes.map, item=", item);
-                            console.log("FrmRights zeroLevelDataTypes.map, index=", index);
+                            // console.log("FrmRights zeroLevelDataTypes.map, item=", item);
+                            // console.log("FrmRights zeroLevelDataTypes.map, index=", index);
                             return (
                                 <li key={item.dtId}>
                                     <span
                                         onClick={() => {
-                                            const expanded = chiExp[item.dtKey]
+                                            const expanded = chiExp[item.dtTable]
                                                 ? false
                                                 : true;
                                             turnExpanded(
                                                 false,
-                                                item.dtKey,
+                                                item.dtTable,
                                                 expanded
                                             );
                                         }}
                                     >
                                         <FontAwesomeIcon
                                             icon={
-                                                chiExp[item.dtKey]
+                                                chiExp[item.dtTable]
                                                     ? "minus-square"
                                                     : "plus-square"
                                             }
@@ -574,23 +574,23 @@ const FrmRights: FC = () => {
                                     </span>
                                     <span
                                         className={
-                                            item.dtKey === selectedChildKey
+                                            item.dtTable === selectedChildKey
                                                 ? "backLigth"
                                                 : ""
                                         }
                                         onClick={() => {
-                                            setSelectedChildKey(item.dtKey);
+                                            setSelectedChildKey(item.dtTable);
                                             dispatch(
                                                 setSelectedChildDataType(item)
                                             );
                                         }}
                                     >
                                         {" "}
-                                        {drWithCodes ? `${item.dtKey}-` : ""}
+                                        {drWithCodes ? `${item.dtTable}-` : ""}
                                         {item.dtName}
                                     </span>
 
-                                    {getDataList(item, item.dtKey, null)}
+                                    {getDataList(item, item.dtTable, null)}
                                 </li>
                             );
                         })}
@@ -600,10 +600,10 @@ const FrmRights: FC = () => {
         );
     }
 
-    function getExpByKey(dtKey: string): boolean {
-        const stateExp = parExp[dtKey];
+    function getExpByKey(dtTable: string): boolean {
+        const stateExp = parExp[dtTable];
         let exp = stateExp;
-        if (dtKey === curParentDtKey && stateExp !== true && stateExp !== false)
+        if (dtTable === curParentDtTable && stateExp !== true && stateExp !== false)
             exp = true;
         return exp;
     }
@@ -633,7 +633,7 @@ const FrmRights: FC = () => {
                                 //   index
                                 // );
 
-                                const exp = getExpByKey(item.dtKey);
+                                const exp = getExpByKey(item.dtTable);
                                 return (
                                     <li
                                         key={item.dtId}
@@ -647,11 +647,11 @@ const FrmRights: FC = () => {
                                         <span
                                             onClick={() => {
                                                 const expanded = !getExpByKey(
-                                                    item.dtKey
+                                                    item.dtTable
                                                 );
                                                 turnExpanded(
                                                     true,
-                                                    item.dtKey,
+                                                    item.dtTable,
                                                     expanded
                                                 );
                                             }}
@@ -666,7 +666,7 @@ const FrmRights: FC = () => {
                                             <WrapText
                                                 text={`${
                                                     drWithCodes
-                                                        ? `${item.dtKey}-`
+                                                        ? `${item.dtTable}-`
                                                         : ""
                                                 }${item.dtName}`}
                                             />

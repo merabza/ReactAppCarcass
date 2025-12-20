@@ -19,7 +19,7 @@ export type fnTurnExpanded = (
 export type fnSaveDtaRightChanges = () => void;
 export type fnLoadChildsTreeDataAndChecks = (
     rView: RightsViewKind,
-    dtKey: string | undefined,
+    dtTable: string | undefined,
     key: string | undefined,
     refresh: boolean
 ) => void;
@@ -98,13 +98,13 @@ export function useRightsForman(): [
     const loadChildsTreeDataAndChecks = useCallback(
         async (
             rView: RightsViewKind,
-            dtKey: string | undefined,
+            dtTable: string | undefined,
             key: string | undefined,
             refresh: boolean
         ) => {
-            // console.log("loadChildsTreeDataAndChecks {rView, dtKey, key, refresh}=", {
+            // console.log("loadChildsTreeDataAndChecks {rView, dtTable, key, refresh}=", {
             //   rView,
-            //   dtKey,
+            //   dtTable,
             //   key,
             //   refresh,
             // });
@@ -124,11 +124,11 @@ export function useRightsForman(): [
 
             async function funLoadChildsTreeData(
                 rView: RightsViewKind,
-                dtKey: string | undefined
+                dtTable: string | undefined
             ) {
                 await funLoadParentsTreeData(rView);
 
-                if (!dtKey) return;
+                if (!dtTable) return;
 
                 const { drChildrenRepo } = rights;
 
@@ -136,29 +136,37 @@ export function useRightsForman(): [
                     drChildrenRepo &&
                     rView in drChildrenRepo &&
                     drChildrenRepo[rView] &&
-                    dtKey in drChildrenRepo[rView] &&
-                    drChildrenRepo[rView][dtKey]
+                    dtTable in drChildrenRepo[rView] &&
+                    drChildrenRepo[rView][dtTable]
                 )
                     return;
 
-                await getChildrenTreeData({ dtKey, rViewId: rView });
+                await getChildrenTreeData({ dtTable, rViewId: rView });
             }
 
             async function CheckDataAndgetHalfChecks() {
-                if (!dtKey || !key) return;
+
+                // console.log("CheckDataAndgetHalfChecks dtTable, key=", {dtTable, key});
+
+                if (!dtTable || !key) return;
 
                 const { drChecksRepo, drParentsRepo } = rights;
+
+                // console.log("CheckDataAndgetHalfChecks drChecksRepo=", drChecksRepo);
 
                 if (
                     drChecksRepo &&
                     rView in drChecksRepo &&
                     drChecksRepo[rView] &&
-                    dtKey in drChecksRepo[rView] &&
-                    drChecksRepo[rView][dtKey] &&
-                    key in drChecksRepo[rView][dtKey] &&
-                    drChecksRepo[rView][dtKey][key]
+                    dtTable in drChecksRepo[rView] &&
+                    drChecksRepo[rView][dtTable] &&
+                    key in drChecksRepo[rView][dtTable] &&
+                    drChecksRepo[rView][dtTable][key]
                 )
                     return;
+
+                // console.log("CheckDataAndgetHalfChecks drParentsRepo=", drParentsRepo);
+                // console.log("CheckDataAndgetHalfChecks rView=", rView);
 
                 if (
                     !drParentsRepo ||
@@ -166,14 +174,21 @@ export function useRightsForman(): [
                     !drParentsRepo[rView]
                 )
                     return;
+                    
+                // console.log("CheckDataAndgetHalfChecks drParentsRepo[rView]=", drParentsRepo[rView]);
+
                 const dt = drParentsRepo[rView].find(
-                    (item) => item.dtKey === dtKey
+                    (item) => item.dtTable === dtTable
                 );
+
+                // console.log("CheckDataAndgetHalfChecks dt=", dt);
+
+
                 if (!dt) return;
                 const parentTypeId = dt.dtId;
 
                 await getHalfChecks({
-                    dtKey,
+                    dtTable,
                     parentTypeId,
                     key,
                     rViewId: rView,
@@ -182,7 +197,7 @@ export function useRightsForman(): [
 
             if (refresh) dispatchStore(clearForRefresh());
 
-            await funLoadChildsTreeData(rView, dtKey);
+            await funLoadChildsTreeData(rView, dtTable);
 
             await CheckDataAndgetHalfChecks();
 

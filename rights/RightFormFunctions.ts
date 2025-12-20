@@ -22,29 +22,29 @@ export function RightsViewKindFromString(
 
 export function createOneRight(
     dtId: number,
-    dtKey: string | null,
+    dtTable: string | null,
     curRViewId: RightsViewKind | null,
     curKey: string | null | undefined,
     drParentsRepo: IParentsRightsDictionary,
-    curParentDtKey: string | null | undefined
+    curParentDtTable: string | null | undefined
 ): RightsChangeModel {
     const oneRight = {} as RightsChangeModel;
     if (
         curRViewId === null ||
-        dtKey === null ||
+        dtTable === null ||
         curKey === null ||
         curKey === undefined
     )
         return oneRight;
     const dt = drParentsRepo[curRViewId].find(
-        (item) => item.dtKey === curParentDtKey
+        (item) => item.dtTable === curParentDtTable
     );
     if (dt === undefined) return oneRight;
     if (curRViewId === RightsViewKind.normalView) {
         oneRight.parent = { dtId: dt.dtId, dKey: curKey };
-        oneRight.child = { dtId, dKey: dtKey };
+        oneRight.child = { dtId, dKey: dtTable };
     } else {
-        oneRight.parent = { dtId, dKey: dtKey };
+        oneRight.parent = { dtId, dKey: dtTable };
         oneRight.child = { dtId: dt.dtId, dKey: curKey };
     }
     return oneRight;
@@ -53,18 +53,18 @@ export function createOneRight(
 export function getChildrenDataTypes(
     dtId: number,
     drLinear: boolean,
-    curParentDtKey: string | null | undefined,
+    curParentDtTable: string | null | undefined,
     curRViewId: RightsViewKind | null,
     drChildrenRepo: { [key: string]: DataTypeModel[] }[]
 ): DataTypeModel[] {
     let childrenDataTypes = [] as DataTypeModel[];
     if (
         !drLinear &&
-        curParentDtKey !== null &&
-        curParentDtKey !== undefined &&
+        curParentDtTable !== null &&
+        curParentDtTable !== undefined &&
         curRViewId === RightsViewKind.normalView
     )
-        childrenDataTypes = drChildrenRepo[curRViewId][curParentDtKey].filter(
+        childrenDataTypes = drChildrenRepo[curRViewId][curParentDtTable].filter(
             (w) =>
                 w.dtParentDataTypeId !== null && dtId === w.dtParentDataTypeId
         );
@@ -75,13 +75,13 @@ export function funAddOneRightAndChildren(
     state: IRightsState,
     dtId: number,
     oneRight: RightsChangeModel,
-    curParentDtKey: string | null | undefined,
+    curParentDtTable: string | null | undefined,
     curRViewId: RightsViewKind | null
 ) {
     const childrenDataTypes = getChildrenDataTypes(
         dtId,
         state.drLinear,
-        curParentDtKey,
+        curParentDtTable,
         curRViewId,
         state.drChildrenRepo
     );
@@ -123,7 +123,7 @@ export function funAddOneRightAndChildren(
                     state,
                     chdt.dtId,
                     nextOneRight,
-                    curParentDtKey,
+                    curParentDtTable,
                     curRViewId
                 );
             });

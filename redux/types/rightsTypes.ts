@@ -15,7 +15,7 @@ export const RightsViewKindName = Object.fromEntries(
 
 export interface DataTypeModel {
     dtId: number;
-    dtKey: string;
+    // dtKey: string;
     dtName: string;
     dtTable: string;
     dtParentDataTypeId: number | null;
@@ -43,7 +43,7 @@ export interface RightsChangeModel {
 export interface IAddRightAction {
     dtId: number;
     oneRight: RightsChangeModel;
-    curParentDtKey: string | null | undefined;
+    curParentDtTable: string | null | undefined;
     curRViewId: RightsViewKind | null;
 }
 
@@ -53,14 +53,14 @@ export interface ISetParentsTreeAction {
 }
 
 export interface ISetChildrenTreeAction {
-    dtKey: string;
+    dtTable: string;
     rViewId: RightsViewKind;
     data: DataTypeModel[];
 }
 
 export interface ISetChecksAction {
     rViewId: RightsViewKind;
-    dtKey: string;
+    dtTable: string;
     key: string;
     data: TypeDataModel[];
 }

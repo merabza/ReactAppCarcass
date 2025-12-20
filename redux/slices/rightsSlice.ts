@@ -36,7 +36,7 @@ interface turnAllParameters {
     selectedChildDataType: DataTypeModel;
     curRViewId: RightsViewKind | null;
     curKey: string | null | undefined;
-    curParentDtKey: string | null | undefined;
+    curParentDtTable: string | null | undefined;
     turnOn: boolean;
 }
 
@@ -82,17 +82,17 @@ export const rightsSlice = createSlice({
     reducers: {
         setParents: (state, action: PayloadAction<ISetParentsTreeAction>) => {
             state.drParentsRepo[action.payload.rViewId] = action.payload.data;
-            console.log("rightsSlice setParents action.payload=", action.payload);
+            // console.log("rightsSlice setParents action.payload=", action.payload);
         },
 
         setChildren: (state, action: PayloadAction<ISetChildrenTreeAction>) => {
-            console.log("rightsSlice setChildren action.payload=", action.payload);
+            // console.log("rightsSlice setChildren action.payload=", action.payload);
             try {
                 state.drChildrenRepo[action.payload.rViewId] = {} as {
                     [key: string]: DataTypeModel[];
                 };
                 state.drChildrenRepo[action.payload.rViewId][
-                    action.payload.dtKey
+                    action.payload.dtTable
                 ] = action.payload.data;
             } catch (error) {
                 // console.log("userRightsApi login catched error");
@@ -112,12 +112,12 @@ export const rightsSlice = createSlice({
                     [key: string]: { [key: string]: TypeDataModel[] };
                 };
                 state.drChecksRepo[action.payload.rViewId][
-                    action.payload.dtKey
+                    action.payload.dtTable
                 ] = {} as {
                     [key: string]: TypeDataModel[];
                 };
                 state.drChecksRepo[action.payload.rViewId][
-                    action.payload.dtKey
+                    action.payload.dtTable
                 ][action.payload.key] = action.payload.data;
             } catch (error) {
                 // console.log("userRightsApi login catched error");
@@ -172,7 +172,7 @@ export const rightsSlice = createSlice({
         },
 
         addRight: (state, action: PayloadAction<IAddRightAction>) => {
-            const { dtId, oneRight, curParentDtKey, curRViewId } =
+            const { dtId, oneRight, curParentDtTable, curRViewId } =
                 action.payload;
 
             fnAddRight(state, oneRight);
@@ -181,7 +181,7 @@ export const rightsSlice = createSlice({
                 state,
                 dtId,
                 oneRight,
-                curParentDtKey,
+                curParentDtTable,
                 curRViewId
             );
         },
@@ -190,7 +190,7 @@ export const rightsSlice = createSlice({
             const {
                 selectedChildDataType,
                 curRViewId,
-                curParentDtKey,
+                curParentDtTable,
                 curKey,
                 turnOn,
             } = action.payload;
@@ -204,7 +204,7 @@ export const rightsSlice = createSlice({
                     curRViewId,
                     curKey,
                     drParentsRepo,
-                    curParentDtKey
+                    curParentDtTable
                 );
                 oneRight.checked = turnOn;
                 fnAddRight(state, oneRight);
@@ -212,7 +212,7 @@ export const rightsSlice = createSlice({
                     state,
                     selectedChildDataType.dtId,
                     oneRight,
-                    curParentDtKey,
+                    curParentDtTable,
                     curRViewId
                 );
             });
