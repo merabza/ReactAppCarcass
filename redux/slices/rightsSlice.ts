@@ -27,6 +27,7 @@ export interface IRightsState {
     changedRights: RightsChangeModel[];
     drWorkingOnRefresh: boolean;
     selectedChildDataType: DataTypeModel | null;
+    selectedChildKey: string | null | undefined;
     searchText: string | undefined;
     drWithCodes: boolean;
     drLinear: boolean;
@@ -49,6 +50,7 @@ const initialState: IRightsState = {
     changedRights: [] as RightsChangeModel[],
     drWorkingOnRefresh: false,
     selectedChildDataType: null,
+    selectedChildKey: null,
     searchText: undefined,
     drWithCodes: false,
     drLinear: false,
@@ -159,6 +161,13 @@ export const rightsSlice = createSlice({
             state.selectedChildDataType = action.payload;
         },
 
+        setSelectedChildKey: (
+            state,
+            action: PayloadAction<string | null | undefined>
+        ) => {
+            state.selectedChildKey = action.payload;
+        },
+
         setSearchText: (state, action: PayloadAction<string | undefined>) => {
             state.searchText = action.payload;
         },
@@ -230,6 +239,7 @@ export const {
     clearForRefresh,
     finishRefresh,
     setSelectedChildDataType,
+    setSelectedChildKey,
     setSearchText,
     switchWithCodes,
     switchLinear,

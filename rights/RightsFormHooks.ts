@@ -24,7 +24,7 @@ export type fnLoadChildsTreeDataAndChecks = (
     refresh: boolean
 ) => void;
 
-interface IExpDictionary {
+export interface IExpDictionary {
     [index: string]: boolean;
 }
 
