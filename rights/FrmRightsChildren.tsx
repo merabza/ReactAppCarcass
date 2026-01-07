@@ -1,8 +1,8 @@
-import { FC } from "react";
+import type { FC } from "react";
 import WaitPage from "../common/WaitPage";
 import { RightsViewKind, RightsViewKindName } from "../redux/types/rightsTypes";
 import { Form } from "react-bootstrap";
-import { fnTurnExpanded, IExpDictionary } from "./RightsFormHooks";
+import type { fnTurnExpanded, IExpDictionary } from "./RightsFormHooks";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { setSelectedChildDataType, setSelectedChildKey } from "../redux/slices/rightsSlice";

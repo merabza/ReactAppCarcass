@@ -13,6 +13,7 @@ export type fnSetFormData<TFormData> = (frp: TFormData) => void;
 export type fnSetSchema<TSchema extends ObjectSchema<any, any, any, any>> = (
     yupSchema: TSchema
 ) => void;
+export type fnTouchAllFields = () => void;
 
 export function useForman<
     TSchema extends ObjectSchema<any, any, any, any>,
@@ -27,15 +28,12 @@ export function useForman<
     fnClearToDefaults,
     fnSetFormData<TFormData>,
     fnSetSchema<TSchema>,
-    boolean
+    boolean,
+    fnTouchAllFields
 ] {
     const [curFormSet, setFormSet] = useState<boolean>(false);
 
-    function getValidationErrMsg(
-        scema: TSchema,
-        path: string,
-        value: any
-    ): string {
+    function getValidationErrMsg(scema: TSchema, path: string, value: any): string {
         try {
             scema.validateSyncAt(path, value);
             return "";
@@ -87,7 +85,8 @@ export function useForman<
         | { type: "clearToDefault" }
         | { type: "changeField"; payload: { fieldPath: string; value: any } }
         | { type: "setForm"; payload: TFormData }
-        | { type: "setSchema"; payload: TSchema };
+        | { type: "setSchema"; payload: TSchema }
+        | { type: "touchAllFields" };
 
     function reducer(prevState: IFormState, action: ActionType): IFormState {
         //console.log("useForman changeField formState=", formState);
@@ -96,9 +95,7 @@ export function useForman<
             case "clearToDefault": {
                 return {
                     ...prevState,
-                    frm: yupSchema
-                        ? (yupSchema.getDefault() as TFormData)
-                        : null,
+                    frm: yupSchema ? (yupSchema.getDefault() as TFormData) : null,
                     err: {} as IDictionary,
                 };
             }
@@ -106,25 +103,18 @@ export function useForman<
                 let newfrm = prevState.frm;
                 const { fieldPath, value } = action.payload;
                 // console.log("useForman changeField { fieldPath, value }=", {
-                //   fieldPath,
-                //   value,
+                //     fieldPath,
+                //     value,
                 // });
 
                 // console.log("useForman before changeField newfrm=", newfrm);
                 newfrm = setValueByPatch(newfrm, fieldPath, value);
                 // console.log("useForman after changeField newfrm=", newfrm);
-                //console.log("useForman changeField newfrm[fieldPath]=", newfrm[fieldPath]);
+                // console.log("useForman changeField newfrm[fieldPath]=", newfrm[fieldPath]);
                 const newerr = prevState.err;
                 if (prevState.sch)
-                    newerr[fieldPath] = getValidationErrMsg(
-                        prevState.sch,
-                        fieldPath,
-                        newfrm
-                    );
-                // console.log(
-                //   "useForman changeField newerr[fieldPath]=",
-                //   newerr[fieldPath]
-                // );
+                    newerr[fieldPath] = getValidationErrMsg(prevState.sch, fieldPath, newfrm);
+                // console.log("useForman changeField newerr[fieldPath]=", newerr[fieldPath]);
                 return { ...prevState, frm: newfrm, err: newerr };
             }
             case "setForm":
@@ -145,11 +135,29 @@ export function useForman<
                 return {
                     ...prevState,
                     sch: newYupSchema,
-                    frm: newYupSchema
-                        ? (newYupSchema.getDefault() as TFormData)
-                        : null,
+                    frm: newYupSchema ? (newYupSchema.getDefault() as TFormData) : null,
                     err: {} as IDictionary,
                 };
+            case "touchAllFields": {
+                if (!prevState.sch || !prevState.frm) return prevState;
+                
+                const newfrm = prevState.frm;
+
+                const newErr: IDictionary = {};
+                const fields = Object.keys(prevState.frm);
+                
+                fields.forEach((fieldPath) => {
+                    newErr[fieldPath] = getValidationErrMsg(
+                        prevState.sch!,
+                        fieldPath,
+                        prevState.frm
+                    );
+                });
+                console.log("useForman touchAllFields newfrm=", newfrm);
+                console.log("useForman touchAllFields newErr=", newErr);
+                
+                return { ...prevState, frm: newfrm, err: newErr };
+            }
             default:
                 throw new Error();
         }
@@ -161,10 +169,10 @@ export function useForman<
         err: {} as IDictionary,
     };
 
-    const [formState, dispatchForm] = useReducer<
-        IFormState,
-        [action: ActionType]
-    >(reducer, initialState);
+    const [formState, dispatchForm] = useReducer<IFormState, [action: ActionType]>(
+        reducer,
+        initialState
+    );
 
     const changeField: fnChangeField = (fieldPath: string, value: any) => {
         dispatchForm({ type: "changeField", payload: { fieldPath, value } });
@@ -172,20 +180,13 @@ export function useForman<
 
     const getError: fnGetError = (fieldPath: string) => {
         const errors = formState.err;
-        if (
-            errors &&
-            fieldPath in errors &&
-            errors[fieldPath] &&
-            errors[fieldPath].length > 0
-        )
+        if (errors && fieldPath in errors && errors[fieldPath] && errors[fieldPath].length > 0)
             return errors[fieldPath];
         return null;
     };
 
     const getAllErrors: fngetAllErrors = () => {
-        const errMsg = formState.sch
-            ? getAllValidationErrMsg(formState.sch, formState.frm)
-            : "";
+        const errMsg = formState.sch ? getAllValidationErrMsg(formState.sch, formState.frm) : "";
         return errMsg;
     };
 
@@ -202,6 +203,10 @@ export function useForman<
         dispatchForm({ type: "setSchema", payload: yupSchema });
     }, []); //dispatchForm
 
+    const touchAllFields = useCallback(() => {
+        dispatchForm({ type: "touchAllFields" });
+    }, []); //dispatchForm
+
     return [
         //frm
         formState.frm,
@@ -212,5 +217,6 @@ export function useForman<
         setFormData,
         setSchema,
         curFormSet,
+        touchAllFields,
     ];
 }

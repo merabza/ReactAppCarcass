@@ -12,7 +12,7 @@ interface IUserState {
     registering: boolean;
     deletingRegistation: boolean;
     changingPassword: boolean;
-    passwordChanged: boolean;
+    // passwordChanged: boolean;
     changingProfile: boolean;
     user: IAppUser | null;
     tabWindowId: number;
@@ -31,7 +31,7 @@ const initialState: IUserState = {
     registering: false,
     deletingRegistation: false,
     changingPassword: false,
-    passwordChanged: false,
+    // passwordChanged: false,
     changingProfile: false,
     user: localStorageuser,
     tabWindowId: lastTwId,
@@ -77,9 +77,9 @@ export const userSlice = createSlice({
         //   state.isUserValid = action.payload;
         //   state.userValidationChecked = true;
         // },
-        setPasswordChanged: (state, action: PayloadAction<boolean>) => {
-            state.passwordChanged = action.payload;
-        },
+        // setPasswordChanged: (state, action: PayloadAction<boolean>) => {
+        //     state.passwordChanged = action.payload;
+        // },
         setChangingPassword: (state, action: PayloadAction<boolean>) => {
             state.changingPassword = action.payload;
         },
@@ -94,6 +94,6 @@ export const {
     setloggingIn,
     setCheckingUser,
     setIsCurrentUserValid,
-    setPasswordChanged,
+    // setPasswordChanged,
     setChangingPassword,
 } = userSlice.actions;

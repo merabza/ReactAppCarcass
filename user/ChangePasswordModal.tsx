@@ -1,16 +1,14 @@
 //ChangePasswordModal.tsx
 
-import { type FC, useEffect } from "react";
-import { Modal, Button, Form, Spinner } from "react-bootstrap";
+import { type FC, useEffect, useState } from "react";
+import { Modal, Button, Form, Spinner, Alert } from "react-bootstrap";
 import * as yup from "yup";
 
 import { useForman } from "../hooks/useForman";
-import {
-    type IChangePasswordModel,
-    useChangePasswordMutation,
-} from "../redux/api/userRightsApi";
+import { type IChangePasswordModel, useChangePasswordMutation } from "../redux/api/userRightsApi";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { clearAllAlerts } from "../redux/slices/alertSlice";
+// import { setPasswordChanged } from "../redux/slices/userSlice";
 
 type ChangePasswordModalProps = {
     show: boolean;
@@ -20,17 +18,24 @@ type ChangePasswordModalProps = {
 const ChangePasswordModal: FC<ChangePasswordModalProps> = (props) => {
     const { show, onHide } = props;
 
-    const { passwordChanged, user } = useAppSelector(
-        (state) => state.userState
-    );
+    const { user } = useAppSelector((state) => state.userState);
     const dispatch = useAppDispatch();
+    const [errorMessage, setErrorMessage] = useState<string>("");
+
+    // useEffect(() => {
+    //     if (passwordChanged) {
+    //         dispatch(clearAllAlerts());
+    //         onHide();
+    //     }
+    // }, [passwordChanged, onHide, dispatch]);
 
     useEffect(() => {
-        if (passwordChanged) {
-            dispatch(clearAllAlerts());
-            onHide();
+        if (show) {
+            setErrorMessage("");
+            clearToDefaults();
+            // dispatch(setPasswordChanged(false));
         }
-    }, [passwordChanged, onHide, dispatch]);
+    }, [show]);
 
     type ChangePasswordData = yup.InferType<typeof changePasswordSchema>;
 
@@ -53,12 +58,9 @@ const ChangePasswordModal: FC<ChangePasswordModalProps> = (props) => {
         clearToDefaults,
         // eslint-disable-next-line
         //setFormData,
-    ] = useForman<typeof changePasswordSchema, ChangePasswordData>(
-        changePasswordSchema
-    );
+    ] = useForman<typeof changePasswordSchema, ChangePasswordData>(changePasswordSchema);
 
-    const [changePassword, { isLoading: changingPassword }] =
-        useChangePasswordMutation();
+    const [changePassword, { isLoading: changingPassword }] = useChangePasswordMutation();
 
     function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
         //console.log("ChangePasswordModal handleChange e.target=", e.target);
@@ -66,26 +68,31 @@ const ChangePasswordModal: FC<ChangePasswordModalProps> = (props) => {
         changeField(id, value);
     }
 
-    function handleSubmit(e: React.SyntheticEvent) {
+    async function handleSubmit(e: React.SyntheticEvent) {
         e.preventDefault();
         if (haveErrors()) return;
         if (user === null) return;
-        //console.log("ChangePasswordModal handleSubmit user=", user);
-        changePassword({
-            ...frm,
-            userName: user.userName,
-            userid: user.userId,
-        } as IChangePasswordModel);
+
+        setErrorMessage("");
+        try {
+            await changePassword({
+                ...frm,
+                userName: user.userName,
+                userid: user.userId,
+            } as IChangePasswordModel).unwrap();
+            // Additional success handling could go here
+            onHide();
+        } catch (error) {
+            // Error handling if needed
+            console.error("Password change failed:", error);
+            setErrorMessage("პაროლის შეცვლა ვერ მოხერხდა");
+            clearToDefaults();
+        }
     }
 
     //console.log("ChangePasswordModal getError(confirmPassword)=", getError("confirmPassword"));
 
-    function getOneTextControl(
-        id: string,
-        label: string,
-        type: string,
-        value: string | undefined
-    ) {
+    function getOneTextControl(id: string, label: string, type: string, value: string | undefined) {
         const error = getError(id);
         return (
             <Form.Group className="mb-0" controlId={id}>
@@ -96,46 +103,53 @@ const ChangePasswordModal: FC<ChangePasswordModalProps> = (props) => {
                     onChange={handleChange}
                     className={!!error ? "is-invalid" : undefined}
                 />
-                <Form.Control.Feedback type="invalid">
-                    {error}
-                </Form.Control.Feedback>
+                <Form.Control.Feedback type="invalid">{error}</Form.Control.Feedback>
             </Form.Group>
         );
     }
 
     if (!frm) return <div>ფორმის მონაცემები არ არის</div>;
 
+    function handleClose() {
+        clearToDefaults();
+        setErrorMessage("");
+        dispatch(clearAllAlerts());
+        onHide();
+    }
+
     return (
-        <Modal
-            show={show}
-            size="sm"
-            aria-labelledby="contained-modal-title-vcenter"
-            centered
-        >
+        <Modal show={show} size="sm" aria-labelledby="contained-modal-title-vcenter" centered onHide={handleClose}>
             <Modal.Header closeButton>
-                <Modal.Title id="contained-modal-title-vcenter">
+                <Modal.Title
+                    id="contained-modal-title-vcenter"
+                >
                     პაროლის შეცვლა
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body>
+                {errorMessage && (
+                    <Alert variant="danger" className="mb-3">
+                        {errorMessage}
+                    </Alert>
+                )}
                 <Form>
                     {getOneTextControl(
                         "oldPassword",
                         "ძველი პაროლი",
                         "password",
-                        frm?.oldPassword
+                        frm?.oldPassword ?? ""
                     )}
                     {getOneTextControl(
                         "newPassword",
                         "ახალი პაროლი",
                         "password",
-                        frm?.newPassword
+                        frm?.newPassword ?? ""
                     )}
                     {getOneTextControl(
                         "newPasswordConfirm",
                         "ახალი პაროლი განმეორებით",
                         "password",
-                        frm?.newPasswordConfirm
+                        frm?.newPasswordConfirm ?? ""
                     )}
                 </Form>
             </Modal.Body>
@@ -155,11 +169,7 @@ const ChangePasswordModal: FC<ChangePasswordModalProps> = (props) => {
                 </Button>
                 <Button
                     variant="secondary"
-                    onClick={() => {
-                        clearToDefaults();
-                        dispatch(clearAllAlerts());
-                        onHide();
-                    }}
+                    onClick={handleClose}
                 >
                     {" "}
                     არა

@@ -10,6 +10,8 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import type { RootState } from "../../../redux/store";
 import { setUser, setloggingIn } from "../slices/userSlice";
 import type { IAppUser } from "../types/authenticationTypes";
+import { buildErrorMessage } from "../types/errorTypes";
+import { setAlertApiLoadError, setAlertApiMutationError } from "../slices/alertSlice";
 
 export interface ILoginRequest {
     username: string;
@@ -71,7 +73,8 @@ export const authenticationApi = createApi({
                     // console.log("authenticationApi login onQueryStarted data=", data);
                     dispatch(setUser(data));
                 } catch (error) {
-                    // console.log("authenticationApi login catched error=", error);
+                    //console.log("authenticationApi login catched error=", error);
+                    dispatch(setAlertApiMutationError(buildErrorMessage(error)));
                     dispatch(setUser(null));
                 }
             },
@@ -91,6 +94,7 @@ export const authenticationApi = createApi({
                     const { data } = await queryFulfilled;
                     dispatch(setUser(data));
                 } catch (error) {
+                    dispatch(setAlertApiMutationError(buildErrorMessage(error)));
                     dispatch(setUser(null));
                 }
             },

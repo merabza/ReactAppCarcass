@@ -1,10 +1,11 @@
 //FrmRightsDataList.tsx
 
-import { FC } from "react";
-import { DataTypeModel, RightsChangeModel, RightsViewKind } from "../redux/types/rightsTypes";
+import type { FC } from "react";
+import type { DataTypeModel, RightsChangeModel } from "../redux/types/rightsTypes";
+import { RightsViewKind } from "../redux/types/rightsTypes";
 import { createOneRight, getChildrenDataTypes } from "./RightFormFunctions";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import { fnTurnExpanded, IExpDictionary } from "./RightsFormHooks";
+import type { fnTurnExpanded, IExpDictionary } from "./RightsFormHooks";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import CybCheckBox from "./CybCheckBox";
 import {
@@ -25,20 +26,18 @@ type FrmRightsDataListProps = {
 };
 
 const FrmRightsDataList: FC<FrmRightsDataListProps> = (props) => {
+    const {
+        dataType,
+        parentKey,
+        parentValue,
+        parentDtTable,
+        rViewId,
+        chiExp,
+        curKey,
+        turnExpanded,
+    } = props;
 
-const {
-    dataType,
-    parentKey,
-    parentValue,
-    parentDtTable,
-    rViewId,
-    chiExp,
-    curKey,
-    turnExpanded,
-} = props;
-
-// console.log("FrmRights getDataList props=", props);
-
+    // console.log("FrmRights getDataList props=", props);
 
     const {
         drParentsRepo,

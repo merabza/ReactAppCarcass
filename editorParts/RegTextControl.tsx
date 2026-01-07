@@ -24,21 +24,14 @@ const RegTextControl: FC<RegTextControlProps> = (props) => {
     return (
         <Form.Group className="mb-0" controlId={controlId}>
             <Form.Control
-                type={
-                    controlId.toLowerCase().includes("password")
-                        ? "password"
-                        : "text"
-                }
+                type={controlId.toLowerCase().includes("password") ? "password" : "text"}
                 placeholder={label}
-                value={value ? value : ""}
+                value={value ?? ""}
                 onChange={handleChange}
-                className={`${
-                    !!getError("username") ? "is-invalid" : ""
-                } h-100`}
+                // className={`${!!getError("username") ? "is-invalid" : ""} h-100`}
+                isInvalid={!!error}
             />
-            <Form.Control.Feedback type="invalid">
-                {error}
-            </Form.Control.Feedback>
+            <Form.Control.Feedback type="invalid">{error}</Form.Control.Feedback>
         </Form.Group>
     );
 };

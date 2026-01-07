@@ -8,7 +8,7 @@ import {
     setChangingPassword,
     setCheckingUser,
     setIsCurrentUserValid,
-    setPasswordChanged,
+    // setPasswordChanged,
     setUser,
 } from "../slices/userSlice";
 import {
@@ -141,13 +141,13 @@ export const userRightsApi = createApi({
                 // console.log("authenticationApi login onQueryStarted started")
                 try {
                     dispatch(setChangingPassword(true));
-                    dispatch(setPasswordChanged(false));
+                    // dispatch(setPasswordChanged(false));
                     await queryFulfilled;
                     dispatch(setChangingPassword(false));
-                    dispatch(setPasswordChanged(true));
+                    // dispatch(setPasswordChanged(true));
                 } catch (error) {
                     dispatch(setChangingPassword(false));
-                    dispatch(setPasswordChanged(false));
+                    // dispatch(setPasswordChanged(false));
                     dispatch(
                         setAlertApiMutationError(buildErrorMessage(error))
                     );
