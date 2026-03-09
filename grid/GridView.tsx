@@ -32,6 +32,7 @@ type GridViewProps = {
         filterByFields: IFilterField[]
     ) => void;
     onRowClick?: (row: any, index: number) => void;
+    onRowActivated?: (row: any) => void;
     readOnly?: boolean;
     allowCreate?: boolean;
     allowUpdate?: boolean;
@@ -54,6 +55,7 @@ const GridView: FC<GridViewProps> = (props) => {
         backLigth,
         onLoadRows,
         onRowClick,
+        onRowActivated, 
         readOnly,
         allowCreate,
         allowUpdate,
@@ -199,6 +201,7 @@ const GridView: FC<GridViewProps> = (props) => {
                         onInlineEditStart={onInlineEditStart}
                         onInlineEditCancel={onInlineEditCancel}
                         onRowClick={onRowClick}
+                        onRowActivated={onRowActivated}
                         onInlineEdit={onInlineEdit}
                     />
                 </Table>

@@ -29,6 +29,7 @@ type GridTableBodyProps = {
     onInlineEditStart?: (row: any) => void;
     onInlineEditCancel?: (row: any) => void;
     onRowClick?: (row: any, index: number) => void;
+    onRowActivated?: (row: any) => void;
     onInlineEdit?: (row: any, fieldName: string, newValue: any) => Promise<boolean>;
 };
 
@@ -50,6 +51,7 @@ const GridTableBody: FC<GridTableBodyProps> = (props) => {
         onInlineEditStart,
         onInlineEditCancel,
         onRowClick,
+        onRowActivated,
         onInlineEdit,
     } = props;
 
@@ -194,6 +196,7 @@ const GridTableBody: FC<GridTableBodyProps> = (props) => {
                     <tr
                         key={row[keyCol.fieldName]}
                         ref={bl ? backLigth : null}
+                        tabIndex={0}
                         onClick={() => {
                             // Don't trigger row click if inline editing is active
                             if (
@@ -202,6 +205,9 @@ const GridTableBody: FC<GridTableBodyProps> = (props) => {
                             ) {
                                 onRowClick?.(row, index);
                             }
+                        }}
+                        onFocus={() => {
+                            onRowActivated?.(row);
                         }}
                         style={{
                             cursor:
