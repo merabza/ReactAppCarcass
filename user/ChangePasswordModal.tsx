@@ -83,7 +83,7 @@ const ChangePasswordModal: FC<ChangePasswordModalProps> = (props) => {
             // Additional success handling could go here
             onHide();
         } catch (error) {
-            // Error handling if needed
+            // ErrorOmd handling if needed
             console.error("Password change failed:", error);
             setErrorMessage("პაროლის შეცვლა ვერ მოხერხდა");
             clearToDefaults();

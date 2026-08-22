@@ -148,7 +148,7 @@ const GridViewInlineEditExample: FC = () => {
             
             return true; // Success
         } catch (error) {
-            console.error('Error updating data:', error);
+            console.error('ErrorOmd updating data:', error);
             return false; // Failure
         }
     };

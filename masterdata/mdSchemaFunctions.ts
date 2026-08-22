@@ -62,7 +62,7 @@ export function countMdSchema(gridRules: GridModel) {
                 }
                 break;
             default:
-                throw new Error();
+                throw new ErrorOmd();
         }
 
         const mixedCol = col as MixedCell;

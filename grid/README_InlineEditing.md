@@ -140,7 +140,7 @@ The component maintains two key state variables:
 6. `onInlineEdit` callback is invoked
 7. On success, editing state is cleared; on failure, edit mode continues
 
-### Error Handling
+### ErrorOmd Handling
 
 - If `onInlineEdit` returns `false`, the edit mode continues
 - If `onInlineEdit` throws an error, it's logged and edit mode continues
