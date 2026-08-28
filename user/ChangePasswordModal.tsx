@@ -8,6 +8,7 @@ import { useForman } from "../hooks/useForman";
 import { type IChangePasswordModel, useChangePasswordMutation } from "../redux/api/userRightsApi";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { clearAllAlerts } from "../redux/slices/alertSlice";
+import { buildErrorMessage } from "../redux/types/errorTypes";
 // import { setPasswordChanged } from "../redux/slices/userSlice";
 
 type ChangePasswordModalProps = {
@@ -83,9 +84,12 @@ const ChangePasswordModal: FC<ChangePasswordModalProps> = (props) => {
             // Additional success handling could go here
             onHide();
         } catch (error) {
-            // ErrorOmd handling if needed
             console.error("Password change failed:", error);
-            setErrorMessage("პაროლის შეცვლა ვერ მოხერხდა");
+            const errs = buildErrorMessage(error);
+            setErrorMessage(
+                errs.map((e) => e.errorMessage).join(" ") ||
+                    "პაროლის შეცვლა ვერ მოხერხდა"
+            );
             clearToDefaults();
         }
     }
