@@ -174,7 +174,7 @@ const GridTableBody: FC<GridTableBodyProps> = (props) => {
                 setEditingCell(null);
             }
         } catch (error) {
-            console.error("ErrorOmd saving inline edit:", error);
+            console.error("Error saving inline edit:", error);
             // Keep editing mode on error
         }
     }

@@ -62,7 +62,7 @@ export function useRightsForman(): [
                 return { ...formRightState, chiExp: newExp };
             }
             default:
-                throw new ErrorOmd();
+                throw new Error();
         }
     }
 

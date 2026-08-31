@@ -159,7 +159,7 @@ export function useForman<
                 return { ...prevState, frm: newfrm, err: newErr };
             }
             default:
-                throw new ErrorOmd();
+                throw new Error();
         }
     }
 
