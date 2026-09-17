@@ -1,6 +1,11 @@
 //gridTypes.ts
 
-import type { Err } from "./errorTypes";
+//ბექენდის SystemTools.SharedKernel.Error ჩანაწერი ისე, როგორც DataTypes.DtGridRulesJson-ში ინახება
+export interface GridErr {
+    code: string;
+    description: string;
+    type: number;
+}
 
 export interface GridModel {
     cells: Cell[];
@@ -26,7 +31,7 @@ export interface Cell {
 }
 
 export interface MixedCell extends Cell {
-    isRequiredErr: Err | null;
+    isRequiredErr: GridErr | null;
     isNullable: boolean | null;
 }
 
@@ -41,7 +46,7 @@ export interface DateCell extends MixedCell {
 }
 
 export interface NumberCell extends MixedCell {
-    isPositiveErr: Err | null;
+    isPositiveErr: GridErr | null;
 }
 
 export interface StringCell extends MixedCell {
@@ -51,7 +56,7 @@ export interface StringCell extends MixedCell {
 
 export interface IntegerCell extends NumberCell {
     def: number | null;
-    isIntegerErr: Err | null;
+    isIntegerErr: GridErr | null;
     minValRule: IntRule | null;
     isShort: boolean;
     isSortId: boolean;
@@ -73,7 +78,7 @@ export interface MdLookupCell extends IntegerCell {
 
 export interface IntRule {
     val: number;
-    err: Err;
+    error: GridErr;
 }
 
 export function DeserializeGridModel(

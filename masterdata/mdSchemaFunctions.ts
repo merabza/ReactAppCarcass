@@ -23,7 +23,7 @@ export function countMdSchema(gridRules: GridModel) {
                 const IntegerCol = col as IntegerCell;
                 if (IntegerCol.isIntegerErr)
                     yupResult = yupResult.integer(
-                        IntegerCol.isIntegerErr.errorMessage
+                        IntegerCol.isIntegerErr.description
                     );
                 else yupResult = yupResult.integer();
                 if (IntegerCol.minValRule) {
@@ -31,7 +31,7 @@ export function countMdSchema(gridRules: GridModel) {
                 }
                 if (IntegerCol.isPositiveErr) {
                     yupResult = yupResult.positive(
-                        IntegerCol.isPositiveErr.errorMessage
+                        IntegerCol.isPositiveErr.description
                     );
                 }
                 if (IntegerCol.def || IntegerCol.def === 0) {
@@ -57,7 +57,7 @@ export function countMdSchema(gridRules: GridModel) {
                 if (StringCol.maxLenRule) {
                     yupResult = yupResult.max(
                         StringCol.maxLenRule.val,
-                        StringCol.maxLenRule.err.errorMessage
+                        StringCol.maxLenRule.error.description
                     );
                 }
                 break;
@@ -68,7 +68,7 @@ export function countMdSchema(gridRules: GridModel) {
         const mixedCol = col as MixedCell;
 
         if (mixedCol.isRequiredErr) {
-            yupResult = yupResult.required(mixedCol.isRequiredErr.errorMessage);
+            yupResult = yupResult.required(mixedCol.isRequiredErr.description);
         }
         if (mixedCol.isNullable) {
             yupResult = yupResult.nullable();
