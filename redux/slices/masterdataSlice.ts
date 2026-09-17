@@ -138,7 +138,8 @@ export const masterdataSlice = createSlice({
                 const existingMdItemIndex = tableDate.rows.findIndex(
                     (mdItm) => mdItm[idFielName] === mdItem[idFielName]
                 );
-                if (existingMdItemIndex) {
+                //findIndex-ის 0 ნამდვილი ინდექსია (პირველი მწკრივი), -1 კი "ვერ იპოვა"
+                if (existingMdItemIndex > -1) {
                     tableDate.rows.splice(existingMdItemIndex, 1, mdItem);
                 }
             }
@@ -156,7 +157,7 @@ export const masterdataSlice = createSlice({
                 const existingMdItemIndex = tableDate.rows.findIndex(
                     (mdItm) => mdItm[idFielName] === id
                 );
-                if (existingMdItemIndex) {
+                if (existingMdItemIndex > -1) {
                     tableDate.rows.splice(existingMdItemIndex, 1);
                 }
             }

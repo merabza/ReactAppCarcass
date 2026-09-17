@@ -177,9 +177,19 @@ const MdItemEdit: FC = () => {
         //   mdIdValue,
         // });
 
-        if (loadingMdRecord || !mdRecordForEdit[tableName]) return;
+        //ფორმაში მხოლოდ ის ჩანაწერი ჯდება, რომელიც ამ იდენტიფიკატორისთვის ჩაიტვირთა: ახალი ჩანაწერისთვის (mdIdValue 0)
+        //და სხვა ჩანაწერზე გადასვლისას redux-ში წინა რედაქტირების ჩანაწერი რჩება და ის არ უნდა გამოჩნდეს
+        const loadedRecord = mdRecordForEdit[tableName];
+        if (
+            !mdIdValue ||
+            loadingMdRecord ||
+            !loadedRecord ||
+            !dataType ||
+            loadedRecord[dataType.idFieldName] !== mdIdValue
+        )
+            return;
 
-        setFormData(mdRecordForEdit[tableName]);
+        setFormData(loadedRecord);
     }, [
         loadingMdRecord,
         mdWorkingOnLoadingListData,
