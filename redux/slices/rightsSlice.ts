@@ -1,10 +1,7 @@
 //rightsSlice.ts
 
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import {
-    createOneRight,
-    funAddOneRightAndChildren,
-} from "../../rights/RightFormFunctions";
+import { changeRightWithCascade } from "../../rights/RightFormFunctions";
 
 import {
     type DataTypeModel,
@@ -55,28 +52,6 @@ const initialState: IRightsState = {
     drWithCodes: false,
     drLinear: false,
 };
-
-function fnAddRight(state: IRightsState, oneRight: RightsChangeModel) {
-    const findedRightIndex = state.changedRights.findIndex(
-        (f) =>
-            f.parent !== null &&
-            oneRight.parent !== null &&
-            f.child !== null &&
-            oneRight.child !== null &&
-            f.parent.dtId === oneRight.parent.dtId &&
-            f.parent.dKey === oneRight.parent.dKey &&
-            f.child.dtId === oneRight.child.dtId &&
-            f.child.dKey === oneRight.child.dKey
-    );
-
-    // console.log("addRight findedRightIndex=", findedRightIndex);
-    // console.log("addRight oneRight=", oneRight);
-    if (findedRightIndex === -1) {
-        state.changedRights.push(oneRight);
-    } else {
-        state.changedRights[findedRightIndex].checked = oneRight.checked;
-    }
-}
 
 export const rightsSlice = createSlice({
     initialState,
@@ -181,17 +156,16 @@ export const rightsSlice = createSlice({
         },
 
         addRight: (state, action: PayloadAction<IAddRightAction>) => {
-            const { dtId, oneRight, curParentDtTable, curRViewId } =
+            const { dataType, row, checked, curParentDtTable, curRViewId, curKey } =
                 action.payload;
+            if (curRViewId === null || !curParentDtTable || !curKey) return;
 
-            fnAddRight(state, oneRight);
-
-            funAddOneRightAndChildren(
+            changeRightWithCascade(
                 state,
-                dtId,
-                oneRight,
-                curParentDtTable,
-                curRViewId
+                { rViewId: curRViewId, parentDtTable: curParentDtTable, curKey },
+                dataType,
+                row,
+                checked
             );
         },
 
@@ -203,27 +177,11 @@ export const rightsSlice = createSlice({
                 curKey,
                 turnOn,
             } = action.payload;
+            if (curRViewId === null || !curParentDtTable || !curKey) return;
 
-            const { drParentsRepo } = state;
-
-            selectedChildDataType.returnValues.forEach((item) => {
-                const oneRight = createOneRight(
-                    selectedChildDataType.dtId,
-                    item.key,
-                    curRViewId,
-                    curKey,
-                    drParentsRepo,
-                    curParentDtTable
-                );
-                oneRight.checked = turnOn;
-                fnAddRight(state, oneRight);
-                funAddOneRightAndChildren(
-                    state,
-                    selectedChildDataType.dtId,
-                    oneRight,
-                    curParentDtTable,
-                    curRViewId
-                );
+            const ctx = { rViewId: curRViewId, parentDtTable: curParentDtTable, curKey };
+            selectedChildDataType.returnValues.forEach((row) => {
+                changeRightWithCascade(state, ctx, selectedChildDataType, row, turnOn);
             });
         },
     },

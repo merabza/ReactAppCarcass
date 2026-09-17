@@ -41,10 +41,12 @@ export interface RightsChangeModel {
 }
 
 export interface IAddRightAction {
-    dtId: number;
-    oneRight: RightsChangeModel;
+    dataType: DataTypeModel;
+    row: ReturnValueModel;
+    checked: boolean;
     curParentDtTable: string | null | undefined;
     curRViewId: RightsViewKind | null;
+    curKey: string | null | undefined;
 }
 
 export interface ISetParentsTreeAction {

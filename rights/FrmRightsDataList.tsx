@@ -1,7 +1,7 @@
 //FrmRightsDataList.tsx
 
 import type { FC } from "react";
-import type { DataTypeModel, RightsChangeModel } from "../redux/types/rightsTypes";
+import type { DataTypeModel, ReturnValueModel } from "../redux/types/rightsTypes";
 import { RightsViewKind } from "../redux/types/rightsTypes";
 import { createOneRight, getChildrenDataTypes } from "./RightFormFunctions";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
@@ -50,13 +50,15 @@ const FrmRightsDataList: FC<FrmRightsDataListProps> = (props) => {
     } = useAppSelector((state) => state.rightsState);
     const dispatch = useAppDispatch();
 
-    function addOneRightAndChildren(dataType: DataTypeModel, oneRight: RightsChangeModel) {
+    function changeRight(row: ReturnValueModel, checked: boolean) {
         dispatch(
             addRight({
-                dtId: dataType.dtId,
-                oneRight,
+                dataType,
+                row,
+                checked,
                 curParentDtTable: parentDtTable,
                 curRViewId: rViewId,
+                curKey,
             })
         );
     }
@@ -69,19 +71,24 @@ const FrmRightsDataList: FC<FrmRightsDataListProps> = (props) => {
     }
 
     function getTopParentDataType(dataType: DataTypeModel): DataTypeModel {
-        const retDataType: DataTypeModel = dataType;
+        let retDataType: DataTypeModel = dataType;
         if (
             !drLinear &&
             parentDtTable !== null &&
             parentDtTable !== undefined &&
             rViewId === RightsViewKind.normalView
         ) {
-            while (retDataType.dtParentDataTypeId) {
+            //მშობლების ჯაჭვით ზედა ტიპამდე; თვითმშობელი ტიპი (dtId === dtParentDataTypeId) ციკლს არ იწვევს
+            while (
+                retDataType.dtParentDataTypeId &&
+                retDataType.dtParentDataTypeId !== retDataType.dtId
+            ) {
                 const dtParentDataTypeId = retDataType.dtParentDataTypeId;
                 const nextDataType = drChildrenRepo[rViewId][parentDtTable].find(
                     (f) => f.dtId === dtParentDataTypeId
                 );
                 if (nextDataType === undefined) return retDataType;
+                retDataType = nextDataType;
             }
         }
         return retDataType;
@@ -215,8 +222,7 @@ const FrmRightsDataList: FC<FrmRightsDataListProps> = (props) => {
                                             usedSpace
                                         ) => {
                                             //console.log("FrmRights getDataList CybCheckBox onChange e.target.checked=", e.target.checked);
-                                            oneRight.checked = e.target.checked;
-                                            addOneRightAndChildren(dataType, oneRight);
+                                            changeRight(itm, e.target.checked);
                                             if (usedSpace) {
                                                 const nextExpKey = getNextSiblingExpKey(
                                                     dataType,
