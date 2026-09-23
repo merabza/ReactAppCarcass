@@ -66,10 +66,10 @@ const LoginPage: FC = () => {
         changeField,
         getError,
         haveErrors,
-        clearToDefaults,
-        setFormData,
-        setSchema,
-        curFormSet,
+        _clearToDefaults,
+        _setFormData,
+        _setSchema,
+        _curFormSet,
         touchAllFields,
     ] = useForman<typeof loginPageSchema, LoginPageData>(loginPageSchema);
 

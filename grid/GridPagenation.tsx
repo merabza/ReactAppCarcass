@@ -1,6 +1,6 @@
 //GridPagenation.tsx
 
-import { FC } from "react";
+import type { FC } from "react";
 import { NzInt } from "../common/myFunctions";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
