@@ -74,7 +74,7 @@ export function ConvertGridModelToGridColumns(
             isKey: field.fieldName === dataType.idFieldName ? true : false,
             lookupColumnPart: lookupData,
             nullable: mixedCell.isNullable,
-        } as IGridColumn;
+        } as unknown as IGridColumn;
     });
 }
 

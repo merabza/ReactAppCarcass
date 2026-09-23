@@ -11,7 +11,7 @@ import type { RootState } from "../../../redux/store";
 import { setUser, setloggingIn } from "../slices/userSlice";
 import type { IAppUser } from "../types/authenticationTypes";
 import { buildErrorMessage } from "../types/errorTypes";
-import { setAlertApiLoadError, setAlertApiMutationError } from "../slices/alertSlice";
+import { setAlertApiMutationError } from "../slices/alertSlice";
 
 export interface ILoginRequest {
     username: string;
