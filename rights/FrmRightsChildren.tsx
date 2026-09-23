@@ -81,9 +81,8 @@ const FrmRightsChildren: FC<FrmRightsChildrenProps> = (props) => {
         <Form>
             <div id="data-rights-tree" className="editor-scroll">
                 <ul className="list-unstyled">
-                    {zeroLevelDataTypes.map((item, index) => {
+                    {zeroLevelDataTypes.map((item) => {
                         // console.log("FrmRights zeroLevelDataTypes.map, item=", item);
-                        // console.log("FrmRights zeroLevelDataTypes.map, index=", index);
                         return (
                             <li key={item.dtId}>
                                 <span
