@@ -22,7 +22,9 @@ const NavMenu: FC = () => {
     const active = useAppSelector((state) => state.navMenuState.active);
     // console.log("NavMenu active=", active);
 
-    useGetMainMenuQuery();
+    //მენიუ მომხმარებლის როლებზეა დამოკიდებული, ქეშირებული კი არგუმენტის გარეშეა: სხვა მომხმარებლით შესვლის შემდეგ
+    //წინა მომხმარებლის მენიუ რომ არ დარჩეს, ყოველ ჩატვირთვაზე თავიდან მოითხოვება (NavMenu მხოლოდ შესვლის შემდეგ იტვირთება)
+    useGetMainMenuQuery(undefined, { refetchOnMountOrArgChange: true });
 
     return (
         <nav id="sidebar" className={active ? "active" : undefined}>

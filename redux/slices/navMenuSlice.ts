@@ -2,6 +2,7 @@
 
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { IMainMenuModel, IMenuItmModel } from "../types/userRightsTypes";
+import { logout } from "./userSlice";
 
 interface INavMenuState {
     active: boolean;
@@ -44,6 +45,13 @@ export const navMenuSlice = createSlice({
         setMenuLoading: (state, action: PayloadAction<boolean>) => {
             state.isMenuLoading = action.payload;
         },
+    },
+    extraReducers: (builder) => {
+        //გასვლისას წინა მომხმარებლის მენიუ იშლება
+        builder.addCase(logout, (state) => {
+            state.mainMenu = null;
+            state.flatMenu = null;
+        });
     },
 });
 
