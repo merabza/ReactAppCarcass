@@ -1,6 +1,7 @@
 //MdGridView.tsx
 
-import { type FC, useEffect } from "react";
+import { type FC, useEffect, useMemo } from "react";
+import { QueryStatus } from "@reduxjs/toolkit/query/react";
 import { useAppSelector } from "../redux/hooks";
 import { useScroller } from "../hooks/useScroller";
 import { useAlert } from "../hooks/useAlert";
@@ -15,6 +16,7 @@ import { useMasterDataLookupLists } from "./masterDataHooks/useMasterDataLookupL
 import GridView from "../grid/GridView";
 import type { IRowsData } from "../grid/GridViewTypes";
 import { useLazyGetTableRowsDataQuery } from "../redux/api/masterdataApi";
+import { dataTypesApi } from "../redux/api/dataTypesApi";
 
 type MdGridViewProps = {
     tableName: string;
@@ -50,6 +52,13 @@ const MdGridView: FC<MdGridViewProps> = (props) => {
 
     const dataType = dataTypesState.dataTypesByTableNames[tableName];
     const gridRules = dataTypesState.gridRules[tableName];
+
+    //ამ ცხრილის grid-ის წესების მოთხოვნის მდგომარეობა (მოთხოვნას loadListData აგზავნის)
+    const selectGridModelRequest = useMemo(
+        () => dataTypesApi.endpoints.getGridModel.select(tableName),
+        [tableName]
+    );
+    const gridModelRequest = useAppSelector(selectGridModelRequest);
 
     useEffect(() => {
         if (
@@ -125,11 +134,17 @@ const MdGridView: FC<MdGridViewProps> = (props) => {
     //   dataType,
     // });
 
-    if (
-        !curGridColumns ||
-        curscrollTo === null ||
-        !dataType
-    ) {
+    //მონაცემთა ტიპები ჯერ არ ჩატვირთულა, ამ ცხრილის grid-ის წესები ჯერ არ მოთხოვნილა ან იტვირთება, ან პირველი
+    //დახატვისას გადასახვევი ჩანაწერი ჯერ არ დაყენებულა: ეს ჩატვირთვაა და არა პრობლემა (ჩატვირთვის შეცდომა ზემოთ უკვე
+    //ნაჩვენებია). მოთხოვნის დასრულების შემდეგაც თუ რამე აკლია, ეს უკვე პრობლემაა
+    const listDataPending =
+        (!dataType && dataTypesState.dataTypes.length === 0) ||
+        (!gridRules &&
+            (gridModelRequest.status === QueryStatus.uninitialized ||
+                gridModelRequest.status === QueryStatus.pending));
+    if (listDataPending || curscrollTo === null) return <Loading />;
+
+    if (!curGridColumns || !dataType) {
         return (
             <div>
                 <h5>ჩატვირთვის პრობლემა 2</h5>

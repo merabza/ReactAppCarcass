@@ -1,6 +1,6 @@
 //MdItemEdit.tsx
 
-import React, { useState, useEffect, type FC } from "react";
+import React, { useState, useEffect, useRef, type FC } from "react";
 import { Form, Row, Col } from "react-bootstrap";
 import * as yup from "yup";
 
@@ -63,6 +63,12 @@ const MdItemEdit: FC = () => {
     const [curYupSchema, setCurYupSchema] = useState<yup.AnySchema | null>(
         null
     );
+    //1.5. ეფექტი ბევრჯერ ეშვება, ამიტომ ფორმის მომზადება (სქემა, ახალი ან ჩატვირთული ჩანაწერი) მხოლოდ ცვლილებისას
+    //ხდება, თორემ მომხმარებლის შეყვანილი მნიშვნელობები იკარგება: რომელი ჩანაწერისთვის (ცხრილი/იდენტიფიკატორი)
+    //მომზადდა ფორმა, რომელი grid-ის წესებით აიწყო სქემა და რომელი ჩატვირთული ჩანაწერი ჩაჯდა ფორმაში
+    const formRecordKey = useRef<string | null>(null);
+    const schemaGridRules = useRef<GridModel | null>(null);
+    const recordInForm = useRef<unknown>(null);
 
     const dispatch = useAppDispatch();
 
@@ -85,7 +91,8 @@ const MdItemEdit: FC = () => {
     const { tableName } = useParams<string>();
     const { mdIdValue: fromParamsMdId } = useParams<string>();
 
-    const [getOneMdRecord, { isLoading: loadingMdRecord }] =
+    //isFetching და არა isLoading: სხვა ჩანაწერზე გადასვლისას ახალი ჩანაწერის ჩატვირთვაც უნდა დაელოდოს
+    const [getOneMdRecord, { isFetching: loadingMdRecord }] =
         useLazyGetOneMdRecordQuery();
 
     const navigate = useNavigate();
@@ -141,7 +148,10 @@ const MdItemEdit: FC = () => {
         setCurDataType(dataType);
         setCurGridRules(gridRules);
 
-        if (gridRules) {
+        //სქემის დაყენება ფორმას default-ებზე აბრუნებს, ამიტომ მხოლოდ ახალ grid-ის წესებზე ხდება
+        if (gridRules && schemaGridRules.current !== gridRules) {
+            schemaGridRules.current = gridRules;
+            recordInForm.current = null;
             const YupSchema = countMdSchema(gridRules);
             //console.log("MdItemEdit useEffect setCurYupSchema YupSchema=", YupSchema);
             setCurYupSchema(YupSchema);
@@ -150,7 +160,12 @@ const MdItemEdit: FC = () => {
 
         const mdIdValue = fromParamsMdId ? parseInt(fromParamsMdId) : 0;
 
-        if (curMdIdVal !== mdIdValue) {
+        //სხვა ჩანაწერზე გადასვლისას (იმავე ან სხვა ცხრილის) ფორმა თავიდან მზადდება
+        const recordKey = `${tableName}/${mdIdValue}`;
+        if (formRecordKey.current !== recordKey) {
+            formRecordKey.current = recordKey;
+            recordInForm.current = null;
+
             //გავასუფთავოთ შეცდომები, სანამ ახლების დაგროვებას დავიწყებთ
             dispatch(clearAllAlerts());
 
@@ -179,16 +194,19 @@ const MdItemEdit: FC = () => {
 
         //ფორმაში მხოლოდ ის ჩანაწერი ჯდება, რომელიც ამ იდენტიფიკატორისთვის ჩაიტვირთა: ახალი ჩანაწერისთვის (mdIdValue 0)
         //და სხვა ჩანაწერზე გადასვლისას redux-ში წინა რედაქტირების ჩანაწერი რჩება და ის არ უნდა გამოჩნდეს
+        //ჩატვირთული ჩანაწერი ფორმაში ერთხელ ჯდება, რომ ეფექტის ხელახლა გაშვებამ მომხმარებლის ცვლილებები არ წაშალოს
         const loadedRecord = mdRecordForEdit[tableName];
         if (
             !mdIdValue ||
             loadingMdRecord ||
             !loadedRecord ||
             !dataType ||
-            loadedRecord[dataType.idFieldName] !== mdIdValue
+            loadedRecord[dataType.idFieldName] !== mdIdValue ||
+            recordInForm.current === loadedRecord
         )
             return;
 
+        recordInForm.current = loadedRecord;
         setFormData(loadedRecord);
     }, [
         loadingMdRecord,
@@ -197,6 +215,7 @@ const MdItemEdit: FC = () => {
         curTableName,
         dataTypesState,
         tableName,
+        fromParamsMdId,
         mdRecordForEdit,
         itemEditorTables,
         itemEditorLookupTables,
@@ -282,8 +301,10 @@ const MdItemEdit: FC = () => {
         frm && curDataType.nameFieldName && frm[curDataType.nameFieldName]
             ? frm[curDataType.nameFieldName]
             : "";
-    const editedObjectName =
-        edObjKey + edObjKey !== "" ? " - " : "" + edObjName;
+    //წაშლის კითხვაში ჩანაწერი გასაღებითა და სახელით ჩანს; ცარიელი ნაწილი და მისი გამყოფი არ იწერება
+    const editedObjectName = [edObjKey, edObjName]
+        .filter((part) => part !== "")
+        .join(" - ");
 
     return (
         <Row id="MdItemEdit">
@@ -294,7 +315,9 @@ const MdItemEdit: FC = () => {
                     noValidate
                 >
                     <EditorHeader
-                        curIdVal={curMdIdVal}
+                        //EditorHeader ახალ ჩანაწერს undefined-ით ცნობს (სათაური „იქმნება ახალი", წაშლის გარეშე), ახალი
+                        //ჩანაწერის იდენტიფიკატორი კი აქ 0-ია
+                        curIdVal={curMdIdVal ? curMdIdVal : undefined}
                         EditorName={curDataType.dtNameNominative}
                         EditorNameGenitive={curDataType.dtNameGenitive}
                         EditedObjectName={editedObjectName}

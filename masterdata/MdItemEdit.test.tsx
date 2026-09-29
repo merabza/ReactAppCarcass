@@ -2,6 +2,7 @@
 
 import { configureStore } from "@reduxjs/toolkit";
 import { act, createEvent, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { StrictMode } from "react";
 import { Provider } from "react-redux";
 import { MemoryRouter, Route, Routes, useNavigate, useParams } from "react-router-dom";
 import { describe, expect, it } from "vitest";
@@ -12,7 +13,7 @@ import { masterdataApi } from "../redux/api/masterdataApi";
 import alertReducer, { setAlertApiMutationError } from "../redux/slices/alertSlice";
 import appParametersReducer from "../redux/slices/appParametersSlice";
 import dataTypesReducer from "../redux/slices/dataTypesSlice";
-import masterDataReducer, { type IMasterDataState } from "../redux/slices/masterdataSlice";
+import masterDataReducer, { type IMasterDataState, setItemEditorTables } from "../redux/slices/masterdataSlice";
 import userReducer, { setUser } from "../redux/slices/userSlice";
 import type { IAppUser } from "../redux/types/authenticationTypes";
 import type { DataTypeFfModel } from "../redux/types/dataTypesTypes";
@@ -179,8 +180,14 @@ function GoButton({ to }: { to: string }) {
     );
 }
 
-function renderEditor(store: Store, path: string, goTo: string[] = []) {
-    return render(
+type RenderOptions = {
+    goTo?: string[];
+    // the app runs in StrictMode, which runs every effect twice in development
+    strict?: boolean;
+};
+
+function renderEditor(store: Store, path: string, { goTo = [], strict = false }: RenderOptions = {}) {
+    const tree = (
         <Provider store={store}>
             <MemoryRouter initialEntries={[path]}>
                 {goTo.map((to) => (
@@ -196,6 +203,7 @@ function renderEditor(store: Store, path: string, goTo: string[] = []) {
             </MemoryRouter>
         </Provider>
     );
+    return render(strict ? <StrictMode>{tree}</StrictMode> : tree);
 }
 
 // the server answers "METHOD /path" requests; any other request gets a 404
@@ -216,13 +224,18 @@ function change(label: string, value: string) {
     fireEvent.change(screen.getByLabelText(label), { target: { value } });
 }
 
+// the labels of the controls (the header of a new record is a label too, but of no control)
 function labels(): (string | null)[] {
-    return [...document.querySelectorAll("form label")].map((label) => label.textContent);
+    return [...document.querySelectorAll("form label[for]")].map((label) => label.textContent);
 }
 
-async function openThingFive(store: Store, routes: Parameters<typeof mockServer>[0] = {}) {
+async function openThingFive(
+    store: Store,
+    routes: Parameters<typeof mockServer>[0] = {},
+    options: RenderOptions = {}
+) {
     const calls = mockServer({ "GET /masterdata/Things/5": { status: 200, body: { entry: thingFive } }, ...routes });
-    renderEditor(store, "/mdItemEdit/Things/5");
+    renderEditor(store, "/mdItemEdit/Things/5", options);
     await waitFor(() => expect(screen.getByLabelText("კოდი")).toHaveValue("A1"));
     return calls;
 }
@@ -461,6 +474,25 @@ describe("MdItemEdit controls", () => {
         expect(screen.getByLabelText("ფასი")).toHaveValue(5.25);
     });
 
+    it("titles a new record as being created and offers no delete", async () => {
+        mockServer({});
+
+        renderEditor(createStore(), "/mdItemEdit/Things");
+
+        await screen.findByRole("button", { name: /შექმნა/ });
+        expect(screen.getByText("იქმნება ახალი ნივთი")).toBeInTheDocument();
+        expect(screen.queryByText("ნივთის რედაქტორი")).not.toBeInTheDocument();
+        expect(screen.queryByRole("button", { name: /წაშლა/ })).not.toBeInTheDocument();
+    });
+
+    it("titles a loaded record as edited and offers the delete", async () => {
+        await openThingFive(createStore());
+
+        expect(screen.getByText("ნივთის რედაქტორი")).toBeInTheDocument();
+        expect(screen.queryByText("იქმნება ახალი ნივთი")).not.toBeInTheDocument();
+        expect(screen.getByRole("button", { name: /წაშლა/ })).toBeInTheDocument();
+    });
+
     it("offers no saving and no deleting to a user who may not change the table", async () => {
         await openThingFive(createStore({ dataTypes: [{ ...thingsDataType, update: false, delete: false }] }));
 
@@ -586,6 +618,26 @@ describe("MdItemEdit deleting", () => {
         ]);
     });
 
+    it("asks about a record by its key and name", async () => {
+        await openThingFive(createStore());
+
+        fireEvent.click(screen.getByRole("button", { name: /წაშლა/ }));
+
+        expect(
+            await screen.findByText('დარწმუნებული ხართ, რომ გსურთ წაშალოთ ნივთი "A1 - ნივთი"')
+        ).toBeInTheDocument();
+    });
+
+    it("asks about a record without a name by its key", async () => {
+        mockServer({ "GET /masterdata/Things/5": { status: 200, body: { entry: { ...thingFive, name: "" } } } });
+        renderEditor(createStore(), "/mdItemEdit/Things/5");
+        await waitFor(() => expect(screen.getByLabelText("კოდი")).toHaveValue("A1"));
+
+        fireEvent.click(screen.getByRole("button", { name: /წაშლა/ }));
+
+        expect(await screen.findByText('დარწმუნებული ხართ, რომ გსურთ წაშალოთ ნივთი "A1"')).toBeInTheDocument();
+    });
+
     it("asks about a record without a key by its name", async () => {
         await openThingFive(createStore({ dataTypes: [{ ...thingsDataType, keyFieldName: null }] }));
 
@@ -679,12 +731,135 @@ describe("MdItemEdit navigation", () => {
     it("forgets the alerts when a record of another table is opened", async () => {
         mockServer({});
         const store = createStore({ dataTypes: [thingsDataType, othersDataType] });
-        renderEditor(store, "/mdItemEdit/Things", ["/mdItemEdit/Others"]);
+        renderEditor(store, "/mdItemEdit/Things", { goTo: ["/mdItemEdit/Others"] });
         await screen.findByRole("button", { name: /შექმნა/ });
         raiseMutationAlert(store);
 
         fireEvent.click(screen.getByRole("button", { name: "go /mdItemEdit/Others" }));
 
         await waitFor(() => expect(store.getState().alertState.alert).toEqual({}));
+    });
+
+    it("loads the record the route moved to and forgets the alerts", async () => {
+        const store = createStore();
+        const calls = await openThingFive(
+            store,
+            { "GET /masterdata/Things/6": { status: 200, body: { entry: { ...thingFive, thingId: 6, code: "B6" } } } },
+            { goTo: ["/mdItemEdit/Things/6"] }
+        );
+        raiseMutationAlert(store);
+
+        fireEvent.click(screen.getByRole("button", { name: "go /mdItemEdit/Things/6" }));
+
+        await waitFor(() => expect(screen.getByLabelText("კოდი")).toHaveValue("B6"));
+        expect(calls.map((call) => call.url)).toContain(`${testBaseUrl}/masterdata/Things/6`);
+        expect(store.getState().alertState.alert).toEqual({});
+    });
+
+    it("shows the wait page while the record the route moved to loads", async () => {
+        await openThingFive(
+            createStore(),
+            { "GET /masterdata/Things/6": () => new Promise<FetchReply>(() => {}) },
+            { goTo: ["/mdItemEdit/Things/6"] }
+        );
+
+        fireEvent.click(screen.getByRole("button", { name: "go /mdItemEdit/Things/6" }));
+
+        expect(await screen.findByText("მოიცადე...")).toBeInTheDocument();
+    });
+
+    it("loads the record with the same id of the table the route moved to", async () => {
+        const store = createStore({ dataTypes: [thingsDataType, othersDataType] });
+        const calls = await openThingFive(
+            store,
+            { "GET /masterdata/Others/5": { status: 200, body: { entry: { ...thingFive, code: "O5" } } } },
+            { goTo: ["/mdItemEdit/Others/5"] }
+        );
+
+        fireEvent.click(screen.getByRole("button", { name: "go /mdItemEdit/Others/5" }));
+
+        await waitFor(() => expect(screen.getByLabelText("კოდი")).toHaveValue("O5"));
+        expect(calls.map((call) => call.url)).toContain(`${testBaseUrl}/masterdata/Others/5`);
+    });
+
+    it("opens an empty form when the route moves to a new record", async () => {
+        await openThingFive(createStore(), {}, { goTo: ["/mdItemEdit/Things"] });
+
+        fireEvent.click(screen.getByRole("button", { name: "go /mdItemEdit/Things" }));
+
+        await waitFor(() => expect(screen.getByLabelText("კოდი")).toHaveValue(""));
+        expect(screen.getByRole("button", { name: /შექმნა/ })).toBeInTheDocument();
+        expect(screen.getByText("იქმნება ახალი ნივთი")).toBeInTheDocument();
+    });
+});
+
+// the editor state changes while the user edits, e.g. when the lists of another table are loaded
+function changeEditorState(store: Store) {
+    act(() => {
+        store.dispatch(setItemEditorTables({ tableNamesList: [], editTableName: "Others" }));
+    });
+}
+
+describe("MdItemEdit keeps the changes of the user", () => {
+    it("keeps a changed field of a loaded record when the editor state changes", async () => {
+        const store = createStore();
+        await openThingFive(store);
+        change("სახელი", "შეცვლილი");
+
+        changeEditorState(store);
+
+        expect(screen.getByLabelText("სახელი")).toHaveValue("შეცვლილი");
+    });
+
+    it("keeps what was typed into a new record when the editor state changes", async () => {
+        mockServer({});
+        const store = createStore();
+        renderEditor(store, "/mdItemEdit/Things");
+        await screen.findByRole("button", { name: /შექმნა/ });
+        change("კოდი", "B2");
+
+        changeEditorState(store);
+
+        expect(screen.getByLabelText("კოდი")).toHaveValue("B2");
+    });
+});
+
+describe("MdItemEdit in StrictMode", () => {
+    it("loads the record once and fills the form", async () => {
+        const calls = await openThingFive(createStore(), {}, { strict: true });
+
+        expect(screen.getByLabelText("სახელი")).toHaveValue("ნივთი");
+        expect(calls.filter((call) => call.url === `${testBaseUrl}/masterdata/Things/5`)).toHaveLength(1);
+    });
+
+    it("opens an empty form for a new record", async () => {
+        mockServer({});
+
+        renderEditor(createStore(), "/mdItemEdit/Things", { strict: true });
+
+        expect(await screen.findByRole("button", { name: /შექმნა/ })).toBeInTheDocument();
+        expect(screen.getByLabelText("კოდი")).toHaveValue("");
+    });
+
+    it("keeps a changed field when the editor state changes", async () => {
+        const store = createStore();
+        await openThingFive(store, {}, { strict: true });
+        change("სახელი", "შეცვლილი");
+
+        changeEditorState(store);
+
+        expect(screen.getByLabelText("სახელი")).toHaveValue("შეცვლილი");
+    });
+
+    it("loads the record the route moved to", async () => {
+        await openThingFive(
+            createStore(),
+            { "GET /masterdata/Things/6": { status: 200, body: { entry: { ...thingFive, thingId: 6, code: "B6" } } } },
+            { goTo: ["/mdItemEdit/Things/6"], strict: true }
+        );
+
+        fireEvent.click(screen.getByRole("button", { name: "go /mdItemEdit/Things/6" }));
+
+        await waitFor(() => expect(screen.getByLabelText("კოდი")).toHaveValue("B6"));
     });
 });
