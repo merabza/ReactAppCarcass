@@ -452,6 +452,19 @@ const MdItemEdit: FC = () => {
                                             onChangeValue={changeField}
                                         />
                                     );
+                                case "Number":
+                                    //ათწილადი რიცხვი (მაგ. ფული)
+                                    return (
+                                        <OneNumberControl
+                                            key={fieldName}
+                                            controlId={fieldName}
+                                            label={caption}
+                                            value={frm[fieldName]}
+                                            getError={getError}
+                                            onChangeValue={changeField}
+                                            stepv={0.01}
+                                        />
+                                    );
                                 default:
                                     break;
                             }

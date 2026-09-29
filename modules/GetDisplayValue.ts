@@ -34,6 +34,8 @@ export function GetDisplayValue(
         const dateCol = col as DateCell;
         if (!dateCol.showDate && !dateCol.showTime) return value;
 
+        if (!dateCol.showDate) return ToTimeMoment(value).format("HH:mm");
+
         const strFormat = `${dateCol.showDate ? "DD-MMM-YYYY" : ""} ${
             dateCol.showTime ? "HH:mm:ss" : ""
         }`;
@@ -104,6 +106,14 @@ export function GetDisplayValue(
 
     // console.log("GetDisplayValue before return {mdItem, col, value}=", {mdItem, col, value});
     return value;
+}
+
+//მხოლოდ დროის მნიშვნელობა (ბექენდის TimeOnly) "HH:mm:ss" ან "HH:mm" სტრიქონია და moment-ს თარიღად ვერ ესმის;
+//დანარჩენი მნიშვნელობები (თარიღი და დრო) ჩვეულებრივ გარდაიქმნება
+export function ToTimeMoment(value: moment.MomentInput): moment.Moment {
+    return typeof value === "string" && /^\d{1,2}:\d{2}(:\d{2})?$/.test(value)
+        ? moment(value, "HH:mm:ss")
+        : moment(value);
 }
 
 export function GetDisplayValueForLookup(

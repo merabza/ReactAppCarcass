@@ -52,6 +52,8 @@ export interface NumberCell extends MixedCell {
 export interface StringCell extends MixedCell {
     def: string | null;
     maxLenRule: IntRule | null;
+    minLenRule?: IntRule | null;
+    patternRule?: StringRule | null;
 }
 
 export interface IntegerCell extends NumberCell {
@@ -78,6 +80,12 @@ export interface MdLookupCell extends IntegerCell {
 
 export interface IntRule {
     val: number;
+    error: GridErr;
+}
+
+//რეგულარული გამოსახულება, რომელსაც მთელი მნიშვნელობა უნდა შეესაბამებოდეს
+export interface StringRule {
+    val: string;
     error: GridErr;
 }
 

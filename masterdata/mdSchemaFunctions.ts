@@ -2,12 +2,19 @@
 
 //mdSchemaFunctions.ts
 import type {
+    DateCell,
     GridModel,
     IntegerCell,
     MixedCell,
+    NumberCell,
     StringCell,
 } from "../redux/types/gridTypes";
 import * as yup from "yup";
+
+//თარიღის უჯრედი, რომელიც მხოლოდ დროს აჩვენებს (ბექენდის DateCell.TimeOnly(); false მნიშვნელობა JSON-ში არ იწერება)
+export function IsTimeOnlyCell(col: DateCell): boolean {
+    return !col.showDate && !!col.showTime;
+}
 
 export function countMdSchema(gridRules: GridModel) {
     const fields = {} as any;
@@ -41,11 +48,24 @@ export function countMdSchema(gridRules: GridModel) {
                     // console.log("2 yupResult=", yupResult);
                 }
                 break;
+            case "Number": {
+                yupResult = yup.number();
+                const NumberCol = col as NumberCell;
+                if (NumberCol.isPositiveErr) {
+                    yupResult = yupResult.positive(
+                        NumberCol.isPositiveErr.description
+                    );
+                }
+                break;
+            }
             case "Boolean":
                 yupResult = yup.boolean();
                 break;
             case "Date":
-                yupResult = yup.date();
+                //მხოლოდ დროის უჯრედის მნიშვნელობა "HH:mm:ss" სტრიქონია და თარიღად ვერ გარდაიქმნება
+                yupResult = IsTimeOnlyCell(col as DateCell)
+                    ? yup.string()
+                    : yup.date();
                 break;
             case "String":
                 const StringCol = col as StringCell;
@@ -58,6 +78,24 @@ export function countMdSchema(gridRules: GridModel) {
                     yupResult = yupResult.max(
                         StringCol.maxLenRule.val,
                         StringCol.maxLenRule.error.description
+                    );
+                }
+                //ცარიელ მნიშვნელობას მინიმალური სიგრძე და ფორმატი არ ამოწმებს (როგორც ბექენდში)
+                if (StringCol.minLenRule) {
+                    const minLenRule = StringCol.minLenRule;
+                    yupResult = yupResult.test(
+                        "minLen",
+                        minLenRule.error.description,
+                        (value) => !value || value.length >= minLenRule.val
+                    );
+                }
+                if (StringCol.patternRule) {
+                    yupResult = yupResult.matches(
+                        new RegExp(StringCol.patternRule.val),
+                        {
+                            message: StringCol.patternRule.error.description,
+                            excludeEmptyString: true,
+                        }
                     );
                 }
                 break;

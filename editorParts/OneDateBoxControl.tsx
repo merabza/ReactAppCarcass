@@ -4,6 +4,7 @@ import { Form, Row, Col } from "react-bootstrap";
 import moment from "moment";
 import type { FC } from "react";
 import type { fnChangeField, fnGetError } from "../hooks/useForman";
+import { ToTimeMoment } from "../modules/GetDisplayValue";
 
 type OneDateBoxControlProps = {
     controlId: string;
@@ -39,7 +40,11 @@ const OneDateBoxControl: FC<OneDateBoxControlProps> = (props) => {
         showTime ? "THH:mm:ss" : ""
     }`;
 
-    const showValue = moment(value).format(strFormat);
+    //მხოლოდ დროის მნიშვნელობა შეიძლება "HH:mm:ss" სტრიქონი იყოს (ბექენდის TimeOnly)
+    const showValue =
+        !showDate && showTime
+            ? ToTimeMoment(value).format("HH:mm")
+            : moment(value).format(strFormat);
     const inputType = `${showDate ? "date" : ""}${showTime ? "time" : ""}`;
 
     return (
