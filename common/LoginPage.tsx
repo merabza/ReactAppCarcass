@@ -9,7 +9,8 @@ import * as yup from "yup";
 import RegTextControl from "../editorParts/RegTextControl";
 import { useAppSelector, useAppDispatch } from "../redux/hooks";
 import { logout } from "../redux/slices/userSlice";
-import { useLoginMutation } from "../redux/api/authenticationApi";
+import { useLoginMutation, useLogoutMutation } from "../redux/api/authenticationApi";
+import { pendingStepPath } from "../redux/types/authenticationTypes";
 
 import "./LoginPage.css";
 import { useForman } from "../hooks/useForman";
@@ -22,7 +23,7 @@ const LoginPage: FC = () => {
 
     const [submitted, setSubmitted] = useState(false);
     const { appName } = useAppSelector((state) => state.appParametersState);
-    const { userValidationChecked, user } = useAppSelector((state) => state.userState);
+    const { userValidationChecked, user, pendingLogin } = useAppSelector((state) => state.userState);
     const [ApiMutationHaveErrors] = useAlert(EAlertKind.ApiMutation);
 
     // console.log("LoginPage appName=", appName);
@@ -33,11 +34,15 @@ const LoginPage: FC = () => {
 
     // 👇 API Login Mutation
     const [loginUser, { isLoading: loggingIn }] = useLoginMutation();
+    const [logoutUser] = useLogoutMutation();
     const { state } = useLocation();
 
     useEffect(() => {
-        if (!submitted) dispatch(logout());
-        else {
+        if (!submitted) {
+            //სისტემიდან გასვლისას განახლების ტოკენი სერვერზეც უქმდება
+            if (user && user.refreshToken) logoutUser({ refreshToken: user.refreshToken });
+            dispatch(logout());
+        } else {
             // console.log("LoginPage handleSubmit after loginUser user=", user);
             if (userValidationChecked && user && user.token) {
                 const pathname = state?.from?.pathname || "/";
@@ -46,13 +51,18 @@ const LoginPage: FC = () => {
                 //   pathname
                 // );
                 navigate(pathname);
+            } else if (pendingLogin) {
+                //ელფოსტა დასადასტურებელია, ან პაროლი შესაცვლელი: სერვერმა მხოლოდ დროებითი ტოკენი დააბრუნა
+                navigate(pendingStepPath(pendingLogin.nextStep));
             }
         }
-    }, [userValidationChecked, user, submitted, state]);
+    }, [userValidationChecked, user, pendingLogin, submitted, state]);
 
     useEffect(() => {
-        if (!loggingIn && !user && submitted) setSubmitted(false);
-    }, [loggingIn, user, submitted]);
+        //წარუმატებელი ავტორიზაციის შემდეგ ფორმა თავიდან უნდა გაიგზავნოს. დაუსრულებელი ავტორიზაციისას (pendingLogin)
+        //ეს არ უნდა მოხდეს, თორემ ზემოთ არსებული ეფექტი logout-ს გამოიძახებს და დროებით ტოკენს წაშლის
+        if (!loggingIn && !user && !pendingLogin && submitted) setSubmitted(false);
+    }, [loggingIn, user, pendingLogin, submitted]);
 
     type LoginPageData = yup.InferType<typeof loginPageSchema>;
 
@@ -131,6 +141,9 @@ const LoginPage: FC = () => {
                             )}
                         </Button>
                         <Link to="/registration">რეგისტრაცია</Link>
+                        <div>
+                            <Link to="/forgot-password">პაროლი დამავიწყდა</Link>
+                        </div>
                     </Form>
                 </div>
             </div>

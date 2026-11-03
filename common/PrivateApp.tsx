@@ -16,7 +16,14 @@ const PrivateApp: FC = () => {
     // console.log("PrivateApp Start { userValidationChecked, user } = ", { userValidationChecked, user });
 
     const navigate = useNavigate();
-    const publicPathces = ["/login", "/registration"];
+    const publicPathces = [
+        "/login",
+        "/registration",
+        "/confirm-email",
+        "/change-required-password",
+        "/forgot-password",
+        "/reset-password",
+    ];
 
     const [IsCurrentUserValid] = useLazyIsCurrentUserValidQuery();
 

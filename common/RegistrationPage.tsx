@@ -14,12 +14,14 @@ import { useForman } from "../hooks/useForman";
 import { clearAlert, EAlertKind } from "../redux/slices/alertSlice";
 import { useAlert } from "../hooks/useAlert";
 import AlertMessages from "./AlertMessages";
+import { pendingStepPath } from "../redux/types/authenticationTypes";
+import { passwordRulesHint, passwordSchema } from "./passwordRules";
 
 const RegistrationPage: FC = () => {
     // console.log("RegistrationPage Start");
 
     const dispatch = useAppDispatch();
-    const user = useAppSelector((state) => state.userState.user);
+    const { user, pendingLogin } = useAppSelector((state) => state.userState);
     const navigate = useNavigate();
     const [ApiMutationHaveErrors] = useAlert(EAlertKind.ApiMutation);
 
@@ -29,6 +31,12 @@ const RegistrationPage: FC = () => {
     useEffect(() => {
         dispatch(logout());
     }, [dispatch]);
+
+    //რეგისტრაციის შემდეგ სერვერი დროებით ტოკენს აბრუნებს: ელფოსტა დასადასტურებელია
+    useEffect(() => {
+        if (user && user.token) navigate("/");
+        else if (pendingLogin) navigate(pendingStepPath(pendingLogin.nextStep));
+    }, [user, pendingLogin, navigate]);
 
     type RegistrationPageData = yup.InferType<typeof registrationPageSchema>;
 
@@ -53,7 +61,7 @@ const RegistrationPage: FC = () => {
             .required("მომხმარებლის სახელი შევსებული უნდა იყოს")
             .max(256, "მომხმარებლის სახელის სიგრძე არ შეიძლება იყოს 256 სიმბოლოზე მეტი")
             .default(""),
-        password: yup.string().required("პაროლი შევსებული უნდა იყოს").default(""),
+        password: passwordSchema().default(""),
         confirmPassword: yup
             .string()
             .oneOf([yup.ref("password"), undefined], "განმეორებითი პაროლი უნდა ემთხვეოდეს პაროლს")
@@ -82,14 +90,7 @@ const RegistrationPage: FC = () => {
             touchAllFields();
             return;
         }
-        try {
-            await userRegistration({ ...frm } as IRegistrationRequest);
-            if (user && user.token) {
-                navigate("/");
-            }
-        } catch (error) {
-            console.log("error=", error);
-        }
+        userRegistration({ ...frm } as IRegistrationRequest);
     }
 
     if (!frm) return <div></div>;
@@ -139,6 +140,7 @@ const RegistrationPage: FC = () => {
                             getError={getError}
                             onChangeValue={changeField}
                         />
+                        <div className="text-muted small">{passwordRulesHint}</div>
                         <RegTextControl
                             controlId="confirmPassword"
                             label="პაროლი განმეორებით"

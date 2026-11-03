@@ -9,6 +9,7 @@ import { type IChangePasswordModel, useChangePasswordMutation } from "../redux/a
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { clearAllAlerts } from "../redux/slices/alertSlice";
 import { buildErrorMessage } from "../redux/types/errorTypes";
+import { passwordSchema } from "../common/passwordRules";
 // import { setPasswordChanged } from "../redux/slices/userSlice";
 
 type ChangePasswordModalProps = {
@@ -42,7 +43,7 @@ const ChangePasswordModal: FC<ChangePasswordModalProps> = (props) => {
 
     const changePasswordSchema = yup.object().shape({
         oldPassword: yup.string().required("ძველი პაროლი შევსებული უნდა იყოს"),
-        newPassword: yup.string().required("პაროლი შევსებული უნდა იყოს"),
+        newPassword: passwordSchema(),
         newPasswordConfirm: yup
             .string()
             .oneOf(
