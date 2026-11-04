@@ -10,6 +10,12 @@ const createFallbackErr = (): Err => ({
     errorMessage: "სერვერის შეცდომა",
 });
 
+// სერვერის rate limiter-ი (BackendCarcass-ის ავტორიზაციის endpoint-ები, ერთწუთიანი ფანჯარა) 429-ს ცარიელი body-ით აბრუნებს
+const createTooManyRequestsErr = (): Err => ({
+    errorCode: "TooManyRequests",
+    errorMessage: "ძალიან ბევრი მოთხოვნა. სცადეთ ერთი წუთის შემდეგ",
+});
+
 const isRecord = (value: unknown): value is Record<string, unknown> =>
     typeof value === "object" && value !== null && !Array.isArray(value);
 
@@ -86,14 +92,18 @@ export function buildErrorMessage(error: unknown, additionalErro?: Err): Err[] {
     }
 
     let errors: Err[] = [];
+    let httpStatus: unknown;
     if (isRecord(err)) {
         errors = normalizeErrorData(err.data, err.status);
+        // PARSING_ERROR-ის დროს HTTP სტატუსი originalStatus-შია
+        httpStatus = typeof err.status === "number" ? err.status : err.originalStatus;
     }
 
     // ამოუცნობი ფორმა, ცარიელი 401/403 body, სტრიქონი data (jwtBaseQuery),
     // ქსელური/პარსინგის შეცდომები, SerializedError — fallback.
+    // ცარიელი 429 (მოთხოვნების ლიმიტი) საკუთარ შეტყობინებას იღებს, რომ სერვერის შეცდომად არ ჩანდეს
     if (errors.length === 0) {
-        errors = [createFallbackErr()];
+        errors = [httpStatus === 429 ? createTooManyRequestsErr() : createFallbackErr()];
     }
 
     if (additionalErro) {
