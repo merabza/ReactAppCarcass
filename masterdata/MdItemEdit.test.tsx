@@ -490,7 +490,8 @@ describe("MdItemEdit controls", () => {
 
         expect(screen.getByText("ნივთის რედაქტორი")).toBeInTheDocument();
         expect(screen.queryByText("იქმნება ახალი ნივთი")).not.toBeInTheDocument();
-        expect(screen.getByRole("button", { name: /წაშლა/ })).toBeInTheDocument();
+        // exact text: one space between the words, the leading one keeps the caption off the icon
+        expect(screen.getByRole("button", { name: /წაშლა/ }).textContent).toBe(" ამ ნივთის წაშლა");
     });
 
     it("offers no saving and no deleting to a user who may not change the table", async () => {
@@ -694,7 +695,7 @@ describe("MdItemEdit deleting", () => {
         fireEvent.click(await screen.findByRole("button", { name: "დიახ" }));
 
         expect(
-            await screen.findByText("ნივთის წაშლაისას მოხდა შეცდომა, წაშლა ვერ მოხერხდა")
+            await screen.findByText("ნივთის წაშლისას მოხდა შეცდომა, წაშლა ვერ მოხერხდა")
         ).toBeInTheDocument();
         expect(screen.getByText("ჩანაწერი გამოყენებულია და ვერ წაიშლება")).toBeInTheDocument();
 

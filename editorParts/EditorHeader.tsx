@@ -52,7 +52,7 @@ const EditorHeader: FC<EditorHeaderRowProps> = (props) => {
                                 variant="danger"
                             >
                                 <FontAwesomeIcon icon="trash" />
-                                {` ამ ${EditorNameGenitive}  წაშლა`}
+                                {` ამ ${EditorNameGenitive} წაშლა`}
                                 {workingOnDelete && (
                                     <Spinner
                                         as="span"
@@ -87,7 +87,7 @@ const EditorHeader: FC<EditorHeaderRowProps> = (props) => {
                 <MessageBox
                     show={DeleteFailure}
                     title="შეცდომა"
-                    text={`${EditorNameGenitive} წაშლაისას მოხდა შეცდომა, წაშლა ვერ მოხერხდა`}
+                    text={`${EditorNameGenitive} წაშლისას მოხდა შეცდომა, წაშლა ვერ მოხერხდა`}
                     primaryButtonText="კარგი"
                     onConfirmed={() => {
                         if (onClearDeletingFailure) onClearDeletingFailure();
