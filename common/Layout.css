@@ -187,7 +187,10 @@ a.article:hover {
     width: 100%;
 }
 
-#content {
+/* id განზრახ არ არის „content“: ბრაუზერის გაფართოებები გვერდში საკუთარ CSS-ს სვამენ და ასეთ ზოგად id-ს ეხებიან.
+   მაგ. „Microsoft Bing Search for Chrome“-ის #content წესი (float, სიგანე 460px, ზედა დაშორება 68px, თეთრი ტექსტი)
+   მენიუდან გადასვლის შემდეგ ზედა პანელს და კონტენტს მარჯვნივ და ქვევით წევდა */
+#layout-content {
     width: calc(100% - 250px);
     padding: 20px;
     min-height: 100vh;
@@ -200,7 +203,7 @@ a.article:hover {
     flex-direction: column;
 }
 
-#content.active {
+#layout-content.active {
     width: 100%;
 }
 
@@ -217,11 +220,11 @@ a.article:hover {
         margin-left: 0;
     }
 
-    #content {
+    #layout-content {
         width: 100%;
     }
 
-    #content.active {
+    #layout-content.active {
         /*rezo*/
         /* width: calc(100% - 250px); */
         /*rezo*/

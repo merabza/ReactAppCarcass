@@ -17,7 +17,7 @@ const Layout: FC = () => {
     return (
         <div className="wrapper">
             <NavMenu />
-            <div id="content" className={active ? "active" : undefined}>
+            <div id="layout-content" className={active ? "active" : undefined}>
                 <TopNavMenu />
                 <div className="content-wrapper">
                     <Outlet />
