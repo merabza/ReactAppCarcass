@@ -6,8 +6,13 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useLazyIsCurrentUserValidQuery } from "../redux/api/userRightsApi";
 import { useAppSelector } from "../redux/hooks";
 import WaitPage from "./WaitPage";
+import { isSsoMode } from "./authMode";
+import SsoPrivateApp from "./SsoPrivateApp";
 
-const PrivateApp: FC = () => {
+//შესული მომხმარებლის გვერდების ჭიშკარი: Local რეჟიმში აპის საკუთარი შესვლა, Sso რეჟიმში ჰოსტის BFF (authMode.ts)
+const PrivateApp: FC = () => (isSsoMode() ? <SsoPrivateApp /> : <LocalPrivateApp />);
+
+const LocalPrivateApp: FC = () => {
     // console.log("PrivateApp Start");
 
     const { userValidationChecked, user, CheckingUser } = useAppSelector(

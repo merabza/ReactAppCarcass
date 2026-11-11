@@ -16,10 +16,20 @@ import AlertMessages from "./AlertMessages";
 import { codeSchema, passwordRulesHint, passwordSchema } from "./passwordRules";
 
 import "./LoginPage.css";
+import { ssoAccountPages, ssoPageUrl, isSsoMode } from "./authMode";
+import SsoRedirect from "./SsoRedirect";
+
+//Sso რეჟიმში პაროლის აღდგენა sso.ltg.ge-ზეა (authMode.ts)
+const ResetPasswordPage: FC = () =>
+    isSsoMode() ? (
+        <SsoRedirect to={ssoPageUrl(ssoAccountPages.resetPassword)} />
+    ) : (
+        <LocalResetPasswordPage />
+    );
 
 //ახალი პაროლის დაყენება დავიწყებულის ნაცვლად:
 //  ელფოსტიდან მოსული ბმულით (?userId=...&token=...), ან ელფოსტაზე მისული კოდით
-const ResetPasswordPage: FC = () => {
+const LocalResetPasswordPage: FC = () => {
     const [searchParams] = useSearchParams();
     const linkUserId = Number(searchParams.get("userId"));
     const linkToken = searchParams.get("token");

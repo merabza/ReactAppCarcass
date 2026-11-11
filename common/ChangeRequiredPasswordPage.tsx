@@ -17,10 +17,20 @@ import { pendingStepPath } from "../redux/types/authenticationTypes";
 import { codeSchema, passwordRulesHint, passwordSchema } from "./passwordRules";
 
 import "./LoginPage.css";
+import { ssoAccountPages, ssoPageUrl, isSsoMode } from "./authMode";
+import SsoRedirect from "./SsoRedirect";
+
+//Sso რეჟიმში პაროლის აუცილებელი შეცვლა sso.ltg.ge-ზეა (authMode.ts)
+const ChangeRequiredPasswordPage: FC = () =>
+    isSsoMode() ? (
+        <SsoRedirect to={ssoPageUrl(ssoAccountPages.changeRequiredPassword)} />
+    ) : (
+        <LocalChangeRequiredPasswordPage />
+    );
 
 //ავტორიზაციისას სერვერმა დაადგინა, რომ პაროლი მოქმედ წესებს არ აკმაყოფილებს: სისტემაში შესვლა ახალი პაროლის
 //დაყენების გარეშე შეუძლებელია. თუ ელფოსტა ამავე სესიაში ახლახან არ დადასტურებულა, კოდიც არის საჭირო
-const ChangeRequiredPasswordPage: FC = () => {
+const LocalChangeRequiredPasswordPage: FC = () => {
     const { appName } = useAppSelector((state) => state.appParametersState);
     const { user, pendingLogin } = useAppSelector((state) => state.userState);
     const [ApiMutationHaveErrors] = useAlert(EAlertKind.ApiMutation);

@@ -12,8 +12,13 @@ import {
 import { type FC, useEffect } from "react";
 import { clearAllAlerts } from "../redux/slices/alertSlice";
 import { useForman } from "../hooks/useForman";
+import { isSsoMode } from "../common/authMode";
+import SsoProfile from "./SsoProfile";
 
-const Profile: FC = () => {
+//Sso რეჟიმში ანგარიში sso.ltg.ge-ზე იმართება: პროფილი მხოლოდ მონაცემებს და ბმულს აჩვენებს (SsoProfile)
+const Profile: FC = () => (isSsoMode() ? <SsoProfile /> : <LocalProfile />);
+
+const LocalProfile: FC = () => {
   const { user } = useAppSelector((state) => state.userState);
   const dispatch = useAppDispatch();
 

@@ -8,7 +8,8 @@ import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { useGetMainMenuQuery } from "../redux/api/userRightsApi";
 import { toggleexp } from "../redux/slices/navMenuSlice";
 import type { IMenuGroupModel } from "../redux/types/userRightsTypes";
-import type { FC } from "react";
+import { type FC, useRef } from "react";
+import { bffLogoutPath, isSsoMode } from "../common/authMode";
 
 //იდეა წამოღებულია https://bootstrapious.com/p/bootstrap-sidebar
 
@@ -90,12 +91,41 @@ const NavMenu: FC = () => {
                     })}
 
                 <li>
-                    <Link to="/login">
-                        <FontAwesomeIcon icon="sign-out-alt" /> გასასვლელი
-                    </Link>
+                    {isSsoMode() ? (
+                        <SsoLogoutLink />
+                    ) : (
+                        <Link to="/login">
+                            <FontAwesomeIcon icon="sign-out-alt" /> გასასვლელი
+                        </Link>
+                    )}
                 </li>
             </ul>
         </nav>
+    );
+};
+
+//Sso რეჟიმში გასვლა ფორმის POST-ია ჰოსტის /bff/logout-ზე antiforgery ტოკენით (D17): ჰოსტი აპის სესიას ხურავს და
+//ბრაუზერს sso-ს end-session-ზე აგზავნის, საიდანაც sso დანარჩენ აპებსაც ატყობინებს (back-channel logout)
+const SsoLogoutLink: FC = () => {
+    const logoutForm = useAppSelector((state) => state.userState.ssoLogoutForm);
+    const formRef = useRef<HTMLFormElement>(null);
+
+    return (
+        <form ref={formRef} method="post" action={bffLogoutPath}>
+            {logoutForm && (
+                <input type="hidden" name={logoutForm.fieldName} value={logoutForm.token} />
+            )}
+            <a
+                href="#"
+                role="button"
+                onClick={(e) => {
+                    e.preventDefault();
+                    formRef.current?.submit();
+                }}
+            >
+                <FontAwesomeIcon icon="sign-out-alt" /> გასასვლელი
+            </a>
+        </form>
     );
 };
 

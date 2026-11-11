@@ -22,6 +22,49 @@ export interface IAppUser {
     refreshToken?: string | null;
 }
 
+//Sso რეჟიმში მიმდინარე მომხმარებელი (GET /bff/user, BackendCarcassShared-ის BffUserResponse). ცვლის LoginResponse-ს:
+//ტოკენები ბრაუზერში აღარ მოდის
+export interface IBffUser {
+    userId: number;
+    userName: string | null;
+    email: string | null;
+    firstName: string | null;
+    lastName: string | null;
+    //როლები მძიმით გამოყოფილი, როგორც IAppUser.roleName-ში
+    roleName: string | null;
+    appClaims: string[] | null;
+    //გასვლის ფორმის (POST /bff/logout) antiforgery ტოკენი და ფორმის ველის სახელი
+    logoutToken: string | null;
+    logoutFormFieldName: string | null;
+}
+
+//Sso რეჟიმის გასვლის ფორმის ველი: მის გარეშე ჰოსტი გასვლას არ მიიღებს
+export interface ISsoLogoutForm {
+    fieldName: string;
+    token: string;
+}
+
+//Sso რეჟიმის მომხმარებელი აპის ჩვეულ ფორმაში; ტოკენი ცარიელია, რადგან ის მხოლოდ ჰოსტზეა (G7)
+export function bffUserToAppUser(user: IBffUser): IAppUser {
+    return {
+        userId: user.userId,
+        userName: user.userName ?? "",
+        email: user.email ?? "",
+        firstName: user.firstName ?? "",
+        lastName: user.lastName ?? "",
+        roleName: user.roleName ?? "",
+        appClaims: user.appClaims ?? [],
+        sequentialNumber: 0,
+        token: "",
+    };
+}
+
+export function bffUserLogoutForm(user: IBffUser): ISsoLogoutForm | null {
+    return user.logoutFormFieldName && user.logoutToken
+        ? { fieldName: user.logoutFormFieldName, token: user.logoutToken }
+        : null;
+}
+
 //დაუსრულებელი ავტორიზაცია: სერვერმა დროებითი ტოკენი დააბრუნა და ელოდება ელფოსტის დადასტურებას, ან პაროლის ცვლილებას
 export interface IPendingLogin {
     token: string;

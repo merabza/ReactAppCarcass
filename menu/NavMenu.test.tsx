@@ -2,16 +2,17 @@
 
 import { configureStore } from "@reduxjs/toolkit";
 import { act, render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import NavMenu from "./NavMenu";
 import { userRightsApi } from "../redux/api/userRightsApi";
 import alertReducer from "../redux/slices/alertSlice";
 import appParametersReducer from "../redux/slices/appParametersSlice";
 import navMenuReducer from "../redux/slices/navMenuSlice";
-import userReducer, { logout, setUser } from "../redux/slices/userSlice";
+import userReducer, { logout, setSsoUser, setUser } from "../redux/slices/userSlice";
 import type { IAppUser } from "../redux/types/authenticationTypes";
 import type { IMainMenuModel } from "../redux/types/userRightsTypes";
 import { mockFetch, testBaseUrl } from "../../testUtils/testStore";
@@ -128,5 +129,68 @@ describe("NavMenu", () => {
         expect(store.getState().navMenuState.mainMenu).toBeNull();
         expect(store.getState().navMenuState.flatMenu).toBeNull();
         expect(screen.queryByText("menu Rights")).not.toBeInTheDocument();
+    });
+});
+
+describe("NavMenu sign-out", () => {
+    afterEach(() => {
+        vi.unstubAllEnvs();
+        vi.restoreAllMocks();
+    });
+
+    it("goes to /login in the Local mode, as before", async () => {
+        vi.stubEnv("VITE_AUTH_MODE", "local");
+        mockMenuByToken({ admin: mainMenu("Rights") });
+        const store = createStore();
+        store.dispatch(setUser({ token: "admin" } as IAppUser));
+
+        renderNavMenu(store);
+
+        expect(await screen.findByText("menu Rights")).toBeInTheDocument();
+        expect(screen.getByRole("link", { name: "გასასვლელი" })).toHaveAttribute("href", "/login");
+    });
+
+    describe("in the Sso mode", () => {
+        beforeEach(() => {
+            vi.stubEnv("VITE_AUTH_MODE", "sso");
+        });
+
+        // გასვლა ფორმის POST-ია /bff/logout-ზე /bff/user-იდან მიღებული antiforgery ტოკენით
+        it("posts the antiforgery token of /bff/user to /bff/logout", async () => {
+            mockFetch(() => ({ status: 200, body: mainMenu("Rights") }));
+            const submit = vi.spyOn(HTMLFormElement.prototype, "submit").mockImplementation(() => {});
+            const store = createStore();
+            store.dispatch(
+                setSsoUser({
+                    userId: 3,
+                    userName: "testuser",
+                    email: "test.user@example.com",
+                    firstName: "სატესტო",
+                    lastName: "მომხმარებელი",
+                    roleName: "Admin",
+                    appClaims: [],
+                    logoutToken: "antiforgery-token",
+                    logoutFormFieldName: "__RequestVerificationToken",
+                })
+            );
+
+            renderNavMenu(store);
+
+            expect(await screen.findByText("menu Rights")).toBeInTheDocument();
+            expect(screen.getByText("სატესტო მომხმარებელი")).toBeInTheDocument();
+            expect(screen.queryByRole("link", { name: "გასასვლელი" })).not.toBeInTheDocument();
+            const signOut = screen.getByRole("button", { name: "გასასვლელი" });
+            const form = signOut.closest("form")!;
+            expect(form).toHaveAttribute("method", "post");
+            expect(form).toHaveAttribute("action", "/bff/logout");
+            const field = form.querySelector<HTMLInputElement>("input[type=hidden]")!;
+            expect(field.name).toBe("__RequestVerificationToken");
+            expect(field.value).toBe("antiforgery-token");
+
+            await userEvent.click(signOut);
+
+            expect(submit).toHaveBeenCalledTimes(1);
+            expect(submit.mock.contexts[0]).toBe(form);
+        });
     });
 });

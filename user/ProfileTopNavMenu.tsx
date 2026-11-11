@@ -10,8 +10,13 @@ import { useDeleteCurrentUserMutation } from "../redux/api/userRightsApi";
 import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "../redux/hooks";
 import type { IdeleteCurrentUserParameters } from "../redux/types/userRightsTypes";
+import { isSsoMode } from "../common/authMode";
 
-const ProfileTopNavMenu: FC = () => {
+//Sso რეჟიმში პაროლის შეცვლა და ანგარიშის გაუქმება sso.ltg.ge-ზეა (ჰოსტი ამ endpoint-ებს არ ხსნის), ამიტომ
+//ზედა ზოლში ღილაკები არ ჩანს
+const ProfileTopNavMenu: FC = () => (isSsoMode() ? null : <LocalProfileTopNavMenu />);
+
+const LocalProfileTopNavMenu: FC = () => {
     const [showDeleteConfirmMessage, setShowDeleteConfirmMessage] =
         useState(false);
     const [changePasswordModalShow, setChangePasswordModalShow] =

@@ -2,7 +2,15 @@
 
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { NzInt } from "../../common/myFunctions";
-import type { IAppUser, IPendingLogin } from "../types/authenticationTypes";
+import { isSsoMode } from "../../common/authMode";
+import {
+    bffUserLogoutForm,
+    bffUserToAppUser,
+    type IAppUser,
+    type IBffUser,
+    type IPendingLogin,
+    type ISsoLogoutForm,
+} from "../types/authenticationTypes";
 
 interface IUserState {
     isUserValid: boolean;
@@ -18,7 +26,15 @@ interface IUserState {
     //დაუსრულებელი ავტორიზაცია (ელფოსტის დადასტურება, ან პაროლის ცვლილება ელოდება).
     //localStorage-ში ინახება, რომ ელფოსტიდან გახსნილმა ბმულმა ახალ ტაბშიც იპოვოს
     pendingLogin: IPendingLogin | null;
+    //Sso რეჟიმის გასვლის ფორმის antiforgery ტოკენი (/bff/user-ის პასუხიდან, მხოლოდ მეხსიერებაში)
+    ssoLogoutForm: ISsoLogoutForm | null;
     tabWindowId: number;
+}
+
+//Sso რეჟიმში ტოკენები ბრაუზერში არ ინახება: Local რეჟიმიდან დარჩენილი მომხმარებელი ტოკენებით და დროებითი ტოკენი იშლება
+if (isSsoMode()) {
+    localStorage.removeItem("user");
+    localStorage.removeItem("pendingLogin");
 }
 
 const userItem = localStorage.getItem("user");
@@ -40,6 +56,7 @@ const initialState: IUserState = {
     changingProfile: false,
     user: localStorageuser,
     pendingLogin: localStoragePendingLogin,
+    ssoLogoutForm: null,
     tabWindowId: lastTwId,
 };
 
@@ -55,6 +72,7 @@ export const userSlice = createSlice({
             state.loggingIn = false;
             state.user = null;
             state.pendingLogin = null;
+            state.ssoLogoutForm = null;
             state.userValidationChecked = true;
         },
         setUser: (state, action: PayloadAction<IAppUser | null>) => {
@@ -62,7 +80,7 @@ export const userSlice = createSlice({
             state.user = action.payload;
             state.userValidationChecked = true;
             if (usr && usr.token) {
-                localStorage.setItem("user", JSON.stringify(usr));
+                if (!isSsoMode()) localStorage.setItem("user", JSON.stringify(usr));
                 localStorage.removeItem("pendingLogin");
                 state.pendingLogin = null;
                 state.isUserValid = true;
@@ -73,11 +91,21 @@ export const userSlice = createSlice({
         setPendingLogin: (state, action: PayloadAction<IPendingLogin | null>) => {
             const pending = action.payload;
             state.pendingLogin = pending;
-            if (pending) localStorage.setItem("pendingLogin", JSON.stringify(pending));
+            if (pending && !isSsoMode()) localStorage.setItem("pendingLogin", JSON.stringify(pending));
             else localStorage.removeItem("pendingLogin");
             localStorage.removeItem("user");
             state.user = null;
             state.isUserValid = false;
+            state.userValidationChecked = true;
+            state.CheckingUser = false;
+            state.loggingIn = false;
+        },
+        //Sso რეჟიმი: მომხმარებელი /bff/user-იდან მოდის და მხოლოდ მეხსიერებაში ინახება
+        setSsoUser: (state, action: PayloadAction<IBffUser>) => {
+            state.user = bffUserToAppUser(action.payload);
+            state.ssoLogoutForm = bffUserLogoutForm(action.payload);
+            state.pendingLogin = null;
+            state.isUserValid = true;
             state.userValidationChecked = true;
             state.CheckingUser = false;
             state.loggingIn = false;
@@ -114,6 +142,7 @@ export const {
     logout,
     setUser,
     setPendingLogin,
+    setSsoUser,
     setloggingIn,
     setCheckingUser,
     setIsCurrentUserValid,

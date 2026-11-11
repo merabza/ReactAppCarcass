@@ -10,12 +10,24 @@ import { fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import type { RootState } from "../../../redux/store";
 import { logout, setUser } from "../slices/userSlice";
 import type { IAppUser } from "../types/authenticationTypes";
+import { csrfHeaderName, csrfHeaderValue, isSsoMode, redirectToBffLogin } from "../../common/authMode";
 
 const rawBaseQuery = (baseUrl: string, token: string) =>
     fetchBaseQuery({
         baseUrl,
         prepareHeaders: (headers) => {
             headers.set("authorization", `Bearer ${token}`);
+            return headers;
+        },
+    });
+
+//Sso რეჟიმი (D17): ტოკენი ბრაუზერში არ არის. მოთხოვნას ამავე origin-ის HttpOnly cookie და CSRF-ის header ახლავს
+const ssoBaseQuery = (baseUrl: string) =>
+    fetchBaseQuery({
+        baseUrl,
+        credentials: "same-origin",
+        prepareHeaders: (headers) => {
+            headers.set(csrfHeaderName, csrfHeaderValue);
             return headers;
         },
     });
@@ -64,6 +76,14 @@ export const jwtBaseQuery: BaseQueryFn<
                 data: "No baseUrl specified",
             },
         };
+    }
+
+    //Sso რეჟიმში 401 ნიშნავს, რომ აპის სესია აღარ არის: ბრაუზერი შესვლაზე გადადის და შემდეგ ამავე გვერდზე ბრუნდება.
+    //წვდომის ტოკენს ჰოსტი თვითონ ანახლებს, ამიტომ აქ განახლება არ არის
+    if (isSsoMode()) {
+        const ssoResult = await ssoBaseQuery(baseUrl)(args, api, extraOptions);
+        if (ssoResult.error && ssoResult.error.status === 401) redirectToBffLogin();
+        return ssoResult;
     }
 
     // By default, if we have a token in the store, let's use that for authenticated requests

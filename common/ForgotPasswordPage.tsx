@@ -16,9 +16,19 @@ import { useAlert } from "../hooks/useAlert";
 import AlertMessages from "./AlertMessages";
 
 import "./LoginPage.css";
+import { ssoAccountPages, ssoPageUrl, isSsoMode } from "./authMode";
+import SsoRedirect from "./SsoRedirect";
+
+//Sso რეჟიმში პაროლის აღდგენა sso.ltg.ge-ზეა (authMode.ts)
+const ForgotPasswordPage: FC = () =>
+    isSsoMode() ? (
+        <SsoRedirect to={ssoPageUrl(ssoAccountPages.forgotPassword)} />
+    ) : (
+        <LocalForgotPasswordPage />
+    );
 
 //დავიწყებული პაროლის აღდგენის დაწყება: მომხმარებლის სახელით, ან ელფოსტით კოდი და ბმული იგზავნება
-const ForgotPasswordPage: FC = () => {
+const LocalForgotPasswordPage: FC = () => {
     const { appName } = useAppSelector((state) => state.appParametersState);
     const [ApiMutationHaveErrors] = useAlert(EAlertKind.ApiMutation);
     const dispatch = useAppDispatch();

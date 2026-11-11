@@ -9,6 +9,7 @@ import {
     setCheckingUser,
     setIsCurrentUserValid,
     // setPasswordChanged,
+    setSsoUser,
     setUser,
 } from "../slices/userSlice";
 import {
@@ -16,12 +17,13 @@ import {
     setAlertApiMutationError,
 } from "../slices/alertSlice";
 import type { RootState } from "../../../redux/store";
-import type { IAppUser } from "../types/authenticationTypes";
+import type { IAppUser, IBffUser } from "../types/authenticationTypes";
 import type {
     IdeleteCurrentUserParameters,
     IMainMenuModel,
 } from "../types/userRightsTypes";
 import { buildErrorMessage } from "../types/errorTypes";
+import { bffUrl, bffUserPath } from "../../common/authMode";
 //import { redirect } from "react-router-dom";
 
 export interface IChangeProfileModel {
@@ -90,6 +92,24 @@ export const userRightsApi = createApi({
                     dispatch(setIsCurrentUserValid(false));
                     //აქ შეცდომის დაფიქირება არ არის საჭირო
                     // dispatch(setAlertApiLoadError(buildErrorMessage(error)));
+                }
+            },
+        }),
+        //////////////////////////////////////////////////////
+        //Sso რეჟიმი: მიმდინარე მომხმარებელი, მისი როლები და გასვლის ფორმის ტოკენი ჰოსტის BFF-იდან (GET /bff/user).
+        //401-ზე jwtBaseQuery ბრაუზერს შესვლაზე გადაიყვანს, სხვა შეცდომას PrivateApp აჩვენებს
+        getBffUser: builder.query<IBffUser, void>({
+            query() {
+                return {
+                    url: bffUrl(bffUserPath),
+                };
+            },
+            async onQueryStarted(_args, { dispatch, queryFulfilled }) {
+                try {
+                    const { data } = await queryFulfilled;
+                    dispatch(setSsoUser(data));
+                } catch {
+                    //შეცდომა query-ის მდგომარეობაშია (PrivateApp)
                 }
             },
         }),
@@ -186,6 +206,7 @@ export const userRightsApi = createApi({
 export const {
     useGetMainMenuQuery,
     useLazyIsCurrentUserValidQuery,
+    useLazyGetBffUserQuery,
     useChangeProfileMutation,
     useChangePasswordMutation,
     useDeleteCurrentUserMutation,

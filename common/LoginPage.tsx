@@ -17,8 +17,18 @@ import { useForman } from "../hooks/useForman";
 import AlertMessages from "./AlertMessages";
 import { clearAlert, EAlertKind } from "../redux/slices/alertSlice";
 import { useAlert } from "../hooks/useAlert";
+import { bffLoginUrl, isSsoMode } from "./authMode";
+import SsoRedirect from "./SsoRedirect";
 
-const LoginPage: FC = () => {
+//Sso რეჟიმში შესვლა ჰოსტის /bff/login-ითაა, რომ შესვლის შემდეგ მომხმარებელი აპში დაბრუნდეს (authMode.ts)
+const LoginPage: FC = () =>
+    isSsoMode() ? (
+        <SsoRedirect to={bffLoginUrl("/")} />
+    ) : (
+        <LocalLoginPage />
+    );
+
+const LocalLoginPage: FC = () => {
     // console.log("LoginPage Start");
 
     const [submitted, setSubmitted] = useState(false);

@@ -16,8 +16,18 @@ import { useAlert } from "../hooks/useAlert";
 import AlertMessages from "./AlertMessages";
 import { pendingStepPath } from "../redux/types/authenticationTypes";
 import { passwordRulesHint, passwordSchema } from "./passwordRules";
+import { ssoAccountPages, ssoPageUrl, isSsoMode } from "./authMode";
+import SsoRedirect from "./SsoRedirect";
 
-const RegistrationPage: FC = () => {
+//Sso რეჟიმში რეგისტრაცია sso.ltg.ge-ზეა (authMode.ts)
+const RegistrationPage: FC = () =>
+    isSsoMode() ? (
+        <SsoRedirect to={ssoPageUrl(ssoAccountPages.registration)} />
+    ) : (
+        <LocalRegistrationPage />
+    );
+
+const LocalRegistrationPage: FC = () => {
     // console.log("RegistrationPage Start");
 
     const dispatch = useAppDispatch();

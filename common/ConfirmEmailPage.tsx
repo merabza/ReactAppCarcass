@@ -21,10 +21,20 @@ import { pendingStepPath } from "../redux/types/authenticationTypes";
 import { codeSchema } from "./passwordRules";
 
 import "./LoginPage.css";
+import { ssoAccountPages, ssoPageUrl, isSsoMode } from "./authMode";
+import SsoRedirect from "./SsoRedirect";
+
+//Sso რეჟიმში ელფოსტის დადასტურება sso.ltg.ge-ზეა (authMode.ts)
+const ConfirmEmailPage: FC = () =>
+    isSsoMode() ? (
+        <SsoRedirect to={ssoPageUrl(ssoAccountPages.confirmEmail)} />
+    ) : (
+        <LocalConfirmEmailPage />
+    );
 
 //ელფოსტის დადასტურება: ან კოდის შეყვანით (დროებითი ტოკენი localStorage-შია),
 //ან ელფოსტიდან მოსული ბმულით (?userId=...&token=...)
-const ConfirmEmailPage: FC = () => {
+const LocalConfirmEmailPage: FC = () => {
     const [searchParams] = useSearchParams();
     const linkUserId = Number(searchParams.get("userId"));
     const linkToken = searchParams.get("token");
