@@ -8,6 +8,7 @@ import * as yup from "yup";
 
 import RegTextControl from "../editorParts/RegTextControl";
 import { useAppSelector, useAppDispatch } from "../redux/hooks";
+import { usePageTitle } from "./pageTitle";
 import { logout } from "../redux/slices/userSlice";
 import { useLoginMutation, useLogoutMutation } from "../redux/api/authenticationApi";
 import { pendingStepPath } from "../redux/types/authenticationTypes";
@@ -33,6 +34,7 @@ const LocalLoginPage: FC = () => {
 
     const [submitted, setSubmitted] = useState(false);
     const { appName } = useAppSelector((state) => state.appParametersState);
+    usePageTitle("შესვლა");
     const { userValidationChecked, user, pendingLogin } = useAppSelector((state) => state.userState);
     const [ApiMutationHaveErrors] = useAlert(EAlertKind.ApiMutation);
 

@@ -8,6 +8,7 @@ import * as yup from "yup";
 
 import RegTextControl from "../editorParts/RegTextControl";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import { usePageTitle } from "./pageTitle";
 import {
     useConfirmEmailLinkMutation,
     useConfirmEmailMutation,
@@ -41,6 +42,8 @@ const LocalConfirmEmailPage: FC = () => {
     const isLinkFlow = linkUserId > 0 && !!linkToken;
 
     const { appName } = useAppSelector((state) => state.appParametersState);
+
+    usePageTitle("ელფოსტის დადასტურება");
     const { user, pendingLogin } = useAppSelector((state) => state.userState);
     const [ApiMutationHaveErrors] = useAlert(EAlertKind.ApiMutation);
     const dispatch = useAppDispatch();

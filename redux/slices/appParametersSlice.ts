@@ -5,6 +5,8 @@ import { appParameters } from "../../../AppParameters";
 
 export interface IAppParametersState {
     appName: string;
+    //ბრაუზერის ტაბის სათაურისთვის; თუ არ არის, appName გამოიყენება
+    appShortName?: string;
     baseUrl: string;
 }
 

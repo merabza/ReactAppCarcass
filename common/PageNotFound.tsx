@@ -2,8 +2,11 @@
 
 import type { FC } from "react";
 import { Link } from "react-router-dom";
+import { usePageTitleOverride } from "./pageTitle";
 
 const PageNotFound: FC = () => {
+    usePageTitleOverride("გვერდი არ არსებობს");
+
     return (
         <div>
             <h1 style={{ color: "red", fontSize: 100 }}>404</h1>

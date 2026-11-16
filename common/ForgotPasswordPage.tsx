@@ -8,6 +8,7 @@ import * as yup from "yup";
 
 import RegTextControl from "../editorParts/RegTextControl";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import { usePageTitle } from "./pageTitle";
 import { useForgotPasswordMutation } from "../redux/api/authenticationApi";
 import { useForman } from "../hooks/useForman";
 import { clearAlert, EAlertKind } from "../redux/slices/alertSlice";
@@ -30,6 +31,7 @@ const ForgotPasswordPage: FC = () =>
 //დავიწყებული პაროლის აღდგენის დაწყება: მომხმარებლის სახელით, ან ელფოსტით კოდი და ბმული იგზავნება
 const LocalForgotPasswordPage: FC = () => {
     const { appName } = useAppSelector((state) => state.appParametersState);
+    usePageTitle("პაროლის აღდგენა");
     const [ApiMutationHaveErrors] = useAlert(EAlertKind.ApiMutation);
     const dispatch = useAppDispatch();
     const navigate = useNavigate();

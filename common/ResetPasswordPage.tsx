@@ -8,6 +8,7 @@ import * as yup from "yup";
 
 import RegTextControl from "../editorParts/RegTextControl";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import { usePageTitle } from "./pageTitle";
 import { useResetPasswordMutation } from "../redux/api/authenticationApi";
 import { useForman } from "../hooks/useForman";
 import { clearAlert, EAlertKind } from "../redux/slices/alertSlice";
@@ -37,6 +38,8 @@ const LocalResetPasswordPage: FC = () => {
     const { state } = useLocation();
 
     const { appName } = useAppSelector((state) => state.appParametersState);
+
+    usePageTitle("ახალი პაროლი");
     const { user } = useAppSelector((state) => state.userState);
     const [ApiMutationHaveErrors] = useAlert(EAlertKind.ApiMutation);
     const dispatch = useAppDispatch();

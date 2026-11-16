@@ -8,6 +8,7 @@ import * as yup from "yup"; // for everything // or //import { string, object } 
 
 import RegTextControl from "../editorParts/RegTextControl";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import { usePageTitle } from "./pageTitle";
 import { logout } from "../redux/slices/userSlice";
 import { type IRegistrationRequest, useRegistrationMutation } from "../redux/api/authenticationApi";
 import { useForman } from "../hooks/useForman";
@@ -91,6 +92,8 @@ const LocalRegistrationPage: FC = () => {
     ] = useForman<typeof registrationPageSchema, RegistrationPageData>(registrationPageSchema);
 
     const appName = useAppSelector((state) => state.appParametersState.appName);
+
+    usePageTitle("რეგისტრაცია");
 
     async function handleSubmit(e: React.SyntheticEvent) {
         e.preventDefault();
