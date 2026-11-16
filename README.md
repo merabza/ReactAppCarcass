@@ -39,6 +39,12 @@ merabza/SsoLtgGe) is implemented in `common/authMode.ts` and the components name
   those endpoints in the Sso mode.
 - The menu item „გასასვლელი“ posts a form to `/bff/logout` with the antiforgery token of `/bff/user`. The host ends
   the app session and sends the browser to sso's end-session, which signs the user out of the other apps as well.
+- The other LTG apps (merabza/SsoLtgGe#22, design D31–D33): `common/ltgApps.ts` (`useLtgApps`) reads
+  `<VITE_SSO_URL>apps` once per page load, without cookies or `X-CSRF`, and drops the app on the current origin; on an
+  error the list is empty. The menu shows them as „LTG აპები“ before „გასასვლელი“, and `common/LtgAppLinks.tsx` gives
+  the host a list for its home page (`<LtgAppLinks />`, heading „LTG-ის სხვა აპები“). The links open in the same tab;
+  the other app signs the user in through the sso session. In the Local mode nothing is shown. An app appears in the
+  list when its client on sso has a `HomeUrl`.
 
 ### Connecting an app
 

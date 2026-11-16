@@ -8,6 +8,7 @@ import { MemoryRouter } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import NavMenu from "./NavMenu";
+import { resetLtgAppsCache } from "../common/ltgApps";
 import { userRightsApi } from "../redux/api/userRightsApi";
 import alertReducer from "../redux/slices/alertSlice";
 import appParametersReducer from "../redux/slices/appParametersSlice";
@@ -192,5 +193,45 @@ describe("NavMenu sign-out", () => {
             expect(submit).toHaveBeenCalledTimes(1);
             expect(submit.mock.contexts[0]).toBe(form);
         });
+
+        // სხვა LTG აპები sso-ს GET /apps-იდან, მიმდინარე აპის გარეშე (merabza/SsoLtgGe#22)
+        it("lists the other LTG apps before the sign-out", async () => {
+            vi.stubEnv("VITE_SSO_URL", "https://sso.example/");
+            resetLtgAppsCache();
+            mockFetch((call) =>
+                call.url === "https://sso.example/apps"
+                    ? {
+                          status: 200,
+                          body: [
+                              { name: "app.grammar.ge", url: "https://grammar.example/" },
+                              { name: "this app", url: `${window.location.origin}/` },
+                          ],
+                      }
+                    : { status: 200, body: mainMenu("Rights") }
+            );
+            const store = createStore();
+            store.dispatch(setUser({ token: "admin" } as IAppUser));
+
+            renderNavMenu(store);
+
+            const grammar = await screen.findByRole("link", { name: "app.grammar.ge" });
+            expect(grammar).toHaveAttribute("href", "https://grammar.example/");
+            expect(screen.getByText("LTG აპები")).toBeInTheDocument();
+            expect(screen.queryByRole("link", { name: "this app" })).not.toBeInTheDocument();
+        });
+    });
+
+    it("shows no LTG apps in the Local mode", async () => {
+        vi.stubEnv("VITE_AUTH_MODE", "local");
+        resetLtgAppsCache();
+        const calls = mockMenuByToken({ admin: mainMenu("Rights") });
+        const store = createStore();
+        store.dispatch(setUser({ token: "admin" } as IAppUser));
+
+        renderNavMenu(store);
+
+        expect(await screen.findByText("menu Rights")).toBeInTheDocument();
+        expect(screen.queryByText("LTG აპები")).not.toBeInTheDocument();
+        expect(calls.some((call) => call.url.endsWith("/apps"))).toBe(false);
     });
 });

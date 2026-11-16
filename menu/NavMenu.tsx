@@ -10,6 +10,8 @@ import { toggleexp } from "../redux/slices/navMenuSlice";
 import type { IMenuGroupModel } from "../redux/types/userRightsTypes";
 import { type FC, useRef } from "react";
 import { bffLogoutPath, isSsoMode } from "../common/authMode";
+import { useLtgApps } from "../common/ltgApps";
+import { LtgAppLink } from "../common/LtgAppLinks";
 
 //იდეა წამოღებულია https://bootstrapious.com/p/bootstrap-sidebar
 
@@ -21,6 +23,7 @@ const NavMenu: FC = () => {
     const dispatch = useAppDispatch();
 
     const active = useAppSelector((state) => state.navMenuState.active);
+    const ltgApps = useLtgApps();
     // console.log("NavMenu active=", active);
 
     //მენიუ მომხმარებლის როლებზეა დამოკიდებული, ქეშირებული კი არგუმენტის გარეშეა: სხვა მომხმარებლით შესვლის შემდეგ
@@ -89,6 +92,20 @@ const NavMenu: FC = () => {
                         }
                         return <div />;
                     })}
+
+                {/* სხვა LTG აპები sso.ltg.ge-ის სიიდან (merabza/SsoLtgGe#22); Local რეჟიმში სია ცარიელია */}
+                {ltgApps.length > 0 && (
+                    <li>
+                        <p className="m-0">LTG აპები</p>
+                        <ul className="list-unstyled">
+                            {ltgApps.map((app) => (
+                                <li key={app.url}>
+                                    <LtgAppLink app={app} />
+                                </li>
+                            ))}
+                        </ul>
+                    </li>
+                )}
 
                 <li>
                     {isSsoMode() ? (
