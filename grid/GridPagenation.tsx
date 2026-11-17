@@ -14,6 +14,12 @@ type GridPagenationProps = {
 const GridPagenation: FC<GridPagenationProps> = (props) => {
     const { offset, rowsCountPerPage, allRowsCount, onChange } = props;
 
+    //ბოლო გვერდი ბოლო ჩანაწერს უნდა შეიცავდეს (21 ჩანაწერი, 10 გვერდზე → წანაცვლება 20)
+    const lastPageOffset = Math.max(
+        0,
+        Math.floor((allRowsCount - 1) / rowsCountPerPage) * rowsCountPerPage
+    );
+
     return (
         <>
             <div className="d-flex align-items-center justify-content-center">
@@ -73,7 +79,8 @@ const GridPagenation: FC<GridPagenationProps> = (props) => {
                     onClick={(e) => {
                         e.preventDefault();
                         if (onChange) {
-                            onChange(offset - rowsCountPerPage, rowsCountPerPage);
+                            //პირველი გვერდიდან უკან არ მიდის
+                            onChange(Math.max(0, offset - rowsCountPerPage), rowsCountPerPage);
                         }
                     }}
                 >
@@ -91,7 +98,11 @@ const GridPagenation: FC<GridPagenationProps> = (props) => {
                     onClick={(e) => {
                         e.preventDefault();
                         if (onChange) {
-                            onChange(offset + rowsCountPerPage, rowsCountPerPage);
+                            //ბოლო გვერდიდან წინ არ მიდის (ცარიელ გვერდზე)
+                            onChange(
+                                Math.min(offset + rowsCountPerPage, Math.max(offset, lastPageOffset)),
+                                rowsCountPerPage
+                            );
                         }
                     }}
                 >
@@ -102,11 +113,7 @@ const GridPagenation: FC<GridPagenationProps> = (props) => {
                     onClick={(e) => {
                         e.preventDefault();
                         if (onChange) {
-                            onChange(
-                                Math.floor((allRowsCount - rowsCountPerPage) / rowsCountPerPage) *
-                                    rowsCountPerPage,
-                                rowsCountPerPage
-                            );
+                            onChange(lastPageOffset, rowsCountPerPage);
                         }
                     }}
                 >
